@@ -1,0 +1,84 @@
+mutation CreateDemoData @transaction @auth(level: USER, insecureReason: "This is a seed mutation and only intended for development and testing. Production environments should secure or remove this operation.") {
+  user_insertMany(data: [
+    {
+      id: "b2d2f1f0-0b0c-4c0e-8a0a-0a0b0c0d0e01",
+      displayName: "Benny Customer",
+      email: "benny.customer@example.com",
+      userType: "Customer",
+      createdAt: "2024-01-01T10:00:00Z",
+      phoneNumber: "+15551234567",
+      address: "123 Main St, Anytown",
+      profilePictureUrl: "https://example.com/benny_customer.jpg"
+    },
+    {
+      id: "b2d2f1f0-0b0c-4c0e-8a0a-0a0b0c0d0e02",
+      displayName: "Alice Technician",
+      email: "alice.tech@example.com",
+      userType: "Technician",
+      createdAt: "2024-01-01T10:05:00Z",
+      phoneNumber: "+15559876543",
+      address: "456 Oak Ave, Techville",
+      profilePictureUrl: "https://example.com/alice_tech.jpg"
+    }
+  ])
+  serviceCategory_insertMany(data: [
+    {
+      id: "c3e3g2g1-1c1d-5d1f-9b1b-1b1c1d1e1f11",
+      name: "Plumbing",
+      description: "Services related to water and drainage systems.",
+      iconUrl: "https://example.com/plumbing_icon.png",
+      createdAt: "2024-01-01T10:10:00Z"
+    },
+    {
+      id: "c3e3g2g1-1c1d-5d1f-9b1b-1b1c1d1e1f12",
+      name: "Electrical",
+      description: "Services related to electrical systems and wiring.",
+      iconUrl: "https://example.com/electrical_icon.png",
+      createdAt: "2024-01-01T10:11:00Z"
+    }
+  ])
+  technicianProfile_insertMany(data: [
+    {
+      id: "d4f4h3h2-2d2e-6e2g-a2c2-2c2d2e2f2g21",
+      userId: "b2d2f1f0-0b0c-4c0e-8a0a-0a0b0c0d0e02",
+      hourlyRate: 75.00,
+      availability: "Weekdays 9 AM - 5 PM",
+      bio: "Experienced plumber with 10 years in the field.",
+      yearsOfExperience: 10,
+      serviceAreas: ["Anytown", "Techville"],
+      createdAt: "2024-01-01T10:15:00Z"
+    }
+  ])
+  technicianSpecialization_insertMany(data: [
+    {
+      technicianProfileId: "d4f4h3h2-2d2e-6e2g-a2c2-2c2d2e2f2g21",
+      serviceCategoryId: "c3e3g2g1-1c1d-5d1f-9b1b-1b1c1d1e1f11",
+      createdAt: "2024-01-01T10:20:00Z"
+    }
+  ])
+  serviceRequest_insertMany(data: [
+    {
+      id: "e5g5i4i3-3e3f-7f3h-b3d3-3d3e3f3g3h31",
+      customerId: "b2d2f1f0-0b0c-4c0e-8a0a-0a0b0c0d0e01",
+      technicianId: "b2d2f1f0-0b0c-4c0e-8a0a-0a0b0c0d0e02",
+      title: "Leaky Faucet Repair",
+      description: "My kitchen faucet has a constant drip.",
+      status: "Scheduled",
+      createdAt: "2024-01-01T10:25:00Z",
+      preferredDateTime: "2024-01-05T14:00:00Z",
+      location: "123 Main St, Anytown",
+      estimatedCost: 150.00
+    }
+  ])
+  review_insertMany(data: [
+    {
+      id: "f6h6j5j4-4f4g-8g4i-c4e4-4e4f4g4h4i41",
+      serviceRequestId: "e5g5i4i3-3e3f-7f3h-b3d3-3d3e3f3g3h31",
+      customerId: "b2d2f1f0-0b0c-4c0e-8a0a-0a0b0c0d0e01",
+      technicianId: "b2d2f1f0-0b0c-4c0e-8a0a-0a0b0c0d0e02",
+      rating: 5,
+      comment: "Alice was great! Fixed the faucet quickly and professionally.",
+      createdAt: "2024-01-05T16:00:00Z"
+    }
+  ])
+}

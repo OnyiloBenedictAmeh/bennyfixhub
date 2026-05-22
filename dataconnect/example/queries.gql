@@ -1,0 +1,47 @@
+mutation CreateUserAccount($displayName: String!, $email: String!, $userType: String!, $phoneNumber: String, $address: String, $profilePictureUrl: String) @auth(level: USER) {
+  user_insert(data: {
+    id_expr: "auth.uid",
+    displayName: $displayName,
+    email: $email,
+    userType: $userType,
+    createdAt_expr: "request.time",
+    phoneNumber: $phoneNumber,
+    address: $address,
+    profilePictureUrl: $profilePictureUrl
+  })
+}
+
+query GetCurrentUserProfile @auth(level: USER) {
+  user(key: {id_expr: "auth.uid"}) {
+    id
+    displayName
+    email
+    userType
+    phoneNumber
+    address
+    profilePictureUrl
+    createdAt
+  }
+}
+
+query ListServiceCategoriesPublic @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public as it only lists general service categories.") {
+  serviceCategories {
+    id
+    name
+    description
+    iconUrl
+  }
+}
+
+mutation SubmitServiceRequest($title: String!, $description: String!, $status: String!, $preferredDateTime: Timestamp, $location: String, $estimatedCost: Float) @auth(level: USER) {
+  serviceRequest_insert(data: {
+    customerId_expr: "auth.uid",
+    title: $title,
+    description: $description,
+    status: $status,
+    createdAt_expr: "request.time",
+    preferredDateTime: $preferredDateTime,
+    location: $location,
+    estimatedCost: $estimatedCost
+  })
+}

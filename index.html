@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BennyFix Hub</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="dashboard.css" />
+    <link rel="icon" type="image/png" href="bennyfix logo.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css"
+    />
+  </head>
+
+  <body>
+    <div class="auth-overlay" id="authModal">
+      <div class="auth-box">
+        <!-- LOGO -->
+        <img src="bennyfix logo.png" class="auth-logo" alt="Logo" />
+
+        <!-- LOGIN FORM -->
+        <div id="loginForm" class="form-group">
+          <h2>Welcome to BennyFix Hub</h2>
+          <p class="subtitle">Login to continue</p>
+
+          <input type="email" id="email" placeholder="Email" />
+          <input type="password" id="password" placeholder="Password" />
+
+          <button id="mainBtn" onclick="login()">Login</button>
+          <a href="#" onclick="forgotPassword()"> Forgot Password? </a>
+
+          <p>
+            Don’t have an account?
+            <span
+              onclick="showRegister()"
+              style="cursor: pointer; color: #2563eb"
+            >
+              Create one
+            </span>
+          </p>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="registerForm" style="display: none" class="form-group">
+          <h2>Create Account</h2>
+          <p class="subtitle">Register to continue</p>
+
+          <input type="text" id="regName" placeholder="Full name" />
+          <input type="email" id="regEmail" placeholder="Email" />
+          <input type="tel" id="regphone" placeholder="Phone Number" />
+          <input type="password" id="regPassword" placeholder="Password" />
+          <input
+            type="password"
+            id="regConfirm"
+            placeholder="Confirm Password"
+          />
+
+          <button onclick="signup()">Create Account</button>
+
+          <p>
+            Already have an account?
+            <span onclick="showLogin()" style="cursor: pointer; color: #2563eb">
+              Login
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="topbar">
+      <div class="wrap topbar-inner">
+        <div>BennyFix Hub | Device Repair & Support</div>
+        <div>
+          <div class="account-wrapper">
+            <a href="#" onclick="toggleAccountMenu(event)">
+              <i class="bx bx-user"></i> My Account
+            </a>
+
+            <div class="account-dropdown" id="accountDropdown">
+              <div id="guestMenu">
+                <a href="#" onclick="openAuth()">Login / Register</a>
+              </div>
+
+              <div id="userMenu" style="display: none">
+                <a href="#">Dashboard</a>
+                <a href="#" onclick="logout()">Logout</a>
+              </div>
+            </div>
+          </div>
+          <a href="#"><i class="bx bx-file"></i> Claims</a>
+        </div>
+      </div>
+    </div>
+    <div id="verifyScreen" style="display: none">
+      <h2>Verify your email</h2>
+
+      <p>We sent a verification link to:</p>
+      <h3 id="verifyEmail"></h3>
+
+      <button onclick="resendVerification()">Resend Email</button>
+
+      <p id="resendTimer"></p>
+    </div>
+    <!-- SEARCH -->
+    <div class="search-modal" id="searchModal">
+      <div
+        class="search-box"
+        onclick="event.stopPropagation()"
+        onmousedown="event.stopPropagation()"
+      >
+        <input
+          id="searchInput"
+          placeholder="Search help..."
+          aria-label="Search help"
+        />
+      </div>
+    </div>
+
+    <header>
+      <div class="wrap header-inner">
+        <div class="logo">
+          <img
+            src="bennyfix logo.png"
+            alt="BennyFix Hub Logo"
+            class="logo-img"
+          />
+          <a href="index.html"><span> BennyFix Hub</span></a>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+          <i class="bx bx-menu"></i>
+        </div>
+        <!-- WRAPPER ADDED (IMPORTANT FIX) -->
+        <div class="nav-wrapper" id="navWrapper">
+          <div class="nav">
+            <div class="nav-item" data-menu="support">
+              <span>Support <i class="bx bx-chevron-down"></i></span>
+            </div>
+
+            <div class="nav-item" data-menu="repairs">
+              <span>Repairs <i class="bx bx-chevron-down"></i></span>
+            </div>
+
+            <div class="nav-item" onclick="toggleSearch(event)">
+              <span><i class="bx bx-search"></i></span>
+            </div>
+          </div>
+
+          <!-- MEGA MENU INSIDE WRAPPER (IMPORTANT FIX) -->
+          <div class="mega-overlay" id="mega">
+            <div class="mega-inner">
+              <div class="mega-tabs">
+                <div onclick="switchTab('support')">Support</div>
+                <div onclick="switchTab('repairs')">Repairs</div>
+              </div>
+
+              <div id="support" class="mega-content active">
+                <div class="mega-box">
+                  <h4>Devices</h4>
+
+                  <div class="mega-item">
+                    <img src="phone.jpg" />
+                    <span>Phones</span>
+                  </div>
+
+                  <div class="mega-item">
+                    <img src="laptop.jpg" />
+                    <span>Laptops</span>
+                  </div>
+                </div>
+                <div class="mega-box">
+                  <h4>Help</h4>
+                  <a href="#">Fix Issues</a>
+                </div>
+              </div>
+
+              <div id="repairs" class="mega-content">
+                <div class="mega-box">
+                  <h4>Services</h4>
+                  <a href="#">Start Repair</a>
+                  <a href="#">Track Repair</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <section class="hero-premium">
+      <div class="hero-overlay"></div>
+
+      <div class="wrap hero-content">
+        <h1>
+          We Build. We Fix. <br />
+          <span class="accent">We Upgrade.</span>
+        </h1>
+
+        <p>
+          From Makurdi to the world — BennyFix Hub is redefining device repair,
+          innovation, and digital support.
+        </p>
+
+        <div class="hero-actions">
+          <button class="primary-btn" onclick="toggleRepairForm()">
+            Start a Repair
+          </button>
+          <button class="ghost-btn">Explore Services</button>
+        </div>
+        <!-- start repair form -->
+        <!-- start repair form -->
+        <div class="repair-form" id="repairForm">
+          <h2>Start a Repair</h2>
+
+          <!-- DEVICE CATEGORY -->
+          <div class="form-group">
+            <label>Device Category</label>
+            <select id="category">
+              <option value="">Select device type</option>
+              <option>Phone</option>
+              <option>Laptop</option>
+              <option>Desktop</option>
+              <option>Tablet</option>
+              <option>TV</option>
+              <option>Printer</option>
+              <option>Game Console</option>
+              <option>Home Appliance</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <!-- DEVICE NAME -->
+          <div class="form-group">
+            <label>Device Name / Model</label>
+            <input
+              id="deviceName"
+              type="text"
+              placeholder="e.g iPhone 11 / HP EliteBook"
+            />
+          </div>
+
+          <!-- PROBLEM TYPE -->
+          <div class="form-group">
+            <label>Problem Type</label>
+            <select id="problemType">
+              <option value="">Select problem</option>
+              <option>Screen Damage</option>
+              <option>Battery Issue</option>
+              <option>Charging Problem</option>
+              <option>Water Damage</option>
+              <option>Not Powering On</option>
+              <option>Software Issue</option>
+              <option>Overheating</option>
+              <option>Slow Performance</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <!-- ISSUE DESCRIPTION -->
+          <div class="form-group">
+            <label>Issue Description</label>
+            <input
+              id="issue"
+              type="text"
+              placeholder="Explain what happened in detail"
+            />
+          </div>
+
+          <!-- URGENCY -->
+          <div class="form-group">
+            <label>Urgency Level</label>
+            <select id="urgency">
+              <option>Normal</option>
+              <option>Urgent</option>
+              <option>Emergency</option>
+            </select>
+          </div>
+
+          <!-- CONTACT -->
+          <div class="form-group">
+            <label>Contact Number</label>
+            <input id="contact" type="tel" placeholder="e.g 080xxxxxxxx" />
+          </div>
+
+          <!-- SERVICE TYPE -->
+          <div class="form-group">
+            <label>Service Type</label>
+            <select id="serviceType">
+              <option>Bring to shop</option>
+              <option>Home pickup</option>
+              <option>Technician visit</option>
+              <option>Remote support</option>
+            </select>
+          </div>
+
+          <button onclick="startRepair()" class="primary-btn">
+            Submit Repair
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="related">
+      <div class="related-grid">
+        <div class="related-card">WiFi Fix</div>
+        <div class="related-card">Overheating</div>
+        <div class="related-card">Slow PC</div>
+      </div>
+    </div>
+    <footer>
+      <div class="wrap footer-grid">
+        <div><h4>Hub</h4></div>
+        <div><h4>Support</h4></div>
+        <div><h4>Repairs</h4></div>
+        <div><h4>Legal</h4></div>
+        <div><h4>Account</h4></div>
+      </div>
+      <div class="credit"><span>BennyFix hub</span> | all rights reserved!</div>
+    </footer>
+
+    <script type="module" src="script.js"></script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    </script>
+    <div
+      class="account-overlay"
+      id="accountOverlay"
+      onclick="closeAccountPanel()"
+    ></div>
+
+    <div class="account-panel" id="accountPanel">
+      <div class="account-top">
+        <div class="avatar">
+          <i class="bx bx-user"></i>
+        </div>
+
+        <div class="user-info">
+          <h4 id="userEmail">Guest</h4>
+          <small>Ben​nyFix Hub Member</small>
+        </div>
+
+        <span class="close-btn" onclick="closeAccountPanel()">✕</span>
+      </div>
+
+      <div class="account-links">
+        <a href="dashboard.html"><i class="bx bx-grid-alt"></i> Dashboard</a>
+        <a href="#"><i class="bx bx-wrench"></i> My Repairs</a>
+        <a href="#"><i class="bx bx-receipt"></i> Claims</a>
+        <a href="#"><i class="bx bx-cog"></i> Settings</a>
+        <a href="#" class="logout" onclick="logout()">
+          <i class="bx bx-log-out"></i> Logout
+        </a>
+      </div>
+    </div>
+    <div id="toastContainer"></div>
+  </body>
+</html>

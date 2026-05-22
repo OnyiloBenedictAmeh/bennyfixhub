@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css">
+</head>
+
+<body>
+
+  <!-- LOADING / SECURITY GATE -->
+  <div id="loading" class="loading">
+  <p id="loadingText"></p>
+</div>
+
+  <!-- ADMIN LOGIN (GATE ENTRY) -->
+  <div id="adminLogin" class="admin-login" style="display:none;">
+  
+  <div class="login-box">
+    <h2>Admin Access</h2>
+    <p class="subtitle">Secure login required</p>
+
+    <input id="adminEmail" type="email" placeholder="Email" />
+    <input id="adminPassword" type="password" placeholder="Password" />
+
+    <button onclick="adminLogin()" class="login-btn">
+      Login
+    </button>
+
+    <p id="adminError" class="error-text"></p>
+  </div>
+
+</div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast"></div>
+
+  <!-- ADMIN DASHBOARD -->
+  <div id="adminDashboard" class="admin-wrapper" style="display:none;">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+  <h2>🛠 Admin</h2>
+
+  <button onclick="showSection('overview')">
+    <i class='bx bxs-dashboard'></i>
+    <span>Overview</span>
+  </button>
+
+  <button onclick="showSection('repairs')">
+    <i class='bx bx-wrench'></i>
+    <span>Repairs</span>
+  </button>
+
+  <button onclick="showSection('users')">
+    <i class='bx bx-user'></i>
+    <span>Users</span>
+  </button>
+
+  <!-- <hr /> -->
+
+  <button onclick="toggleDarkMode()">
+    <i class='bx bx-moon'></i>
+    <span>Dark Mode</span>
+  </button>
+
+  <button onclick="logoutAdmin()">
+    <i class='bx bx-log-out'></i>
+    <span>Logout</span>
+  </button>
+</div>
+<div class="bottom-nav">
+  <button onclick="showSection('overview')" id="tab-overview">
+    <i class="bx bx-home"></i>
+    <span>Overview</span>
+  </button>
+
+  <button onclick="showSection('repairs')" id="tab-repairs">
+    <i class="bx bx-wrench"></i>
+    <span>Repairs</span>
+  </button>
+
+  <button onclick="showSection('users')" id="tab-users">
+    <i class="bx bx-user"></i>
+    <span>Users</span>
+  </button>
+
+  <button onclick="toggleNotifications()" id="tab-bell">
+    <i class="bx bx-bell"></i>
+    <span>showToasts</span>
+    <span id="notifBadge" class="badge">0</span>
+  </button>
+</div>
+  
+ <!-- OVERVIEW SECTION -->
+<div id="overview" class="section">
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3 id="totalRepairs">0</h3>
+      <p>Total Repairs</p>
+    </div>
+
+    <div class="stat-card pending">
+      <h3 id="pendingRepairs">0</h3>
+      <p>Pending</p>
+    </div>
+
+    <div class="stat-card diagnosing">
+      <h3 id="progressRepairs">0</h3>
+      <p>In Progress</p>
+    </div>
+
+    <div class="stat-card completed">
+      <h3 id="completedRepairs">0</h3>
+      <p>Completed</p>
+    </div>
+  </div>
+<h3 class="chart-title">Repair Status Overview</h3>
+  <div class="chart-container">
+    <canvas id="statusChart"></canvas>
+  </div>
+
+</div>
+<!-- NAVIGATION -->
+<!-- <div class="admin-nav">
+  <button onclick="showSection('overview')">📊 Overview</button>
+  <button onclick="showSection('repairs')">🛠 Repairs</button>
+  <button onclick="showSection('users')">👤 Users</button>
+  <button onclick="logoutAdmin()">🚪 Logout</button>
+</div> -->
+<!-- REPAIRS SECTION -->
+<div id="repairs" class="section" style="display:none;">
+  <div id="repairsContainer" class="repairs-container"></div>
+</div>
+
+<!-- USERS SECTION -->
+<!-- USERS SECTION -->
+<div id="users" class="section" style="display:none;">
+  <div id="usersContainer"></div>
+
+  <button onclick="openTechForm()" class="add-btn">
+    ➕ Add Technician
+  </button>
+</div>
+
+<div id="techForm" class="modal hidden">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeTechForm()">×</button>
+
+    <h3>Add Technician</h3>
+
+    <input id="techName" placeholder="Full Name">
+    <input id="techEmail" placeholder="Email">
+    <input id="techPassword" placeholder="Password">
+
+    <button class="btn btn-primary" onclick="createTechnician()">
+  Create Technician
+</button>
+
+<button class="btn btn-secondary" onclick="closeTechForm()">
+  Cancel
+</button>
+  </div>
+</div>
+
+<!-- USERS SECTION -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script type="module" src="admin.js"></script>
+
+</body>
+</html>

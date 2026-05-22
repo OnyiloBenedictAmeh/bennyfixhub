@@ -1,0 +1,53 @@
+type User @table {
+  displayName: String!
+  email: String!
+  userType: String! # "Customer" or "Technician"
+  createdAt: Timestamp!
+  phoneNumber: String
+  address: String
+  profilePictureUrl: String
+}
+
+type ServiceCategory @table {
+  name: String!
+  createdAt: Timestamp!
+  description: String
+  iconUrl: String
+}
+
+type ServiceRequest @table {
+  customer: User!
+  technician: User
+  title: String!
+  description: String!
+  status: String! # "Pending", "Accepted", "InProgress", "Completed", "Cancelled"
+  createdAt: Timestamp!
+  preferredDateTime: Timestamp
+  location: String
+  estimatedCost: Float
+}
+
+type TechnicianProfile @table {
+  user: User!
+  hourlyRate: Float!
+  availability: String! # e.g., JSON string or simple text describing availability
+  createdAt: Timestamp!
+  bio: String
+  yearsOfExperience: Int
+  serviceAreas: [String]
+}
+
+type TechnicianSpecialization @table(key: ["technicianProfile", "serviceCategory"]) {
+  technicianProfile: TechnicianProfile!
+  serviceCategory: ServiceCategory!
+  createdAt: Timestamp!
+}
+
+type Review @table {
+  serviceRequest: ServiceRequest!
+  customer: User!
+  technician: User!
+  rating: Int! # 1-5
+  createdAt: Timestamp!
+  comment: String
+}
