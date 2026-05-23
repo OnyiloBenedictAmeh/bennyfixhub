@@ -173,21 +173,21 @@
                 </div>
               </div>
 
-             <div id="repairs" class="mega-content">
-  <div class="mega-box">
-    <h4>Repair Services</h4>
+              <div id="repairs" class="mega-content">
+                <div class="mega-box">
+                  <h4>Repair Services</h4>
 
-    <div class="mega-item">
-      <img src="repair-phone.jpg" />
-      <span>Phone Repair</span>
-    </div>
+                  <div class="mega-item">
+                    <img src="repair-phone.jpg" />
+                    <span>Phone Repair</span>
+                  </div>
 
-    <div class="mega-item">
-      <img src="repair-laptop.jpg" />
-      <span>Laptop Repair</span>
-    </div>
-  </div>
-</div>
+                  <div class="mega-item">
+                    <img src="repair-laptop.jpg" />
+                    <span>Laptop Repair</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -214,137 +214,150 @@
           <button class="ghost-btn">Explore Services</button>
         </div>
         <!-- REPAIR MODAL -->
-<div class="repair-form" id="repairForm">
+        <div id="repairOverlay" class="repair-overlay">
+          <div class="repair-form" id="repairForm">
+            <!-- PROGRESS BAR -->
+            <div class="progress-bar">
+              <div class="progress" id="progress"></div>
+            </div>
 
-  <!-- PROGRESS BAR -->
-  <div class="progress-bar">
-    <div class="progress" id="progress"></div>
-  </div>
+            <!-- STEP 1 -->
+            <div class="step active" id="step1">
+              <h2>What device do you need fixed?</h2>
 
-  <!-- STEP 1 -->
-  <div class="step active" id="step1">
-    <h2>What device do you need fixed?</h2>
+              <select id="category">
+                <option value="">Select device type</option>
+                <option>Phone</option>
+                <option>Laptop</option>
+                <option>Desktop</option>
+                <option>Tablet</option>
+                <option>TV</option>
+                <option>Printer</option>
+                <option>Game Console</option>
+                <option>Home Appliance</option>
+              </select>
 
-    <select id="category">
-      <option value="">Select device type</option>
-      <option>Phone</option>
-      <option>Laptop</option>
-      <option>Desktop</option>
-      <option>Tablet</option>
-      <option>TV</option>
-      <option>Printer</option>
-      <option>Game Console</option>
-      <option>Home Appliance</option>
-    </select>
+              <button onclick="nextStep(1)">Next</button>
+              <div class="upload-box" id="uploadBox">
+                <input type="file" id="deviceImage" accept="image/*" hidden />
 
-    <button onclick="nextStep(1)">Next</button>
-    <div class="upload-box" id="uploadBox">
-  <input type="file" id="deviceImage" accept="image/*" hidden />
+                <div class="upload-content" id="uploadContent">
+                  <p>📷 Drag & drop or click to upload image</p>
+                  <small>PNG, JPG (max 5MB)</small>
+                </div>
 
-  <div class="upload-content" id="uploadContent">
-    <p>📷 Drag & drop or click to upload image</p>
-    <small>PNG, JPG (max 5MB)</small>
-  </div>
+                <div
+                  class="image-preview-box"
+                  id="imagePreviewBox"
+                  style="display: none"
+                >
+                  <img id="previewImg" />
+                  <button type="button" id="removeImageBtn">Remove</button>
+                </div>
+              </div>
+            </div>
 
-  <div class="image-preview-box" id="imagePreviewBox" style="display:none;">
-    <img id="previewImg" />
-    <button type="button" id="removeImageBtn">Remove</button>
-  </div>
-</div>
-  </div>
+            <!-- STEP 2 -->
+            <div class="step" id="step2">
+              <h2>What’s the device model?</h2>
 
-  <!-- STEP 2 -->
-  <div class="step" id="step2">
-    <h2>What’s the device model?</h2>
+              <input
+                id="deviceName"
+                type="text"
+                placeholder="e.g iPhone 11 / HP EliteBook"
+              />
 
-    <input id="deviceName" type="text" placeholder="e.g iPhone 11 / HP EliteBook"/>
+              <div class="btn-row">
+                <button onclick="prevStep(2)">Back</button>
+                <button onclick="nextStep(2)">Next</button>
+              </div>
+            </div>
 
-    <div class="btn-row">
-      <button onclick="prevStep(2)">Back</button>
-      <button onclick="nextStep(2)">Next</button>
-    </div>
-  </div>
+            <!-- STEP 3 -->
+            <div class="step" id="step3">
+              <h2>What is the problem?</h2>
 
-  <!-- STEP 3 -->
-  <div class="step" id="step3">
-    <h2>What is the problem?</h2>
+              <select id="problemType">
+                <option value="">Select problem</option>
+                <option>Screen Damage</option>
+                <option>Battery Issue</option>
+                <option>Charging Problem</option>
+                <option>Water Damage</option>
+                <option>Not Powering On</option>
+                <option>Software Issue</option>
+                <option>Overheating</option>
+                <option>Slow Performance</option>
+              </select>
 
-    <select id="problemType">
-      <option value="">Select problem</option>
-      <option>Screen Damage</option>
-      <option>Battery Issue</option>
-      <option>Charging Problem</option>
-      <option>Water Damage</option>
-      <option>Not Powering On</option>
-      <option>Software Issue</option>
-      <option>Overheating</option>
-      <option>Slow Performance</option>
-    </select>
+              <div class="btn-row">
+                <button onclick="prevStep(3)">Back</button>
+                <button onclick="nextStep(3)">Next</button>
+              </div>
+            </div>
 
-    <div class="btn-row">
-      <button onclick="prevStep(3)">Back</button>
-      <button onclick="nextStep(3)">Next</button>
-    </div>
-  </div>
+            <!-- STEP 4 -->
+            <div class="step" id="step4">
+              <h2>Describe the issue</h2>
 
-  <!-- STEP 4 -->
-  <div class="step" id="step4">
-    <h2>Describe the issue</h2>
+              <input
+                id="issue"
+                type="text"
+                placeholder="Explain what happened"
+              />
 
-    <input id="issue" type="text" placeholder="Explain what happened"/>
+              <div class="btn-row">
+                <button onclick="prevStep(4)">Back</button>
+                <button onclick="nextStep(4)">Next</button>
+              </div>
+            </div>
 
-    <div class="btn-row">
-      <button onclick="prevStep(4)">Back</button>
-      <button onclick="nextStep(4)">Next</button>
-    </div>
-  </div>
+            <!-- STEP 5 -->
+            <div class="step" id="step5">
+              <h2>Contact & Urgency</h2>
 
-  <!-- STEP 5 -->
-  <div class="step" id="step5">
-    <h2>Contact & Urgency</h2>
+              <input id="contact" type="tel" placeholder="Phone number" />
 
-    <input id="contact" type="tel" placeholder="Phone number"/>
+              <select id="urgency">
+                <option>Normal</option>
+                <option>Urgent</option>
+                <option>Emergency</option>
+              </select>
 
-    <select id="urgency">
-      <option>Normal</option>
-      <option>Urgent</option>
-      <option>Emergency</option>
-    </select>
+              <div class="btn-row">
+                <button onclick="prevStep(5)">Back</button>
+                <button onclick="nextStep(5)">Next</button>
+              </div>
+            </div>
 
-    <div class="btn-row">
-      <button onclick="prevStep(5)">Back</button>
-      <button onclick="nextStep(5)">Next</button>
-    </div>
-  </div>
+            <!-- STEP 6 -->
+            <div class="step" id="step6">
+              <h2>Service type</h2>
 
-  <!-- STEP 6 -->
-  <div class="step" id="step6">
-    <h2>Service type</h2>
+              <select id="serviceType">
+                <option>Bring to shop</option>
+                <option>Home pickup</option>
+                <option>Technician visit</option>
+                <option>Remote support</option>
+              </select>
 
-    <select id="serviceType">
-      <option>Bring to shop</option>
-      <option>Home pickup</option>
-      <option>Technician visit</option>
-      <option>Remote support</option>
-    </select>
+              <div class="btn-row">
+                <button onclick="prevStep(6)">Back</button>
+                <button onclick="startRepair()">Submit</button>
+              </div>
+            </div>
 
-    <div class="btn-row">
-      <button onclick="prevStep(6)">Back</button>
-      <button onclick="startRepair()">Submit</button>
-    </div>
-  </div>
+            <div class="step" id="step7">
+              <h2>Review Your Request</h2>
 
-  <div class="step" id="step7">
-  <h2>Review Your Request</h2>
+              <div id="reviewBox"></div>
 
-  <div id="reviewBox"></div>
-
-  <div class="btn-row">
-    <button onclick="prevStep(7)">Back</button>
-    <button onclick="startRepair()">Submit</button>
-  </div>
-</div>
-</div>
+              <div class="btn-row">
+                <button onclick="prevStep(7)">Back</button>
+                <button onclick="startRepair()">Submit</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 

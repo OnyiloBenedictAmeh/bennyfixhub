@@ -1047,6 +1047,7 @@ async function startRepair() {
     showToast("Repair submitted successfully 🚀");
 
     document.getElementById("repairForm").style.display = "none";
+    document.getElementById("repairOverlay").classList.remove("show");
 
   } catch (err) {
     console.error(err);
@@ -1186,3 +1187,9 @@ removeBtn.addEventListener("click", (e) => {
   previewBox.style.display = "none";
   uploadContent.style.display = "block";
 });
+window.toggleRepairForm = function () {
+  const overlay = document.getElementById("repairOverlay");
+  if (!overlay) return;
+
+  overlay.classList.toggle("show");
+};
