@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Profile</title>
+
+  <link rel="stylesheet" href="profile.css">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+ <div class="profile-page">
+
+  <!-- COVER -->
+  <div class="cover-photo">
+    <img id="coverImg" src="">
+  </div>
+
+  <!-- PROFILE HEADER -->
+  <div class="profile-header">
+
+    <img id="profileAvatar" class="avatar">
+
+    <div class="profile-info">
+      <h2 id="profileName">Loading...</h2>
+      <p id="profileBio"></p>
+    </div>
+
+    <button onclick="openEditProfile()">
+      Edit Profile
+    </button>
+
+  </div>
+<div id="editProfileModal" class="modal hidden">
+
+  <div class="modal-box">
+
+    <input id="editName" placeholder="Name">
+
+    <textarea id="editBio"></textarea>
+
+    <input id="editLocation">
+
+    <button onclick="saveProfile()">
+      Save
+    </button>
+
+  </div>
+
+</div>
+  <!-- STATS -->
+  <div class="profile-stats">
+
+    <div class="stat-box">
+      <h3 id="repairCount">0</h3>
+      <p>Repairs</p>
+    </div>
+
+    <div class="stat-box">
+      <h3 id="completedCount">0</h3>
+      <p>Completed</p>
+    </div>
+
+    <div class="stat-box">
+      <h3 id="claimCount">0</h3>
+      <p>Claims</p>
+    </div>
+
+  </div>
+
+  <!-- ABOUT -->
+  <div class="profile-card">
+    <h3>About</h3>
+
+    <p id="profileEmail"></p>
+    <p id="profileLocation"></p>
+    <p id="profileJoined"></p>
+  </div>
+
+  <!-- TIMELINE -->
+  <div class="profile-card">
+    <h3>Activity</h3>
+
+    <div id="activityFeed"></div>
+  </div>
+
+</div>
+
+  <script type="module" src="profile.js"></script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BennyFix Hub - Dashboard</title>
+
+  <link rel="stylesheet" href="dashboard.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
+</head>
+
+<body>
+  <style>
+    .credit {
+  text-transform: capitalize;
+  color: #000;
+  /* padding: 3rem; */
+  text-align: center;
+}
+
+.credit span {
+  color: #487DE7;
+}
+  </style>
+
+<a href="index.html" class="back-home">
+  <i class='bx bx-arrow-back'></i> Home
+</a>
+
+<div class="dashboard">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h3>BennyFix Hub</h3>
+
+    <a data-nav="overview"><i class='bx bx-grid-alt'></i> Dashboard</a>
+    <a data-page="repairs"><i class='bx bx-wrench'></i> Repairs</a>
+    <a data-page="claims" ><i class='bx bx-receipt'></i> Claims</a>
+    <a data-page="devices" ><i class='bx bx-devices'></i> Devices</a>
+    <a data-page="support" ><i class='bx bx-support'></i> Support</a>
+    <a data-page="settings" ><i class='bx bx-cog'></i> Settings</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="top-header">
+      <h1 id="pageTitle">Overview</h1>
+      <div class="notif-icon" onclick="toggleNotif()">
+        <i class='bx bx-bell'></i>
+      </div>
+    </div>
+
+   <div class="notif-panel" id="notifPanel">
+
+  <div class="notif-header">
+    <h3>Notifications</h3>
+  </div>
+
+  <div id="userNotifications">
+
+    <p class="empty-notif">
+      No notifications yet
+    </p>
+
+  </div>
+
+</div>
+    <!-- DASH CARDS -->
+    <div class="dashboard-cards">
+
+      <div class="dash-card" data-page="overview">
+        <i class='bx bx-grid-alt'></i>
+        <h3>Overview</h3>
+        <p>Summary of activity</p>
+      </div>
+
+      <div class="dash-card" data-page="repairs">
+        <i class='bx bx-wrench'></i>
+        <h3>Repairs</h3>
+      </div>
+
+      <div class="dash-card" data-page="claims" >
+        <i class='bx bx-receipt'></i>
+        <h3>Claims</h3>
+      </div>
+
+      <div class="dash-card" data-page="devices" >
+        <i class='bx bx-devices'></i>
+        <h3>Devices</h3>
+      </div>
+
+      <div class="dash-card" data-page="support" >
+        <i class='bx bx-support'></i>
+        <h3>Support</h3>
+      </div>
+
+      <div class="dash-card" data-page="settings" >
+        <i class='bx bx-cog'></i>
+        <h3>Settings</h3>
+      </div>
+
+    </div>
+<div class="repairs-wrapper">
+
+  <div class="repair-section">
+
+    <div class="section-header">
+      <h2>Active Repairs</h2>
+      <span id="activeCount">0</span>
+    </div>
+
+    <div id="activeRepairs"></div>
+
+  </div>
+
+  <div class="repair-section">
+
+    <div class="section-header">
+      <h2>Completed Repairs</h2>
+      <span id="completedCount">0</span>
+    </div>
+
+    <div id="completedRepairs"></div>
+
+  </div>
+
+</div>
+    <!-- PAGES -->
+    <section class="page active" id="overviewPage">
+      <div class="card"><section class="page active" id="overviewPage">
+
+  <div class="card">
+    <!-- <h3>Active Repairs</h3>
+
+    <div class="repair-item">
+      <div>
+        <strong>HP Laptop</strong>
+        <p>Restart loop issue</p>
+      </div>
+      <span class="status in-progress">In Progress</span>
+    </div>
+
+    <div class="repair-item">
+      <div>
+        <strong>iPhone 11</strong>
+        <p>Screen replacement</p>
+      </div>
+      <span class="status pending">Pending</span>
+    </div>
+  </div> -->
+
+  <div class="card">
+    <h3>Recent Claims</h3>
+
+    <div class="repair-item">
+      <div>
+        <strong>Claim #1023</strong>
+        <p>Battery issue</p>
+      </div>
+      <span class="status approved">Approved</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Repair Status</h3>
+
+    <div class="journey">
+      <div class="step completed"><span>Submitted</span></div>
+      <div class="step completed"><span>Diagnosing</span></div>
+      <div class="step active"><span>Fixing</span></div>
+      <div class="step"><span>Completed</span></div>
+    </div>
+  </div>
+
+</section></div>
+    </section>
+
+ <section class="page" id="repairsPage">
+
+  <div class="card">
+    <h3>Active Repairs</h3>
+
+
+  </div>
+
+</section>
+
+    <section class="page" id="claimsPage">
+<div class="card"> <h3>Recent Claims</h3> <div class="repair-item"> <div> <strong>Claim #1023</strong> <p>Battery issue</p> </div> <span class="status approved">Approved</span> </div> </div>    </section>
+
+    <section class="page" id="devicesPage">
+<div class="card"> <h3>Your Devices</h3> <div class="device-grid"> <div class="device-card"> <i class='bx bx-laptop'></i> <h4>HP Laptop</h4> <p>Windows 11</p> </div> <div class="device-card"> <i class='bx bx-mobile'></i> <h4>iPhone 11</h4> <p>iOS</p> </div> </div> </div>    </section>
+
+    <section class="page" id="supportPage">
+<div class="card"> <h3>Support Center</h3> <p>Chat with us or open a ticket.</p> </div>    </section>
+
+    <section class="page" id="settingsPage">
+<div class="card"> <h3>Settings</h3> <p>Manage your account preferences.</p> </div>    </section>
+
+  </main>
+
+</div><hr>
+       <div class="credit"> <span>BennyFix hub</span> | all rights reserved! </div>
+<script type="module" src="script.js" defer></script>
+</body>
+</html>
