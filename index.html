@@ -238,6 +238,19 @@
     </select>
 
     <button onclick="nextStep(1)">Next</button>
+    <div class="upload-box" id="uploadBox">
+  <input type="file" id="deviceImage" accept="image/*" hidden />
+
+  <div class="upload-content" id="uploadContent">
+    <p>📷 Drag & drop or click to upload image</p>
+    <small>PNG, JPG (max 5MB)</small>
+  </div>
+
+  <div class="image-preview-box" id="imagePreviewBox" style="display:none;">
+    <img id="previewImg" />
+    <button type="button" id="removeImageBtn">Remove</button>
+  </div>
+</div>
   </div>
 
   <!-- STEP 2 -->
@@ -285,13 +298,7 @@
       <button onclick="nextStep(4)">Next</button>
     </div>
   </div>
-<div class="form-group">
-  <label>Upload Device Image (Optional)</label>
-  <input type="file" id="deviceImage" accept="image/*" />
-  
-  <!-- preview -->
-  <img id="previewImg" style="width:100%; margin-top:10px; display:none; border-radius:10px;" />
-</div>
+
   <!-- STEP 5 -->
   <div class="step" id="step5">
     <h2>Contact & Urgency</h2>

@@ -13,6 +13,12 @@ const navWrapper = document.getElementById("navWrapper");
 const authModal = document.getElementById("authModal");
 const dashboard = document.querySelector(".dashboard");
   let currentUser = null;
+const uploadBox = document.getElementById("uploadBox");
+const fileInput = document.getElementById("deviceImage");
+const previewImg = document.getElementById("previewImg");
+const uploadContent = document.getElementById("uploadContent");
+const previewBox = document.getElementById("imagePreviewBox");
+const removeBtn = document.getElementById("removeImageBtn");
 
 // =========================
 // MEGA MENU FUNCTIONALITY
@@ -659,69 +665,69 @@ window.openAccountPanel = function () {
 window.closeAccountPanel = function () {
   document.getElementById("accountPanel").classList.remove("open");
 };
-// start repair form scripts
-window.startRepair = async function () {
+// // start repair form scripts
+// window.startRepair = async function () {
 
-  const category =
-    document.getElementById("category").value;
+//   const category =
+//     document.getElementById("category").value;
 
-  const device =
-    document.getElementById("deviceName").value;
+//   const device =
+//     document.getElementById("deviceName").value;
 
-  const problemType =
-    document.getElementById("problemType").value;
+//   const problemType =
+//     document.getElementById("problemType").value;
 
-  const issue =
-    document.getElementById("issue").value;
+//   const issue =
+//     document.getElementById("issue").value;
 
-  const urgency =
-    document.getElementById("urgency").value;
+//   const urgency =
+//     document.getElementById("urgency").value;
 
-  const contact =
-    document.getElementById("contact").value;
+//   const contact =
+//     document.getElementById("contact").value;
 
-  const serviceType =
-    document.getElementById("serviceType").value;
+//   const serviceType =
+//     document.getElementById("serviceType").value;
 
-  if (!category || !device || !problemType || !issue || !contact) {
-    return showToast("Please fill all required fields");
-  }
+//   if (!category || !device || !problemType || !issue || !contact) {
+//     return showToast("Please fill all required fields");
+//   }
 
-  if (!currentUser) {
-    return showToast("Please login first", "error");
-  }
+//   if (!currentUser) {
+//     return showToast("Please login first", "error");
+//   }
 
-  try {
+//   try {
 
-    await addDoc(collection(db, "repairs"), {
+//     await addDoc(collection(db, "repairs"), {
 
-      uid: currentUser.uid,
-      email: currentUser.email,
+//       uid: currentUser.uid,
+//       email: currentUser.email,
 
-      category,
-      device,
-      problemType,
-      issue,
-      urgency,
-      contact,
-      serviceType,
+//       category,
+//       device,
+//       problemType,
+//       issue,
+//       urgency,
+//       contact,
+//       serviceType,
 
-      status: "Pending",
-      createdAt: serverTimestamp()
+//       status: "Pending",
+//       createdAt: serverTimestamp()
 
-    });
+//     });
 
-    showToast("Repair submitted successfully!", "success");
+//     showToast("Repair submitted successfully!", "success");
 
-    document.getElementById("repairForm").reset();
+//     document.getElementById("repairForm").reset();
 
-    window.location.href = "dashboard.html";
+//     window.location.href = "dashboard.html";
 
-  } catch (err) {
-    console.error(err);
-    showToast("Error: " + err.message);
-  }
-};
+//   } catch (err) {
+//     console.error(err);
+//     showToast("Error: " + err.message);
+//   }
+// };
 function showToast(message, type = "info") {
   const container =
     document.getElementById("toastContainer");
@@ -958,27 +964,57 @@ window.toggleJourney = function (id) {
 let currentStep = 1;
 const totalSteps = 7;
 
-function showStep(step) {
-  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
-
-  const el = document.getElementById("step" + step);
-  if (el) el.classList.add("active");
-
-  if (step === 7) buildReview();
-
-  let progress = ((step - 1) / (totalSteps - 1)) * 100;
-  document.getElementById("progress").style.width = progress + "%";
-}
-
-function nextStep(step) {
+window.nextStep = function (step) {
   if (!validateStep(step)) return;
   currentStep = step + 1;
   showStep(currentStep);
-}
+};
 
-function prevStep(step) {
+window.prevStep = function (step) {
   currentStep = step - 1;
   showStep(currentStep);
+};
+
+window.showStep = function (step) {
+  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+
+  const el = document.getElementById("step" + step);
+  if (!el) return;
+
+  el.classList.add("active");
+
+  // 🔥 RESET IMAGE WHEN LEAVING STEP 1
+  if (step !== 1) {
+    resetImagePreview();
+  }
+
+  if (step === 7) buildReview();
+
+  let progress = ((step - 1) / (7 - 1)) * 100;
+  document.getElementById("progress").style.width = progress + "%";
+};
+function resetImagePreview() {
+  const fileInput = document.getElementById("deviceImage");
+  const previewImg = document.getElementById("previewImg");
+  const uploadContent = document.getElementById("uploadContent");
+  const previewBox = document.getElementById("imagePreviewBox");
+
+  if (fileInput) fileInput.value = "";
+  if (previewImg) previewImg.src = "";
+
+  if (previewBox) previewBox.style.display = "none";
+  if (uploadContent) uploadContent.style.display = "block";
+}
+function collectFormData() {
+  return {
+    category: document.getElementById("category")?.value || "",
+    deviceName: document.getElementById("deviceName")?.value || "",
+    problemType: document.getElementById("problemType")?.value || "",
+    issue: document.getElementById("issue")?.value || "",
+    urgency: document.getElementById("urgency")?.value || "",
+    contact: document.getElementById("contact")?.value || "",
+    serviceType: document.getElementById("serviceType")?.value || ""
+  };
 }
 async function startRepair() {
   try {
@@ -1017,16 +1053,18 @@ async function startRepair() {
     showToast("Submission failed ❌");
   }
 }
-async function saveDraft() {
-  if (!currentUser) return;
+window.addEventListener("DOMContentLoaded", () => {
+  const draft = localStorage.getItem("repairDraft");
 
-  const data = collectFormData();
+  if (draft) {
+    const data = JSON.parse(draft);
 
-  await setDoc(doc(db, "repair_drafts", draftId), {
-    ...data,
-    updatedAt: serverTimestamp()
-  }, { merge: true });
-}
+    Object.keys(data).forEach(key => {
+      const el = document.getElementById(key);
+      if (el) el.value = data[key];
+    });
+  }
+});
 document.querySelectorAll("input, select").forEach(el => {
   el.addEventListener("change", () => {
     if (typeof saveDraft === "function") {
@@ -1075,6 +1113,7 @@ document.getElementById("deviceImage").addEventListener("change", function (e) {
     reader.readAsDataURL(file);
   }
 });
+const file = fileInput.files[0];
 async function uploadImage(file) {
   if (!file) return null;
 
@@ -1087,3 +1126,63 @@ async function uploadImage(file) {
 }window.switchTab = function (id) {
   console.log("switchTab running:", id);
 };
+
+// CLICK to open file picker
+uploadBox.addEventListener("click", () => {
+  fileInput.click();
+});
+
+// DRAG OVER STYLE
+uploadBox.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  uploadBox.style.borderColor = "#2563eb";
+});
+
+// DRAG LEAVE
+uploadBox.addEventListener("dragleave", () => {
+  uploadBox.style.borderColor = "#d1d5db";
+});
+
+// DROP FILE
+uploadBox.addEventListener("drop", (e) => {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0];
+  handleFile(file);
+});
+
+// FILE CHANGE
+fileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  handleFile(file);
+});
+
+// HANDLE FILE
+function handleFile(file) {
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    return showToast("Only image files allowed", "error");
+  }
+
+  const reader = new FileReader();
+
+  reader.onload = (e) => {
+    previewImg.src = e.target.result;
+
+    uploadContent.style.display = "none";
+    previewBox.style.display = "flex";
+  };
+
+  reader.readAsDataURL(file);
+}
+
+// REMOVE IMAGE
+removeBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+
+  fileInput.value = "";
+  previewImg.src = "";
+
+  previewBox.style.display = "none";
+  uploadContent.style.display = "block";
+});

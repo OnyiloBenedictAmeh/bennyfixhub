@@ -625,7 +625,24 @@ transition: background-image 0.8s ease-in-out;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.15s ease, visibility 0.15s ease;
+    transition: all 0.25s ease;
+
+  /* transition: opacity 0.15s ease, visibility 0.15s ease; */
+}
+.mega-overlay.show .mega-inner {
+  transform: translateY(0);
+  animation: dropIn 0.25s ease;
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* ACTIVE STATE (JS CONTROLLED) */
@@ -634,16 +651,18 @@ transition: background-image 0.8s ease-in-out;
   visibility: visible;
   pointer-events: auto;
 }
-
 .mega-inner {
-  width: 850px;
-  background: #fff;
-  border-radius: 12px;
+  width: 900px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(14px);
+  border-radius: 16px;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
   display: grid;
-  grid-template-columns: 200px 1fr;
-  padding: 20px;
-  gap: 20px;
+  grid-template-columns: 220px 1fr;
+  padding: 18px;
+  gap: 18px;
+
+  border: 1px solid rgba(0,0,0,0.05);
 }
 
 /* =========================
@@ -651,17 +670,23 @@ transition: background-image 0.8s ease-in-out;
    ========================= */
 
 .mega-tabs {
-  border-right: 1px solid #eee;
+  border-right: 1px solid #e5e7eb;
+  padding-right: 10px;
 }
 
 .mega-tabs div {
-  padding: 10px;
+  padding: 12px 10px;
   font-size: 14px;
   cursor: pointer;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  transition: 0.2s ease;
+  font-weight: 500;
 }
 
 .mega-tabs div:hover {
-  background: #f1f5f9; 
+  background: #f1f5f9;
+  transform: translateX(3px);
 }
 
 /* =========================
@@ -679,12 +704,22 @@ transition: background-image 0.8s ease-in-out;
 }
 
 .mega-box {
-  min-height: 80px;
+  background: white;
+  padding: 12px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  transition: 0.2s ease;
+}
+
+.mega-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.1);
 }
 
 .mega-box h4 {
-  margin: 0 0 8px;
+  margin-bottom: 10px;
   font-size: 13px;
+  color: #111;
 }
 
 .mega-box a {
@@ -701,19 +736,84 @@ transition: background-image 0.8s ease-in-out;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 6px 0;
+  padding: 8px;
+  border-radius: 10px;
   cursor: pointer;
+  transition: 0.2s;
+}
+
+.mega-item:hover {
+  background: #f8fafc;
 }
 
 .mega-item img {
   width: 40px;
   height: 40px;
+  transform: scale(1.05);
   object-fit: cover;
   border-radius: 6px;
 }
 
+.mega-item span {
+  font-size: 14px;
+  color: #334155;
+  transition: 0.2s;
+}
+
 .mega-item:hover span {
   color: #000;
+  font-weight: 500;
+}
+.upload-box {
+  border: 2px dashed #d1d5db;
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+  background: #f9fafb;
+}
+
+.upload-box:hover {
+  border-color: #2563eb;
+  background: #f3f6ff;
+}
+
+.upload-content p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.upload-content small {
+  color: #6b7280;
+}
+
+.image-preview-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#previewImg {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+#removeImageBtn {
+  padding: 6px 10px;
+  border: none;
+  background: #ef4444;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.step {
+  overflow: hidden;
 }
 /* =========================
    CONTENT AREA
