@@ -30,23 +30,31 @@ function switchTab(id) {
   });
 
   const activeTab = document.getElementById(id);
-  if (activeTab) activeTab.classList.add("active");
 
-  updateMegaLayout();
+  if (!activeTab) {
+    console.warn("Mega tab not found:", id);
+    return;
+  }
+
+  activeTab.classList.add("active");
+
+  if (typeof updateMegaLayout === "function") {
+    updateMegaLayout();
+  }
 }
 
-// OPEN MEGA
+// OPEN MEGA & CLOSE
 function openMega(tab) {
-  clearTimeout(megaTimeout);
+  if (!mega) return;
+
   mega.classList.add("show");
   switchTab(tab);
 }
 
-// CLOSE MEGA
 function closeMega() {
-  megaTimeout = setTimeout(() => {
-    mega.classList.remove("show");
-  }, 150);
+  if (!mega) return;
+
+  mega.classList.remove("show");
 }
 
 // HOVER CONTROL
@@ -74,10 +82,11 @@ document.querySelectorAll(".nav-item").forEach((item) => {
   });
 
   item.addEventListener("click", (e) => {
-  if (window.innerWidth <= 900) {
-    e.stopPropagation(); // 🔥 prevent bubbling
-    openMega(menu);
-  }
+    if (window.innerWidth <= 900) {
+      e.preventDefault();
+      e.stopPropagation();
+      openMega(menu);
+    }
 });
 });
 
@@ -152,9 +161,9 @@ window.addEventListener("scroll", () => {
 // =========================
 // 🔥 FIREBASE SETUP
 // =========================
-// import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -163,32 +172,43 @@ import {
   onAuthStateChanged,
   sendEmailVerification,
   sendPasswordResetEmail
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";import {
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
   getFirestore,
   doc,
   setDoc,
-  updateDoc,
+  deleteDoc,
   collection,
   addDoc,
   query,
   where,
   onSnapshot,
-  serverTimestamp
+  serverTimestamp,
+  getDoc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyA4btiZMSBa4g6vt3XKf1uHeJiu8GJtTj4",
-  authDomain: "bennyfixhub.firebaseapp.com",
-  projectId: "bennyfixhub",
-  storageBucket: "bennyfixhub.appspot.com",
-  messagingSenderId: "281036247412",
-  appId: "1:281036247412:web:19db51739bc6c81fbc1c21",
-  measurementId: "G-EZ4FHYDFZB"
-};
-
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-const auth = getAuth(app);
-const db = getFirestore(app);
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+ const firebaseConfig = {
+   apiKey: "AIzaSyA4btiZMSBa4g6vt3XKf1uHeJiu8GJtTj4",
+   authDomain: "bennyfixhub.firebaseapp.com",
+   projectId: "bennyfixhub",
+   storageBucket: "bennyfixhub.appspot.com",
+   messagingSenderId: "281036247412",
+   appId: "1:281036247412:web:19db51739bc6c81fbc1c21",
+   measurementId: "G-EZ4FHYDFZB"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+  const emailBox = document.getElementById("emailBox");
 // =========================
 // AUTH FUNCTIONS
 // =========================
@@ -602,7 +622,7 @@ const images = [
   "images/6.jpg",
   "images/7.jpg",
   "images/8.jpg",
-  "images/9.jpg",
+  "images/9.png",
   "images/10.jpg",
   "images/11.jpg",
   "images/12.jpg",
@@ -934,4 +954,136 @@ window.toggleJourney = function (id) {
 
     box.classList.toggle("hidden");
   });
+};
+let currentStep = 1;
+const totalSteps = 7;
+
+function showStep(step) {
+  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+
+  const el = document.getElementById("step" + step);
+  if (el) el.classList.add("active");
+
+  if (step === 7) buildReview();
+
+  let progress = ((step - 1) / (totalSteps - 1)) * 100;
+  document.getElementById("progress").style.width = progress + "%";
+}
+
+function nextStep(step) {
+  if (!validateStep(step)) return;
+  currentStep = step + 1;
+  showStep(currentStep);
+}
+
+function prevStep(step) {
+  currentStep = step - 1;
+  showStep(currentStep);
+}
+async function startRepair() {
+  try {
+    showToast("Submitting repair request... ⏳");
+
+    const file = document.getElementById("deviceImage")?.files[0];
+
+    let imageUrl = null;
+    if (file) {
+      imageUrl = await uploadImage(file);
+    }
+
+    const data = collectFormData();
+
+    const requestId = crypto.randomUUID(); // 🔥 FIX
+
+    const finalData = {
+      ...data,
+      imageUrl,
+      status: "pending",
+      createdAt: serverTimestamp()
+    };
+
+    await setDoc(doc(db, "repair_requests", requestId), finalData);
+
+    await deleteDoc(doc(db, "repair_drafts", draftId));
+
+    localStorage.removeItem("repairDraftId");
+
+    showToast("Repair submitted successfully 🚀");
+
+    document.getElementById("repairForm").style.display = "none";
+
+  } catch (err) {
+    console.error(err);
+    showToast("Submission failed ❌");
+  }
+}
+async function saveDraft() {
+  if (!currentUser) return;
+
+  const data = collectFormData();
+
+  await setDoc(doc(db, "repair_drafts", draftId), {
+    ...data,
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+}
+document.querySelectorAll("input, select").forEach(el => {
+  el.addEventListener("change", () => {
+    if (typeof saveDraft === "function") {
+      saveDraft();
+    }
+  });
+});
+function validateStep(step) {
+  const stepEl = document.getElementById("step" + step);
+  const inputs = stepEl.querySelectorAll("input, select");
+
+  for (let input of inputs) {
+    if (input.value.trim() === "") {
+      input.style.border = "2px solid red";
+      return false;
+    } else {
+      input.style.border = "1px solid #ddd";
+    }
+  }
+  return true;
+}function buildReview() {
+  const data = collectFormData();
+
+  document.getElementById("reviewBox").innerHTML = `
+    <p><b>Category:</b> ${data.category}</p>
+    <p><b>Device:</b> ${data.deviceName}</p>
+    <p><b>Problem:</b> ${data.problemType}</p>
+    <p><b>Issue:</b> ${data.issue}</p>
+    <p><b>Contact:</b> ${data.contact}</p>
+    <p><b>Urgency:</b> ${data.urgency}</p>
+    <p><b>Service:</b> ${data.serviceType}</p>
+  `;
+}
+document.getElementById("deviceImage").addEventListener("change", function (e) {
+  const file = e.target.files[0];
+  const preview = document.getElementById("previewImg");
+
+  if (file) {
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      preview.src = event.target.result;
+      preview.style.display = "block";
+    };
+
+    reader.readAsDataURL(file);
+  }
+});
+async function uploadImage(file) {
+  if (!file) return null;
+
+  const imageRef = ref(storage, `repair_images/${draftId}_${file.name}`);
+
+  await uploadBytes(imageRef, file);
+
+  const url = await getDownloadURL(imageRef);
+  return url;
+}window.switchTab = function (id) {
+  console.log("switchTab running:", id);
 };
