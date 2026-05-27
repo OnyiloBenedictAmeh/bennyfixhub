@@ -6,19 +6,15 @@ function hideAllAuthUI() {
 // =========================
 // ELEMENT REFERENCES
 // =========================
+const guestMenu = document.getElementById("guestMenu");
+const userMenu = document.getElementById("userMenu");
 const mega = document.getElementById("mega");
 const searchModal = document.getElementById("searchModal");
 const searchInput = document.getElementById("searchInput");
 const navWrapper = document.getElementById("navWrapper");
 const authModal = document.getElementById("authModal");
 const dashboard = document.querySelector(".dashboard");
-  let currentUser = null;
-const uploadBox = document.getElementById("uploadBox");
-const fileInput = document.getElementById("deviceImage");
-const previewImg = document.getElementById("previewImg");
-const uploadContent = document.getElementById("uploadContent");
-const previewBox = document.getElementById("imagePreviewBox");
-const removeBtn = document.getElementById("removeImageBtn");
+let currentUser = null;
 
 // =========================
 // MEGA MENU FUNCTIONALITY
@@ -65,14 +61,12 @@ function closeMega() {
 
 // HOVER CONTROL
 document.addEventListener("DOMContentLoaded", () => {
-
   const mega = document.getElementById("mega");
 
   if (mega) {
     mega.addEventListener("mouseenter", () => clearTimeout(megaTimeout));
     mega.addEventListener("mouseleave", closeMega);
   }
-
 });
 document.querySelectorAll(".nav-item").forEach((item) => {
   const menu = item.dataset.menu;
@@ -93,7 +87,7 @@ document.querySelectorAll(".nav-item").forEach((item) => {
       e.stopPropagation();
       openMega(menu);
     }
-});
+  });
 });
 
 // =========================
@@ -102,7 +96,7 @@ document.querySelectorAll(".nav-item").forEach((item) => {
 function updateMegaLayout() {
   document.querySelectorAll(".mega-content").forEach((container) => {
     const items = [...container.querySelectorAll(".mega-box")].filter(
-      (el) => el.offsetParent !== null
+      (el) => el.offsetParent !== null,
     ).length;
 
     if (items === 3) container.classList.add("three-items");
@@ -133,9 +127,9 @@ function toggleSearch(e) {
 
 document.addEventListener("click", (e) => {
   if (!e.target.closest(".search-box") && !e.target.closest(".bx-search")) {
-  if (searchModal) {
-  searchModal.style.display = "none";
-}
+    if (searchModal) {
+      searchModal.style.display = "none";
+    }
   }
 });
 
@@ -156,10 +150,10 @@ window.addEventListener("scroll", () => {
   clearTimeout(scrollTimeout);
   scrollTimeout = setTimeout(() => {
     if (searchModal) {
-  if (searchModal) {
-  searchModal.style.display = "none";
-}
-}
+      if (searchModal) {
+        searchModal.style.display = "none";
+      }
+    }
     mega.classList.remove("show");
   }, 100);
 });
@@ -177,7 +171,7 @@ import {
   signOut,
   onAuthStateChanged,
   sendEmailVerification,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
   getFirestore,
@@ -191,30 +185,46 @@ import {
   onSnapshot,
   serverTimestamp,
   getDoc,
-  updateDoc
+  getDocs,
+  updateDoc,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
   getStorage,
   ref,
   uploadBytes,
-  getDownloadURL
+  getDownloadURL,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
- const firebaseConfig = {
-   apiKey: "AIzaSyA4btiZMSBa4g6vt3XKf1uHeJiu8GJtTj4",
-   authDomain: "bennyfixhub.firebaseapp.com",
-   projectId: "bennyfixhub",
-   storageBucket: "bennyfixhub.appspot.com",
-   messagingSenderId: "281036247412",
-   appId: "1:281036247412:web:19db51739bc6c81fbc1c21",
-   measurementId: "G-EZ4FHYDFZB"
-  };
-  
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
-  const emailBox = document.getElementById("emailBox");
+const firebaseConfig = {
+  apiKey: "AIzaSyA4btiZMSBa4g6vt3XKf1uHeJiu8GJtTj4",
+  authDomain: "bennyfixhub.firebaseapp.com",
+  projectId: "bennyfixhub",
+  storageBucket: "bennyfixhub.appspot.com",
+  messagingSenderId: "281036247412",
+  appId: "1:281036247412:web:19db51739bc6c81fbc1c21",
+  measurementId: "G-EZ4FHYDFZB",
+};
+
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+const emailBox = document.getElementById("emailBox");
+window.auth = auth;
+window.db = db;
+window.storage = storage;
+window.getDoc = getDoc;
+window.getDocs = getDocs;
+window.doc = doc;
+window.collection = collection;
+window.query = query;
+window.where = where;
+const uploadBox = document.getElementById("uploadBox");
+const fileInput = document.getElementById("deviceImage");
+const uploadContent = document.getElementById("uploadContent");
+const previewBox = document.getElementById("imagePreviewBox");
+const previewImg = document.getElementById("previewImg");
+const removeBtn = document.getElementById("removeImageBtn");
 // =========================
 // AUTH FUNCTIONS
 // =========================
@@ -226,26 +236,22 @@ export async function getUserProfile(uid) {
   }
 
   return null;
-};
+}
 window.login = async function () {
-  const email =
-    document.getElementById("email").value;
+  const email = document.getElementById("email").value;
 
-  const password =
-    document.getElementById("password").value;
+  const password = document.getElementById("password").value;
 
   if (!email || !password) {
     return showToast("Fill all fields");
   }
 
   try {
-
-    const userCredential =
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
 
     const user = userCredential.user;
 
@@ -253,16 +259,14 @@ window.login = async function () {
     await user.reload();
 
     if (!user.emailVerified) {
-
       await signOut(auth);
 
       return showToast(
-        "Please verify your email first. Check your inbox or spam folder."
+        "Please verify your email first. Check your inbox or spam folder.",
       );
     }
 
     showToast("Logged in successfully!");
-
   } catch (err) {
     showToast(err.message);
   }
@@ -275,11 +279,12 @@ window.logout = async function () {
   document.getElementById("password").value = "";
 
   // reset UI states
+  document.addEventListener("DOMContentLoaded", ()=>{
   const dashboard = document.querySelector(".dashboard");
   const navWrapper = document.getElementById("navWrapper");
   const mega = document.getElementById("mega");
   const searchModal = document.getElementById("searchModal");
-
+});
   if (dashboard) dashboard.style.display = "none";
   if (navWrapper) navWrapper.classList.remove("open");
   if (mega) mega.classList.remove("show");
@@ -322,6 +327,7 @@ window.closeAccountPanel = function () {
   document.getElementById("accountOverlay").classList.remove("show");
 };
 onAuthStateChanged(auth, async (user) => {
+  console.log("AUTH STATE:", user);
   currentUser = user;
 
   const authModal = document.getElementById("authModal");
@@ -330,7 +336,7 @@ onAuthStateChanged(auth, async (user) => {
   // RESET UI FIRST (VERY IMPORTANT)
   if (authModal) authModal.style.display = "none";
   if (verifyScreen) verifyScreen.style.display = "none";
-  
+
   // ❌ NO USER
   if (!user) {
     if (guestMenu) guestMenu.style.display = "block";
@@ -357,35 +363,28 @@ onAuthStateChanged(auth, async (user) => {
   // ✅ VERIFIED USER
   if (guestMenu) guestMenu.style.display = "none";
   if (userMenu) userMenu.style.display = "block";
-
+  if (authModal) authModal.style.display = "none";
+  if (dashboard) dashboard.style.display = "grid";
   loadUserRepairs();
   listenToNotifications();
   loadProfile();
   loadHeaderUser();
   loadProfileStats();
 
-  if (authModal) authModal.style.display = "none";
-  if (dashboard) dashboard.style.display = "grid";
-
   const heading = document.querySelector(".main h1");
   if (heading) heading.innerText = "Welcome, " + user.email;
 
   if (emailBox) emailBox.innerText = user.email;
 
-const snap = await getDoc(doc(db, "users", user.uid));
+  const snap = await getDoc(doc(db, "users", user.uid));
 
-if (snap.exists()) {
-  const data = snap.data();
+  if (snap.exists()) {
+    const data = snap.data();
 
-
-  if (heading) {
-    heading.innerText = "Welcome, " + (data.name || user.email);
+    if (heading) {
+      heading.innerText = "Welcome, " + (data.name || user.email);
+    }
   }
-}
-if (dashboard) dashboard.style.display = "none";
-setTimeout(() => {
-  loadHeaderUser();
-}, 100);
 });
 window.toggleAccountMenu = function (e) {
   e.preventDefault();
@@ -475,25 +474,21 @@ window.rateRepair = async function (id) {
   }
 };
 function listenToNotifications() {
-
-  const box =
-    document.getElementById("userNotifications");
+  const box = document.getElementById("userNotifications");
 
   if (!box || !currentUser) return;
 
   const q = query(
     collection(db, "notifications"),
-    where("uid", "==", currentUser.uid)
+    where("uid", "==", currentUser.uid),
   );
 
   onSnapshot(q, (snapshot) => {
-
     box.innerHTML = "";
 
     let count = 0;
 
     snapshot.forEach((docSnap) => {
-
       const n = docSnap.data();
 
       count++;
@@ -513,10 +508,8 @@ function listenToNotifications() {
           <small>
             ${
               n.createdAt
-              ? new Date(
-                  n.createdAt.seconds * 1000
-                ).toLocaleString()
-              : "Just now"
+                ? new Date(n.createdAt.seconds * 1000).toLocaleString()
+                : "Just now"
             }
           </small>
         </div>
@@ -529,17 +522,13 @@ function listenToNotifications() {
   });
 }
 function updateNotificationBadge(count) {
-
-  const bell =
-    document.querySelector(".notif-icon");
+  const bell = document.querySelector(".notif-icon");
 
   if (!bell) return;
 
-  let badge =
-    document.querySelector(".notif-badge");
+  let badge = document.querySelector(".notif-badge");
 
   if (!badge) {
-
     badge = document.createElement("span");
     badge.className = "notif-badge";
     bell.appendChild(badge);
@@ -548,19 +537,15 @@ function updateNotificationBadge(count) {
   badge.innerText = count;
 
   // hide badge if zero
-  badge.style.display =
-    count > 0 ? "flex" : "none";
+  badge.style.display = count > 0 ? "flex" : "none";
 }
 // =========================
 // NOTIFICATIONS
 // =========================
 window.toggleNotif = function () {
-
-  const panel =
-    document.getElementById("notifPanel");
+  const panel = document.getElementById("notifPanel");
 
   panel.classList.toggle("show");
-
 };
 //-----====================
 //login  switching settings
@@ -572,7 +557,8 @@ window.showRegister = function () {
 window.showLogin = function () {
   document.getElementById("loginForm").style.display = "block";
   document.getElementById("registerForm").style.display = "none";
-};window.signup = async function () {
+};
+window.signup = async function () {
   const name = document.getElementById("regName").value;
   const email = document.getElementById("regEmail").value;
   const password = document.getElementById("regPassword").value;
@@ -587,8 +573,11 @@ window.showLogin = function () {
   }
 
   try {
-    const userCredential =
-      await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password,
+    );
 
     const user = userCredential.user;
 
@@ -598,7 +587,7 @@ window.showLogin = function () {
       email: user.email,
       role: "user",
       avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=487DE7&color=fff`,
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     });
 
     await sendEmailVerification(user);
@@ -607,13 +596,11 @@ window.showLogin = function () {
 
     // IMPORTANT: DO NOT LOG OUT
     showVerifyScreen(user);
-
   } catch (err) {
     showToast(err.message, "error");
   }
 };
 window.resendVerification = async function () {
-
   const user = auth.currentUser;
 
   if (!user) {
@@ -621,47 +608,30 @@ window.resendVerification = async function () {
   }
 
   try {
-
     await sendEmailVerification(user);
 
-    showToast(
-      "Verification email resent!",
-      "success"
-    );
-
+    showToast("Verification email resent!", "success");
   } catch (err) {
     showToast(err.message, "error");
   }
 };
 window.forgotPassword = async function () {
-
-  const email =
-    document.getElementById("email").value;
+  const email = document.getElementById("email").value;
 
   if (!email) {
-    return showToast(
-      "Please enter your email first."
-    );
+    return showToast("Please enter your email first.");
   }
 
   try {
-
-    await sendPasswordResetEmail(
-      auth,
-      email
-    );
+    await sendPasswordResetEmail(auth, email);
 
     showToast(
-      "Password reset link sent! Check your email inbox or spam folder."
+      "Password reset link sent! Check your email inbox or spam folder.",
     );
-
   } catch (err) {
-
     if (err.code === "auth/user-not-found") {
       showToast("No account found with this email.");
-    } else if (
-      err.code === "auth/invalid-email"
-    ) {
+    } else if (err.code === "auth/invalid-email") {
       showToast("Invalid email address.");
     } else {
       showToast(err.message);
@@ -671,47 +641,54 @@ window.forgotPassword = async function () {
 // =========================
 // HERO BACKGROUND ROTATION
 // =========================
+// =========================
+// HERO BACKGROUND ROTATION
+// =========================
 
 const hero = document.querySelector(".hero-premium");
 
-const images = [
-  "images/1.jpg",
-  "images/2.jpg",
-  "images/3.jpg",
-  "images/4.jpg",
-  "images/5.jpg",
-  "images/6.jpg",
-  "images/7.jpg",
-  "images/8.jpg",
-  "images/9.png",
-  "images/10.jpg",
-  "images/11.jpg",
-  "images/12.jpg",
-  "images/13.jpg"
-];
-let index = 0;
+if (hero) {
+  const images = [
+    "images/1.jpg",
+    "images/2.jpg",
+    "images/3.jpg",
+    "images/4.jpg",
+    "images/5.jpg",
+    "images/6.jpg",
+    "images/7.jpg",
+    "images/8.jpg",
+    "images/9.png",
+    "images/10.jpg",
+    "images/11.jpg",
+    "images/12.jpg",
+    "images/13.jpg",
+  ];
 
-// preload images (prevents lag)
-images.forEach(src => {
-  const img = new Image();
-  img.src = src;
-});
+  let index = 0;
 
-// set first image
-hero.style.backgroundImage = `url(${images[0]})`;
+  // preload images
+  images.forEach((src) => {
+    const img = new Image();
+    img.src = src;
+  });
 
-function changeHeroBg() {
-  hero.classList.add("fade");
+  // first image
+  hero.style.backgroundImage = `url(${images[0]})`;
 
-  setTimeout(() => {
-    index = (index + 1) % images.length;
-    hero.style.backgroundImage = `url(${images[index]})`;
-    hero.classList.remove("fade");
-  }, 400);
+  function changeHeroBg() {
+    hero.classList.add("fade");
+
+    setTimeout(() => {
+      index = (index + 1) % images.length;
+
+      hero.style.backgroundImage = `url(${images[index]})`;
+
+      hero.classList.remove("fade");
+    }, 400);
+  }
+
+  setInterval(changeHeroBg, 5000);
 }
-
-// change every 5 seconds
-setInterval(changeHeroBg, 5000);
 // MY ACCOUNT PANEL SCRIPT
 window.openAccountPanel = function () {
   document.getElementById("accountPanel").classList.add("open");
@@ -720,80 +697,14 @@ window.openAccountPanel = function () {
 window.closeAccountPanel = function () {
   document.getElementById("accountPanel").classList.remove("open");
 };
-// // start repair form scripts
-// window.startRepair = async function () {
-
-//   const category =
-//     document.getElementById("category").value;
-
-//   const device =
-//     document.getElementById("deviceName").value;
-
-//   const problemType =
-//     document.getElementById("problemType").value;
-
-//   const issue =
-//     document.getElementById("issue").value;
-
-//   const urgency =
-//     document.getElementById("urgency").value;
-
-//   const contact =
-//     document.getElementById("contact").value;
-
-//   const serviceType =
-//     document.getElementById("serviceType").value;
-
-//   if (!category || !device || !problemType || !issue || !contact) {
-//     return showToast("Please fill all required fields");
-//   }
-
-//   if (!currentUser) {
-//     return showToast("Please login first", "error");
-//   }
-
-//   try {
-
-//     await addDoc(collection(db, "repairs"), {
-
-//       uid: currentUser.uid,
-//       email: currentUser.email,
-
-//       category,
-//       device,
-//       problemType,
-//       issue,
-//       urgency,
-//       contact,
-//       serviceType,
-
-//       status: "Pending",
-//       createdAt: serverTimestamp()
-
-//     });
-
-//     showToast("Repair submitted successfully!", "success");
-
-//     document.getElementById("repairForm").reset();
-
-//     window.location.href = "dashboard.html";
-
-//   } catch (err) {
-//     console.error(err);
-//     showToast("Error: " + err.message);
-//   }
-// };
 function showToast(message, type = "info") {
-  const container =
-    document.getElementById("toastContainer");
+  const container = document.getElementById("toastContainer");
 
   if (!container) return;
 
-  const toast =
-    document.createElement("div");
+  const toast = document.createElement("div");
 
-  toast.className =
-    `toast ${type}`;
+  toast.className = `toast ${type}`;
 
   toast.innerText = message;
 
@@ -802,7 +713,7 @@ function showToast(message, type = "info") {
   setTimeout(() => {
     toast.remove();
   }, 3000);
-};
+}
 window.toggleRepairForm = function () {
   const form = document.getElementById("repairForm");
   if (!form) return;
@@ -811,7 +722,6 @@ window.toggleRepairForm = function () {
 };
 
 function loadUserRepairs() {
-
   if (!currentUser) return;
 
   const active = document.getElementById("activeRepairs");
@@ -821,11 +731,10 @@ function loadUserRepairs() {
 
   const q = query(
     collection(db, "repairs"),
-    where("uid", "==", currentUser.uid)
+    where("uid", "==", currentUser.uid),
   );
 
   onSnapshot(q, (snapshot) => {
-
     active.innerHTML = "";
     completed.innerHTML = "";
 
@@ -837,10 +746,9 @@ function loadUserRepairs() {
       `;
       return;
     }
-let activeCount = 0;
-let completedCount = 0;
+    let activeCount = 0;
+    let completedCount = 0;
     snapshot.forEach((docSnap) => {
-
       const r = docSnap.data();
 
       const status = (r.status || "Pending").toLowerCase();
@@ -849,7 +757,7 @@ let completedCount = 0;
         pending: 20,
         diagnosing: 40,
         fixing: 75,
-        completed: 100
+        completed: 100,
       };
 
       const progress = progressMap[status] || 10;
@@ -888,13 +796,13 @@ let completedCount = 0;
 
         ${
           r.assignedTo
-          ? `
+            ? `
             <div class="tech-box">
               👨‍🔧 Technician:
               ${r.assignedTo.name}
             </div>
           `
-          : ""
+            : ""
         }
 
 
@@ -905,7 +813,9 @@ let completedCount = 0;
 
   ${
     r.journey && r.journey.length
-    ? r.journey.map(t => `
+      ? r.journey
+          .map(
+            (t) => `
 
       <div class="journey-step">
 
@@ -918,8 +828,10 @@ let completedCount = 0;
 
       </div>
 
-    `).join("")
-    : `
+    `,
+          )
+          .join("")
+      : `
       <p class="empty-journey">
         No updates yet
       </p>
@@ -936,13 +848,10 @@ let completedCount = 0;
         activeCount++;
         active.appendChild(card);
       }
-
     });
-document.getElementById("activeCount").innerText =
-  activeCount;
+    document.getElementById("activeCount").innerText = activeCount;
 
-document.getElementById("completedCount").innerText =
-  completedCount;
+    document.getElementById("completedCount").innerText = completedCount;
   });
 }
 //add technician code
@@ -963,7 +872,7 @@ window.createTechnician = async function () {
       name,
       email,
       role: "technician",
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     });
 
     showToast("Technician added successfully");
@@ -971,7 +880,6 @@ window.createTechnician = async function () {
     nameEl.value = "";
     emailEl.value = "";
     closeTechForm();
-
   } catch (err) {
     console.error(err);
     showToast("Failed to add technician");
@@ -979,7 +887,7 @@ window.createTechnician = async function () {
 };
 // dashboard codes
 window.navigate = function (page) {
-  document.querySelectorAll(".page").forEach(p => {
+  document.querySelectorAll(".page").forEach((p) => {
     p.classList.remove("active");
   });
 
@@ -992,7 +900,7 @@ window.navigate = function (page) {
   localStorage.setItem("lastPage", page);
 };
 
-document.querySelectorAll("[data-page]").forEach(card => {
+document.querySelectorAll("[data-page]").forEach((card) => {
   card.addEventListener("click", () => {
     window.navigate(card.dataset.page);
   });
@@ -1006,12 +914,16 @@ window.toggleJourney = function (id) {
     const data = snap.data();
     const journey = data.journey || [];
 
-    box.innerHTML = journey.map(t => `
+    box.innerHTML = journey
+      .map(
+        (t) => `
       <div class="journey-step">
         <strong>${t.stage}</strong>
         <small>${t.time}</small>
       </div>
-    `).join("");
+    `,
+      )
+      .join("");
 
     box.classList.toggle("hidden");
   });
@@ -1031,7 +943,9 @@ window.prevStep = function (step) {
 };
 
 window.showStep = function (step) {
-  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+  document
+    .querySelectorAll(".step")
+    .forEach((s) => s.classList.remove("active"));
 
   const el = document.getElementById("step" + step);
   if (!el) return;
@@ -1068,7 +982,7 @@ function collectFormData() {
     issue: document.getElementById("issue")?.value || "",
     urgency: document.getElementById("urgency")?.value || "",
     contact: document.getElementById("contact")?.value || "",
-    serviceType: document.getElementById("serviceType")?.value || ""
+    serviceType: document.getElementById("serviceType")?.value || "",
   };
 }
 async function startRepair() {
@@ -1090,7 +1004,7 @@ async function startRepair() {
       ...data,
       imageUrl,
       status: "pending",
-      createdAt: serverTimestamp()
+      createdAt: serverTimestamp(),
     };
 
     await setDoc(doc(db, "repair_requests", requestId), finalData);
@@ -1103,7 +1017,6 @@ async function startRepair() {
 
     document.getElementById("repairForm").style.display = "none";
     document.getElementById("repairOverlay").classList.remove("show");
-
   } catch (err) {
     console.error(err);
     showToast("Submission failed ❌");
@@ -1115,13 +1028,13 @@ window.addEventListener("DOMContentLoaded", () => {
   if (draft) {
     const data = JSON.parse(draft);
 
-    Object.keys(data).forEach(key => {
+    Object.keys(data).forEach((key) => {
       const el = document.getElementById(key);
       if (el) el.value = data[key];
     });
   }
 });
-document.querySelectorAll("input, select").forEach(el => {
+document.querySelectorAll("input, select").forEach((el) => {
   el.addEventListener("change", () => {
     if (typeof saveDraft === "function") {
       saveDraft();
@@ -1141,7 +1054,8 @@ function validateStep(step) {
     }
   }
   return true;
-}function buildReview() {
+}
+function buildReview() {
   const data = collectFormData();
 
   document.getElementById("reviewBox").innerHTML = `
@@ -1154,63 +1068,74 @@ function validateStep(step) {
     <p><b>Service:</b> ${data.serviceType}</p>
   `;
 }
-document.getElementById("deviceImage").addEventListener("change", function (e) {
-  const file = e.target.files[0];
-  const preview = document.getElementById("previewImg");
+const deviceImage = document.getElementById("deviceImage");
 
-  if (file) {
+if (deviceImage) {
+  deviceImage.addEventListener("change", function (e) {
+    const file = e.target.files[0];
+
+    const preview = document.getElementById("previewImg");
+
+    if (!file || !preview) return;
+
     const reader = new FileReader();
 
     reader.onload = function (event) {
       preview.src = event.target.result;
+
       preview.style.display = "block";
     };
 
     reader.readAsDataURL(file);
-  }
-});
-const file = fileInput.files[0];
+  });
+}
 async function uploadImage(file) {
-  if (!file) return null;
+  if (!file || !storage) return null;
 
-  const imageRef = ref(storage, `repair_images/${draftId}_${file.name}`);
+  const imageRef = ref(
+    storage,
+    `repair_images/${Date.now()}_${file.name}`
+  );
 
   await uploadBytes(imageRef, file);
 
-  const url = await getDownloadURL(imageRef);
-  return url;
-}window.switchTab = function (id) {
+  return await getDownloadURL(imageRef);
+}
+window.switchTab = function (id) {
   console.log("switchTab running:", id);
 };
+if (uploadBox && fileInput) {
 
-// CLICK to open file picker
-uploadBox.addEventListener("click", () => {
-  fileInput.click();
-});
+  // CLICK to open file picker
+  uploadBox.addEventListener("click", () => {
+    fileInput.click();
+  });
 
-// DRAG OVER STYLE
-uploadBox.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  uploadBox.style.borderColor = "#2563eb";
-});
+  // DRAG OVER
+  uploadBox.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    uploadBox.style.borderColor = "#2563eb";
+  });
 
-// DRAG LEAVE
-uploadBox.addEventListener("dragleave", () => {
-  uploadBox.style.borderColor = "#d1d5db";
-});
+  // DRAG LEAVE
+  uploadBox.addEventListener("dragleave", () => {
+    uploadBox.style.borderColor = "#d1d5db";
+  });
 
-// DROP FILE
-uploadBox.addEventListener("drop", (e) => {
-  e.preventDefault();
-  const file = e.dataTransfer.files[0];
-  handleFile(file);
-});
+  // DROP FILE
+  uploadBox.addEventListener("drop", (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    handleFile(file);
+  });
 
-// FILE CHANGE
-fileInput.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  handleFile(file);
-});
+  // FILE CHANGE
+  fileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    handleFile(file);
+  });
+
+}
 
 // HANDLE FILE
 function handleFile(file) {
@@ -1223,25 +1148,33 @@ function handleFile(file) {
   const reader = new FileReader();
 
   reader.onload = (e) => {
-    previewImg.src = e.target.result;
+    if (previewImg) previewImg.src = e.target.result;
 
-    uploadContent.style.display = "none";
-    previewBox.style.display = "flex";
+    if (uploadContent)
+      uploadContent.style.display = "none";
+
+    if (previewBox)
+      previewBox.style.display = "flex";
   };
 
   reader.readAsDataURL(file);
 }
 
 // REMOVE IMAGE
-removeBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
+if (removeBtn) {
+  removeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
 
-  fileInput.value = "";
-  previewImg.src = "";
+    if (fileInput) fileInput.value = "";
+    if (previewImg) previewImg.src = "";
 
-  previewBox.style.display = "none";
-  uploadContent.style.display = "block";
-});
+    if (previewBox)
+      previewBox.style.display = "none";
+
+    if (uploadContent)
+      uploadContent.style.display = "block";
+  });
+}
 window.toggleRepairForm = function () {
   const overlay = document.getElementById("repairOverlay");
   if (!overlay) return;
@@ -1278,7 +1211,7 @@ async function loadProfileStats() {
   let total = 0;
   let completed = 0;
 
-  snap.forEach(doc => {
+  snap.forEach((doc) => {
     total++;
     if (doc.data().status === "completed") completed++;
   });

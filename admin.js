@@ -462,7 +462,6 @@ window.updateRepair = async function (id, status) {
     showToast("Update failed");
   }
 };
-import { addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 async function notifyUser(repairData) {
   try {
