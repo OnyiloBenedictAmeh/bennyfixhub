@@ -20,7 +20,8 @@ const sounds = {
 // set volume for all
 Object.values(sounds).forEach((s) => {
   s.volume = 0.4;
-});notifySound.volume = 0.5;
+});
+// notifySound.volume = 0.5;
 const loadingTexts = [
   "Initializing secure session...",
   "Authenticating admin credentials...",
@@ -57,7 +58,6 @@ function showLoading() {
 
   hideAll();
   el.style.display = "flex";
-
   startLoadingAnimation();
 }
 
@@ -83,6 +83,7 @@ import {
   collection,
   onSnapshot,
   updateDoc,
+  query
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /* =========================
@@ -216,7 +217,7 @@ function listenToRepairs() {
     showToast("🔔 New repair update");
 
     // 🔊 play sound
-    playsound("repair").catch(() => {});
+    playSound("repair").catch(() => {});
   }
 
   firstLoad = false;
