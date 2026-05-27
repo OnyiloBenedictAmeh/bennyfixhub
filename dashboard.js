@@ -141,3 +141,99 @@ document.getElementById("completedCount").innerText =
   });
 
 }
+  document.querySelectorAll("[data-page]").forEach(el => {
+  el.addEventListener("click", () => {
+
+    const page = el.getAttribute("data-page");
+
+    document.querySelectorAll(".page")
+      .forEach(p => p.classList.remove("active"));
+
+    document.getElementById(page + "Page")
+      .classList.add("active");
+  });
+});
+async function loadProfile() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const snap = await getDoc(doc(db, "users", user.uid));
+  if (!snap.exists()) return;
+
+  const data = snap.data();
+
+  // PROFILE PAGE
+  const set = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.innerText = value || "Not set";
+  };
+
+  set("profileName", data.name || user.email.split("@")[0]);
+  set("profileBio", data.bio);
+  set("profileEmail", data.email || user.email);
+  set("profileLocation", data.location);
+  set("profileJoined",
+    data.createdAt?.toDate?.().toDateString() || "Unknown"
+  );
+
+  document.getElementById("profileAvatar").src =
+    data.avatar ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || "User")}`;
+
+  document.getElementById("coverImg").src =
+    data.coverPhoto || "images/default-cover.jpg";
+}
+window.openEditProfile = function () {
+
+  document.getElementById("editProfileModal")
+    .classList.remove("hidden");
+
+  // preload existing data
+  document.getElementById("editName").value =
+    document.getElementById("profileName").innerText;
+
+  document.getElementById("editBio").value =
+    document.getElementById("profileBio").innerText;
+
+  document.getElementById("editLocation").value =
+    document.getElementById("profileLocation").innerText;
+};
+window.closeEditProfile = function () {
+  document.getElementById("editProfileModal")
+    .classList.add("hidden");
+};
+async function uploadAvatar(file, uid) {
+  const imageRef = ref(storage, `avatars/${uid}`);
+  await uploadBytes(imageRef, file);
+  return await getDownloadURL(imageRef);
+}
+import { updateDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+window.saveProfile = async function () {
+  // avatar: avatarUrl || undefined,
+  let avatarUrl;
+
+if (avatarBlob) {
+  avatarUrl = await uploadAvatar(avatarBlob, auth.currentUser.uid);
+}
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const ref = doc(db, "users", user.uid);
+
+  const updateData = {
+    name: document.getElementById("editName").value,
+    bio: document.getElementById("editBio").value,
+    location: document.getElementById("editLocation").value,
+    avatar: document.getElementById("editAvatar").value,
+    coverPhoto: document.getElementById("editCover").value
+  };
+
+  await updateDoc(ref, updateData);
+
+  await loadProfile(); // IMPORTANT: refresh UI
+
+  closeEditProfile();
+
+  showToast("Profile updated successfully");
+};

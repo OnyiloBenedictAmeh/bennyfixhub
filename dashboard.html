@@ -1,209 +1,270 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BennyFix Hub - Dashboard</title>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BennyFix Hub - Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+  </head>
 
-  <link rel="stylesheet" href="dashboard.css">
-  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet" />
-</head>
+  <body>
+    <style>
+      .credit {
+        text-transform: capitalize;
+        color: #000;
+        /* padding: 3rem; */
+        text-align: center;
+      }
 
-<body>
-  <style>
-    .credit {
-  text-transform: capitalize;
-  color: #000;
-  /* padding: 3rem; */
-  text-align: center;
-}
+      .credit span {
+        color: #487de7;
+      }
+    </style>
 
-.credit span {
-  color: #487DE7;
-}
-  </style>
+    <div class="dashboard">
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <h3>BennyFix Hub</h3>
 
-<a href="index.html" class="back-home">
-  <i class='bx bx-arrow-back'></i> Home
-</a>
+        <a data-nav="overview"><i class="bx bx-grid-alt"></i> Dashboard</a>
+        <a data-page="repairs"><i class="bx bx-wrench"></i> Repairs</a>
+        <a data-page="claims"><i class="bx bx-receipt"></i> Claims</a>
+        <a data-page="devices"><i class="bx bx-devices"></i> Devices</a>
+        <a data-page="profile"><i class="bx bx-user-circle"></i> Profile</a>
+        <a data-page="support"><i class="bx bx-support"></i> Support</a>
+        <a data-page="settings"><i class="bx bx-cog"></i> Settings</a>
+      </aside>
 
-<div class="dashboard">
+      <!-- MAIN -->
+      <main class="main">
+        <div class="top-header">
+          <a href="index.html" class="back-home">
+            <i class="bx bx-home-circle"></i> Home
+          </a>
+          <h1 id="pageTitle">Overview</h1>
+          <div class="notif-icon" onclick="toggleNotif()">
+            <i class="bx bx-bell"></i>
+          </div>
+        </div>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <h3>BennyFix Hub</h3>
+        <div class="notif-panel" id="notifPanel">
+          <div class="notif-header">
+            <h3>Notifications</h3>
+          </div>
 
-    <a data-nav="overview"><i class='bx bx-grid-alt'></i> Dashboard</a>
-    <a data-page="repairs"><i class='bx bx-wrench'></i> Repairs</a>
-    <a data-page="claims" ><i class='bx bx-receipt'></i> Claims</a>
-    <a data-page="devices" ><i class='bx bx-devices'></i> Devices</a>
-    <a data-page="support" ><i class='bx bx-support'></i> Support</a>
-    <a data-page="settings" ><i class='bx bx-cog'></i> Settings</a>
-  </aside>
+          <div id="userNotifications">
+            <p class="empty-notif">No notifications yet</p>
+          </div>
+        </div>
+        <!-- DASH CARDS -->
+        <div class="dashboard-cards">
+          <div class="dash-card" data-page="overview">
+            <i class="bx bx-grid-alt"></i>
+            <h3>Overview</h3>
+            <p>Summary of activity</p>
+          </div>
 
-  <!-- MAIN -->
-  <main class="main">
+          <div class="dash-card" data-page="repairs">
+            <i class="bx bx-wrench"></i>
+            <h3>Repairs</h3>
+          </div>
 
-    <div class="top-header">
-      <h1 id="pageTitle">Overview</h1>
-      <div class="notif-icon" onclick="toggleNotif()">
-        <i class='bx bx-bell'></i>
-      </div>
-    </div>
+          <div class="dash-card" data-page="claims">
+            <i class="bx bx-receipt"></i>
+            <h3>Claims</h3>
+          </div>
 
-   <div class="notif-panel" id="notifPanel">
+          <div class="dash-card" data-page="devices">
+            <i class="bx bx-devices"></i>
+            <h3>Devices</h3>
+          </div>
 
-  <div class="notif-header">
-    <h3>Notifications</h3>
-  </div>
+          <div class="dash-card" data-page="support">
+            <i class="bx bx-support"></i>
+            <h3>Support</h3>
+          </div>
+          <div class="dash-card" data-page="profile">
+            <i class="bx bx-user"></i>
+            <h3>Profile</h3>
+          </div>
 
-  <div id="userNotifications">
+          <div class="dash-card" data-page="settings">
+            <i class="bx bx-cog"></i>
+            <h3>Settings</h3>
+          </div>
+        </div>
+        <div class="repairs-wrapper">
+          <div class="repair-section">
+            <div class="section-header">
+              <h2>Active Repairs</h2>
+              <span id="activeCount">0</span>
+            </div>
 
-    <p class="empty-notif">
-      No notifications yet
-    </p>
+            <div id="activeRepairs"></div>
+          </div>
 
-  </div>
+          <div class="repair-section">
+            <div class="section-header">
+              <h2>Completed Repairs</h2>
+              <span id="completedCount">0</span>
+            </div>
 
+            <div id="completedRepairs"></div>
+          </div>
+        </div>
+        <!-- PAGES -->
+        <section class="page active" id="overviewPage">
+          <div class="card">
+            <h3>Recent Claims</h3>
+
+            <div class="repair-item">
+              <div>
+                <strong>Claim #1023</strong>
+                <p>Battery issue</p>
+              </div>
+              <span class="status approved">Approved</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Repair Status</h3>
+
+            <div class="journey">
+              <div class="step completed"><span>Submitted</span></div>
+              <div class="step completed"><span>Diagnosing</span></div>
+              <div class="step active"><span>Fixing</span></div>
+              <div class="step"><span>Completed</span></div>
+            </div>
+          </div>
+        </section>
+        <section class="page" id="repairsPage">
+          <div class="card">
+            <h3>Active Repairs</h3>
+          </div>
+        </section>
+        <section class="page" id="profilePage">
+          <!-- COVER -->
+          <div class="profile-cover">
+            <img id="coverImg" />
+          </div>
+
+          <!-- HEADER -->
+          <div class="profile-header">
+<div class="avatar-wrap">
+  <img id="profileAvatar" class="avatar" />
+
+  <input type="file" id="avatarFile" accept="image/*" hidden />
 </div>
-    <!-- DASH CARDS -->
-    <div class="dashboard-cards">
+            <div class="profile-info">
+              <h2 id="profileName">Loading...</h2>
+              <p id="profileBio"></p>
+            </div>
 
-      <div class="dash-card" data-page="overview">
-        <i class='bx bx-grid-alt'></i>
-        <h3>Overview</h3>
-        <p>Summary of activity</p>
-      </div>
+            <button onclick="openEditProfile()">Edit Profile</button>
+          </div>
 
-      <div class="dash-card" data-page="repairs">
-        <i class='bx bx-wrench'></i>
-        <h3>Repairs</h3>
-      </div>
+          <!-- STATS -->
+          <div class="profile-stats">
+            <div class="stat">
+              <h3 id="repairCount">0</h3>
+              <p>Repairs</p>
+            </div>
 
-      <div class="dash-card" data-page="claims" >
-        <i class='bx bx-receipt'></i>
-        <h3>Claims</h3>
-      </div>
+            <div class="stat">
+              <h3 id="completedCount">0</h3>
+              <p>Completed</p>
+            </div>
 
-      <div class="dash-card" data-page="devices" >
-        <i class='bx bx-devices'></i>
-        <h3>Devices</h3>
-      </div>
+            <div class="stat">
+              <h3 id="claimCount">0</h3>
+              <p>Claims</p>
+            </div>
+          </div>
 
-      <div class="dash-card" data-page="support" >
-        <i class='bx bx-support'></i>
-        <h3>Support</h3>
-      </div>
+          <!-- ABOUT -->
+          <div class="card">
+            <h3>About</h3>
+            <p id="profileEmail"></p>
+            <p id="profileLocation"></p>
+            <p id="profileJoined"></p>
+          </div>
 
-      <div class="dash-card" data-page="settings" >
-        <i class='bx bx-cog'></i>
-        <h3>Settings</h3>
-      </div>
+          <!-- ACTIVITY -->
+          <div class="card">
+            <h3>Activity</h3>
+            <div id="activityFeed"></div>
+          </div>
+        </section>
+        <section class="page" id="claimsPage">
+          <div class="card">
+            <h3>Recent Claims</h3>
+            <div class="repair-item">
+              <div>
+                <strong>Claim #1023</strong>
+                <p>Battery issue</p>
+              </div>
+              <span class="status approved">Approved</span>
+            </div>
+          </div>
+        </section>
 
+        <section class="page" id="devicesPage">
+          <div class="card">
+            <h3>Your Devices</h3>
+            <div class="device-grid">
+              <div class="device-card">
+                <i class="bx bx-laptop"></i>
+                <h4>HP Laptop</h4>
+                <p>Windows 11</p>
+              </div>
+              <div class="device-card">
+                <i class="bx bx-mobile"></i>
+                <h4>iPhone 11</h4>
+                <p>iOS</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="supportPage">
+          <div class="card">
+            <h3>Support Center</h3>
+            <p>Chat with us or open a ticket.</p>
+          </div>
+        </section>
+
+        <section class="page" id="settingsPage">
+          <div class="card">
+            <h3>Settings</h3>
+            <p>Manage your account preferences.</p>
+          </div>
+        </section>
+      </main>
     </div>
-<div class="repairs-wrapper">
+    <div id="editProfileModal" class="modal hidden">
+      <div class="modal-box">
+        <span class="close-btn" onclick="closeEditProfile()">×</span>
 
-  <div class="repair-section">
+        <h3>Edit Profile</h3>
 
-    <div class="section-header">
-      <h2>Active Repairs</h2>
-      <span id="activeCount">0</span>
-    </div>
+        <input id="editName" placeholder="Full Name" />
+        <textarea id="editBio" placeholder="Bio"></textarea>
+        <input id="editLocation" placeholder="Location" />
 
-    <div id="activeRepairs"></div>
+        <input id="editAvatar" placeholder="Avatar URL" />
+        <input id="editCover" placeholder="Cover Image URL" />
 
-  </div>
-
-  <div class="repair-section">
-
-    <div class="section-header">
-      <h2>Completed Repairs</h2>
-      <span id="completedCount">0</span>
-    </div>
-
-    <div id="completedRepairs"></div>
-
-  </div>
-
-</div>
-    <!-- PAGES -->
-    <section class="page active" id="overviewPage">
-      <div class="card"><section class="page active" id="overviewPage">
-
-  <div class="card">
-    <!-- <h3>Active Repairs</h3>
-
-    <div class="repair-item">
-      <div>
-        <strong>HP Laptop</strong>
-        <p>Restart loop issue</p>
+        <button onclick="saveProfile()">Save Changes</button>
       </div>
-      <span class="status in-progress">In Progress</span>
     </div>
-
-    <div class="repair-item">
-      <div>
-        <strong>iPhone 11</strong>
-        <p>Screen replacement</p>
-      </div>
-      <span class="status pending">Pending</span>
-    </div>
-  </div> -->
-
-  <div class="card">
-    <h3>Recent Claims</h3>
-
-    <div class="repair-item">
-      <div>
-        <strong>Claim #1023</strong>
-        <p>Battery issue</p>
-      </div>
-      <span class="status approved">Approved</span>
-    </div>
-  </div>
-
-  <div class="card">
-    <h3>Repair Status</h3>
-
-    <div class="journey">
-      <div class="step completed"><span>Submitted</span></div>
-      <div class="step completed"><span>Diagnosing</span></div>
-      <div class="step active"><span>Fixing</span></div>
-      <div class="step"><span>Completed</span></div>
-    </div>
-  </div>
-
-</section></div>
-    </section>
-
- <section class="page" id="repairsPage">
-
-  <div class="card">
-    <h3>Active Repairs</h3>
-
-
-  </div>
-
-</section>
-
-    <section class="page" id="claimsPage">
-<div class="card"> <h3>Recent Claims</h3> <div class="repair-item"> <div> <strong>Claim #1023</strong> <p>Battery issue</p> </div> <span class="status approved">Approved</span> </div> </div>    </section>
-
-    <section class="page" id="devicesPage">
-<div class="card"> <h3>Your Devices</h3> <div class="device-grid"> <div class="device-card"> <i class='bx bx-laptop'></i> <h4>HP Laptop</h4> <p>Windows 11</p> </div> <div class="device-card"> <i class='bx bx-mobile'></i> <h4>iPhone 11</h4> <p>iOS</p> </div> </div> </div>    </section>
-
-    <section class="page" id="supportPage">
-<div class="card"> <h3>Support Center</h3> <p>Chat with us or open a ticket.</p> </div>    </section>
-
-    <section class="page" id="settingsPage">
-<div class="card"> <h3>Settings</h3> <p>Manage your account preferences.</p> </div>    </section>
-
-  </main>
-
-</div><hr>
-       <div class="credit"> <span>BennyFix hub</span> | all rights reserved! </div>
-<script type="module" src="script.js" defer></script>
-</body>
+    <hr />
+    <div class="credit"><span>BennyFix hub</span> | all rights reserved!</div>
+    <script type="module" src="dashboard.js"></script>
+    <script type="module" src="scipt.js"></script>
+  </body>
 </html>

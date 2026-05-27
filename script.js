@@ -218,6 +218,15 @@ import {
 // =========================
 // AUTH FUNCTIONS
 // =========================
+export async function getUserProfile(uid) {
+  const snap = await getDoc(doc(db, "users", uid));
+
+  if (snap.exists()) {
+    return snap.data();
+  }
+
+  return null;
+};
 window.login = async function () {
   const email =
     document.getElementById("email").value;
@@ -258,12 +267,40 @@ window.login = async function () {
     showToast(err.message);
   }
 };
-window.logout = function () {
-  signOut(auth);
+window.logout = async function () {
+  await signOut(auth);
+
+  // reset forms
   document.getElementById("email").value = "";
   document.getElementById("password").value = "";
-};
 
+  // reset UI states
+  const dashboard = document.querySelector(".dashboard");
+  const navWrapper = document.getElementById("navWrapper");
+  const mega = document.getElementById("mega");
+  const searchModal = document.getElementById("searchModal");
+
+  if (dashboard) dashboard.style.display = "none";
+  if (navWrapper) navWrapper.classList.remove("open");
+  if (mega) mega.classList.remove("show");
+  if (searchModal) searchModal.style.display = "none";
+
+  // reset menus (VERY IMPORTANT)
+  if (typeof guestMenu !== "undefined" && guestMenu) {
+    guestMenu.style.display = "block";
+  }
+
+  if (typeof userMenu !== "undefined" && userMenu) {
+    userMenu.style.display = "none";
+  }
+
+  // close account panels / dropdowns
+  const accountPanel = document.getElementById("accountPanel");
+  if (accountPanel) accountPanel.classList.remove("open");
+
+  const accountDropdown = document.getElementById("accountDropdown");
+  if (accountDropdown) accountDropdown.classList.remove("show");
+};
 // =========================
 // AUTH STATE CONTROL
 // =========================
@@ -283,7 +320,8 @@ window.openAuth = function () {
 window.closeAccountPanel = function () {
   document.getElementById("accountPanel").classList.remove("open");
   document.getElementById("accountOverlay").classList.remove("show");
-};onAuthStateChanged(auth, async (user) => {
+};
+onAuthStateChanged(auth, async (user) => {
   currentUser = user;
 
   const authModal = document.getElementById("authModal");
@@ -292,8 +330,7 @@ window.closeAccountPanel = function () {
   // RESET UI FIRST (VERY IMPORTANT)
   if (authModal) authModal.style.display = "none";
   if (verifyScreen) verifyScreen.style.display = "none";
-  if (dashboard) dashboard.style.display = "none";
-
+  
   // ❌ NO USER
   if (!user) {
     if (guestMenu) guestMenu.style.display = "block";
@@ -323,6 +360,9 @@ window.closeAccountPanel = function () {
 
   loadUserRepairs();
   listenToNotifications();
+  loadProfile();
+  loadHeaderUser();
+  loadProfileStats();
 
   if (authModal) authModal.style.display = "none";
   if (dashboard) dashboard.style.display = "grid";
@@ -331,6 +371,21 @@ window.closeAccountPanel = function () {
   if (heading) heading.innerText = "Welcome, " + user.email;
 
   if (emailBox) emailBox.innerText = user.email;
+
+const snap = await getDoc(doc(db, "users", user.uid));
+
+if (snap.exists()) {
+  const data = snap.data();
+
+
+  if (heading) {
+    heading.innerText = "Welcome, " + (data.name || user.email);
+  }
+}
+if (dashboard) dashboard.style.display = "none";
+setTimeout(() => {
+  loadHeaderUser();
+}, 100);
 });
 window.toggleAccountMenu = function (e) {
   e.preventDefault();
@@ -1193,3 +1248,41 @@ window.toggleRepairForm = function () {
 
   overlay.classList.toggle("show");
 };
+async function loadHeaderUser() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const snap = await getDoc(doc(db, "users", user.uid));
+  if (!snap.exists()) return;
+
+  const data = snap.data();
+
+  const nameEl = document.getElementById("userName");
+  const roleEl = document.getElementById("userRole");
+
+  if (nameEl) {
+    nameEl.innerText = data.name || user.email.split("@")[0];
+  }
+
+  if (roleEl) {
+    roleEl.innerText = data.role || "User";
+  }
+}
+async function loadProfileStats() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const q = query(collection(db, "repairs"), where("uid", "==", user.uid));
+  const snap = await getDocs(q);
+
+  let total = 0;
+  let completed = 0;
+
+  snap.forEach(doc => {
+    total++;
+    if (doc.data().status === "completed") completed++;
+  });
+
+  document.getElementById("repairCount").innerText = total;
+  document.getElementById("completedCount").innerText = completed;
+}
