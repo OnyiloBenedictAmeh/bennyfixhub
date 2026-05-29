@@ -7,9 +7,9 @@
 
     <link rel="stylesheet" href="dashboard.css" />
     <link
-  rel="stylesheet"
-  href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"
-/>
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css"
+    />
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
@@ -159,11 +159,11 @@
 
           <!-- HEADER -->
           <div class="profile-header">
-<div class="avatar-wrap">
-  <img id="profileAvatar" class="avatar" />
+            <div class="avatar-wrap">
+              <img id="profileAvatar" class="avatar" />
 
-  <input type="file" id="avatarFile" accept="image/*" hidden />
-</div>
+              <input type="file" id="avatarFile" accept="image/*" hidden />
+            </div>
             <div class="profile-info">
               <h2 id="profileName">Loading...</h2>
               <p id="profileBio"></p>
@@ -258,41 +258,38 @@
 
         <input id="editName" placeholder="Full Name" />
         <textarea id="editBio" placeholder="Bio"></textarea>
-        <input id="editLocation" placeholder="Location" />     
+        <input id="editLocation" placeholder="Location" />
         <input id="editCover" placeholder="Cover Image URL" />
-        <button id="saveProfileBtn" onclick="saveProfile()">Save Changes</button>
+        <button id="saveProfileBtn" onclick="saveProfile()">
+          Save Changes
+        </button>
       </div>
     </div>
     <div id="cropModal" class="modal hidden">
-  <div class="modal-box crop-box">
+      <div class="modal-box crop-box">
+        <h3>Adjust Profile Photo</h3>
 
-    <h3>Adjust Profile Photo</h3>
+        <div class="crop-container">
+          <img id="cropImage" />
+        </div>
 
-    <div class="crop-container">
-      <img id="cropImage" />
+        <input
+          type="range"
+          id="zoomSlider"
+          min="0.5"
+          max="3"
+          step="0.1"
+          value="1"
+        />
+
+        <div class="crop-actions">
+          <button onclick="closeCropper()">Cancel</button>
+
+          <button onclick="cropAvatar()">Crop & Save</button>
+        </div>
+      </div>
     </div>
-
-    <input
-      type="range"
-      id="zoomSlider"
-      min="0.5"
-      max="3"
-      step="0.1"
-      value="1"
-    />
-
-    <div class="crop-actions">
-      <button onclick="closeCropper()">
-        Cancel
-      </button>
-
-      <button onclick="cropAvatar()">
-        Crop & Save
-      </button>
-    </div>
-
-  </div>
-</div>
+    
     <hr />
     <div class="credit"><span>BennyFix hub</span> | all rights reserved!</div>
     <script type="module" src="script.js"></script>

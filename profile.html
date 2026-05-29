@@ -2,30 +2,241 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>User Profile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doctor Profile</title>
 
-  <link rel="stylesheet" href="profile.css">
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background: #f2f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .phone {
+      width: 360px;
+      background: #fff;
+      border-radius: 35px;
+      overflow: hidden;
+      border: 6px solid #111;
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+    .top-section {
+      background: #0b3b8f;
+      height: 180px;
+      border-bottom-left-radius: 30px;
+      border-bottom-right-radius: 30px;
+      position: relative;
+      color: white;
+      text-align: center;
+      padding-top: 30px;
+    }
+
+    .top-section h2 {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .profile-image {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 5px solid #fff;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: -60px;
+      background: #fff;
+    }
+
+    .profile-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .content {
+      padding: 80px 20px 20px;
+      text-align: center;
+    }
+
+    .doctor-name {
+      font-size: 26px;
+      font-weight: bold;
+      color: #222;
+    }
+
+    .specialty {
+      color: #777;
+      margin-top: 5px;
+      font-size: 16px;
+    }
+
+    .rating {
+      margin-top: 10px;
+      color: #f4b400;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+      gap: 10px;
+    }
+
+    .card {
+      flex: 1;
+      background: #fff;
+      padding: 18px 10px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .card h3 {
+      font-size: 20px;
+      color: #0b3b8f;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 30px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 12px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .tabs span {
+      color: #666;
+      cursor: pointer;
+    }
+
+    .tabs .active {
+      color: #0b3b8f;
+      border-bottom: 3px solid #0b3b8f;
+      padding-bottom: 8px;
+    }
+
+    .about {
+      text-align: left;
+      margin-top: 20px;
+    }
+
+    .about h4 {
+      margin-bottom: 10px;
+      color: #222;
+      font-size: 18px;
+    }
+
+    .about p {
+      color: #666;
+      line-height: 1.7;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .working-time {
+      margin-bottom: 20px;
+    }
+
+    .working-time strong,
+    .conditions strong {
+      display: block;
+      margin-bottom: 8px;
+      color: #222;
+    }
+
+    .conditions-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .condition-item {
+      background: #f0f4ff;
+      color: #0b3b8f;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+
+    .bottom-btn {
+      margin-top: 30px;
+    }
+
+    .bottom-btn button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 14px;
+      background: #0b3b8f;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .bottom-btn button:hover {
+      background: #082d6d;
+    }
+
+  </style>
 </head>
-
 <body>
 
- <div class="profile-page">
+<!-- PROFILE -->
+<section class="page" id="profilePage">
 
   <!-- COVER -->
-  <div class="cover-photo">
-    <img id="coverImg" src="">
+  <div class="profile-cover">
+    <img
+      id="coverImg"
+      src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1400&auto=format&fit=crop"
+    />
   </div>
 
-  <!-- PROFILE HEADER -->
+  <!-- HEADER -->
   <div class="profile-header">
 
-    <img id="profileAvatar" class="avatar">
+    <div class="avatar-wrap">
+      <img
+        id="profileAvatar"
+        class="avatar"
+        src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=800&auto=format&fit=crop"
+      />
+
+      <input type="file" id="avatarFile" accept="image/*" hidden />
+    </div>
 
     <div class="profile-info">
-      <h2 id="profileName">Loading...</h2>
-      <p id="profileBio"></p>
+      <h2 id="profileName">Benedict Onyilo</h2>
+      <p id="profileBio">
+        Tech enthusiast and BennyFix Hub customer. Managing repairs,
+        warranties, and device support all in one place.
+      </p>
     </div>
 
     <button onclick="openEditProfile()">
@@ -33,61 +244,91 @@
     </button>
 
   </div>
-<div id="editProfileModal" class="modal hidden">
 
-  <div class="modal-box">
-
-    <input id="editName" placeholder="Name">
-
-    <textarea id="editBio"></textarea>
-
-    <input id="editLocation">
-
-    <button onclick="saveProfile()">
-      Save
-    </button>
-
-  </div>
-
-</div>
   <!-- STATS -->
   <div class="profile-stats">
 
-    <div class="stat-box">
-      <h3 id="repairCount">0</h3>
+    <div class="stat">
+      <h3 id="repairCount">12</h3>
       <p>Repairs</p>
     </div>
 
-    <div class="stat-box">
-      <h3 id="completedCount">0</h3>
+    <div class="stat">
+      <h3 id="completedCount">9</h3>
       <p>Completed</p>
     </div>
 
-    <div class="stat-box">
-      <h3 id="claimCount">0</h3>
+    <div class="stat">
+      <h3 id="claimCount">4</h3>
       <p>Claims</p>
     </div>
 
   </div>
 
   <!-- ABOUT -->
-  <div class="profile-card">
+  <div class="card">
+
     <h3>About</h3>
 
-    <p id="profileEmail"></p>
-    <p id="profileLocation"></p>
-    <p id="profileJoined"></p>
+    <p id="profileEmail">
+      <strong>Email:</strong> benedict@bennyfixhub.com
+    </p>
+
+    <p id="profileLocation">
+      <strong>Location:</strong> Lagos, Nigeria
+    </p>
+
+    <p id="profileJoined">
+      <strong>Member Since:</strong> January 2026
+    </p>
+
   </div>
 
-  <!-- TIMELINE -->
-  <div class="profile-card">
-    <h3>Activity</h3>
+  <!-- ACTIVITY -->
+  <div class="card">
 
-    <div id="activityFeed"></div>
+    <h3>Recent Activity</h3>
+
+    <div id="activityFeed">
+
+      <div class="repair-item">
+        <div>
+          <strong>HP Laptop Repair</strong>
+          <p>Screen replacement completed successfully.</p>
+        </div>
+
+        <span class="status approved">
+          Completed
+        </span>
+      </div>
+
+      <div class="repair-item">
+        <div>
+          <strong>iPhone 11 Claim</strong>
+          <p>Battery replacement claim submitted.</p>
+        </div>
+
+        <span class="status pending">
+          Pending
+        </span>
+      </div>
+
+      <div class="repair-item">
+        <div>
+          <strong>Samsung TV Support</strong>
+          <p>Technician assigned to your request.</p>
+        </div>
+
+        <span class="status approved">
+          Active
+        </span>
+      </div>
+
+    </div>
+
   </div>
 
-</div>
+</section>
 
-  <script type="module" src="profile.js"></script>
 </body>
 </html>
