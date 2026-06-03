@@ -1035,7 +1035,7 @@ window.startRepair = async function startRepair() {
       ...data,
       uid: user.uid,
       imageUrl,
-      status: "pending",
+      status: "Pending",
       createdAt: serverTimestamp(),
     };
 
