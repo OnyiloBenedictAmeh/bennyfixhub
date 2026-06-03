@@ -55,7 +55,7 @@ let completedCount = 0;
         <div class="repair-top">
 
           <div>
-            <h3>${r.device}</h3>
+            <h3>${r.deviceName || r.device || "Unknown device"}</h3>
             <p>${r.issue}</p>
           </div>
 

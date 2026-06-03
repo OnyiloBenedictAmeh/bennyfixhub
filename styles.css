@@ -115,11 +115,7 @@ a {
 
   z-index: 9999;
 }
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+
 .auth-box {
   width: 360px;
   background: rgba(255,255,255,0.95);
@@ -1108,6 +1104,7 @@ header {
   margin-bottom: 15px;
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
 .form-group label {
@@ -1117,12 +1114,14 @@ header {
 }
 
 .form-group input {
-  padding: 12px;
+  padding: 12px 14px;
   border: 1px solid #ddd;
   border-radius: 8px;
   outline: none;
 }
-
+.form-group button {
+  margin-top: 6px;
+}
 .primary-btn {
   width: 100%;
   padding: 12px;

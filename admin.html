@@ -58,7 +58,12 @@
     <span>Users</span>
   </button>
 
-  <!-- <hr /> -->
+  <button onclick="toggleNotifications()" id="sidebar-notifications">
+    <i class="bx bx-bell"></i>
+    <span>Notifications</span>
+    <span id="notifBadge" class="badge">0</span>
+  </button>
+  <hr />
 
   <button onclick="toggleDarkMode()">
     <i class='bx bx-moon'></i>
@@ -88,7 +93,7 @@
 
   <button onclick="toggleNotifications()" id="tab-bell">
     <i class="bx bx-bell"></i>
-    <span>showToasts</span>
+    <span>Notifications</span>
     <span id="notifBadge" class="badge">0</span>
   </button>
 </div>
@@ -139,10 +144,6 @@
 <!-- USERS SECTION -->
 <div id="users" class="section" style="display:none;">
   <div id="usersContainer"></div>
-
-  <button onclick="openTechForm()" class="add-btn">
-    ➕ Add Technician
-  </button>
 </div>
 
 <div id="techForm" class="modal hidden">

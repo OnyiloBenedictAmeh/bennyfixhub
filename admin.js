@@ -10,11 +10,11 @@ let statusChart = null;
 let newCount = 0;
 let technicians = [];
 const sounds = {
-  info: new Audio("/sounds/notify-info.mp3"),
-  success: new Audio("/sounds/notify-success.mp3"),
-  warning: new Audio("/sounds/notify-warning.mp3"),
-  error: new Audio("/sounds/notify-error.mp3"),
-  repair: new Audio("/sounds/notify-repair.mp3"),
+  info: new Audio("sounds/notify-info.mp3"),
+  success: new Audio("sounds/notify-success.mp3"),
+  warning: new Audio("sounds/notify-warning.mp3"),
+  error: new Audio("sounds/notify-error.mp3"),
+  repair: new Audio("sounds/notify-repair.mp3"),
 };
 
 // set volume for all
@@ -83,7 +83,8 @@ import {
   collection,
   onSnapshot,
   updateDoc,
-  query
+  query,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 /* =========================
@@ -201,23 +202,28 @@ window.adminLogin = async function () {
 function playSound(type = "info") {
   const sound = sounds[type];
 
-  if (!sound) return;
+  if (!sound) {
+    console.warn("Sound type not found:", type);
+    return;
+  }
 
-  // reset so it can replay quickly
   sound.currentTime = 0;
 
-  sound.play().catch(() => {});
+  sound.play().catch((err) => {
+    console.warn("Sound could not play:", type, err.message);
+  });
 }
 function listenToRepairs() {
   const container = document.getElementById("repairsContainer");
 
-  onSnapshot(collection(db, "repairs"), (snapshot) => {
+onSnapshot(collection(db, "repairs"), (snapshot) => {
+  const hasNewRepair = snapshot
+    .docChanges()
+    .some((change) => change.type === "added");
 
-  if (!firstLoad) {
-    showToast("🔔 New repair update");
-
-    // 🔊 play sound
-    playSound("repair").catch(() => {});
+  if (!firstLoad && hasNewRepair) {
+    showToast("New repair request");
+    playSound("repair");
   }
 
   firstLoad = false;
@@ -232,19 +238,23 @@ function listenToRepairs() {
     container.innerHTML = "";
 
     snapshot.forEach((docSnap) => {
-      const r = docSnap.data();
-      total++;
+  const r = docSnap.data();
+  total++;
 
-      if (r.status === "Pending") pending++;
-      else if (r.status === "Diagnosing" || r.status === "Fixing") progress++;
-      else if (r.status === "Completed") completed++;
+  const status = r.status || "Pending";
+  const statusKey = status.toLowerCase();
+  const deviceTitle = r.deviceName || r.device || "Unknown device";
 
-      const card = document.createElement("div");
-      card.className = "repair-card";
+  if (statusKey === "pending") pending++;
+  else if (statusKey === "diagnosing" || statusKey === "fixing") progress++;
+  else if (statusKey === "completed") completed++;
 
-      card.innerHTML = `
+  const card = document.createElement("div");
+  card.className = "repair-card";
+
+  card.innerHTML = `
   <div class="repair-left">
-    <h3>${r.device}</h3>
+    <h3>${r.deviceName || r.deviceTitle || "Unknown device"}</h3>
     <p class="issue">${r.issue}</p>
     <small class="email">${r.email || ""}</small>
 
@@ -252,15 +262,14 @@ function listenToRepairs() {
   </div>
 
   <div class="repair-right">
-    <span class="status-badge ${r.status.toLowerCase()}">${r.status}</span>
-
+<span class="status-badge ${statusKey}">${status}</span>
 <select 
   onchange="updateRepair('${docSnap.id}', this.value)"
-  ${r.status === "Completed" ? "disabled" : ""}
->      <option ${r.status === "Pending" ? "selected" : ""}>Pending</option>
-      <option ${r.status === "Diagnosing" ? "selected" : ""}>Diagnosing</option>
-      <option ${r.status === "Fixing" ? "selected" : ""}>Fixing</option>
-      <option ${r.status === "Completed" ? "selected" : ""}>Completed</option>
+  ${status === "Completed" ? "disabled" : ""}
+>      <option ${status === "Pending" ? "selected" : ""}>Pending</option>
+      <option ${status === "Diagnosing" ? "selected" : ""}>Diagnosing</option>
+      <option ${status === "Fixing" ? "selected" : ""}>Fixing</option>
+      <option ${status === "Completed" ? "selected" : ""}>Completed</option>
       
     </select>
 
@@ -296,8 +305,9 @@ function listenToNotifications() {
 
   const q = query(collection(db, "notifications"));
 
-  onSnapshot(q, (snapshot) => {
-
+  onSnapshot(
+  q,
+  (snapshot) => {
     let unread = 0;
 
     snapshot.forEach((docSnap) => {
@@ -313,7 +323,12 @@ function listenToNotifications() {
       badge.style.display = unread > 0 ? "flex" : "none";
     }
 
-  });
+    },
+  (err) => {
+    console.error("Notifications listener failed:", err);
+    showToast("Could not load notifications");
+  }
+);
 }
 window.toggleJourney = async function (id) {
   const box = document.getElementById(`journey-${id}`);
@@ -347,11 +362,13 @@ window.toggleNotifications = async function () {
 
   const snapshot = await getDocs(q);
 
-  snapshot.forEach(async (docSnap) => {
-    await updateDoc(doc(db, "notifications", docSnap.id), {
-      read: true
-    });
-  });
+  await Promise.all(
+  snapshot.docs.map((docSnap) =>
+    updateDoc(doc(db, "notifications", docSnap.id), {
+      read: true,
+    })
+  )
+);
 
   const badge = document.getElementById("notifBadge");
 
@@ -447,8 +464,8 @@ window.updateRepair = async function (id, status) {
 
   // ✅ EXTRA when completed
   if (status === "Completed") {
-  updateData.completedAt = new Date();
-  updateData.completedBy = auth.currentUser?.email || "Admin";
+updateData.completedAt = serverTimestamp();
+updateData.completedBy = auth.currentUser?.email || "Admin";
 
   // 🔔 notify user
   notifyUser(data);
@@ -469,7 +486,7 @@ async function notifyUser(repairData) {
     await addDoc(collection(db, "notifications"), {
       uid: repairData.uid,
       message: "✅ Your repair has been completed",
-      createdAt: new Date(),
+createdAt: serverTimestamp(),
       read: false
     });
   } catch (err) {
@@ -500,33 +517,38 @@ function loadUsers() {
 
       const div = document.createElement("div");
       div.className = "user-card";
+div.innerHTML = `
+  <div class="user-info">
+    <img src="${avatar}" class="avatar" />
+    <div>
+      <p>${name}</p>
+      <small>${email}</small>
+    </div>
+  </div>
 
-      div.innerHTML = `
-        <div class="user-info">
-          <img src="${avatar}" class="avatar" />
-          <div>
-            <p>${name}</p>
-            <small>${email}</small>
-            <button onclick="location.href='profile.html?uid=${docSnap.id}'">
+  <span class="role">${role}</span>
+
+  <button onclick="location.href='profile.html?uid=${docSnap.id}'">
     View Profile
   </button>
-          </div>
-        </div>
 
-        <span class="role">${role}</span>
-
-        ${
-          role === "user"
-            ? `<button onclick="makeTechnician('${docSnap.id}')">
-                Make Technician
-              </button>`
-            : role === "technician"
-            ? `<button onclick="makeAdmin('${docSnap.id}')">
-                Make Admin
-              </button>`
-            : `<span class="admin-badge">Admin</span>`
-        }
-      `;
+  ${
+  role === "user"
+    ? `<button onclick="makeTechnician('${docSnap.id}')">
+        Make Technician
+      </button>`
+    : role === "technician"
+    ? `
+      <button onclick="makeAdmin('${docSnap.id}')">
+        Make Admin
+      </button>
+      <button class="danger-btn" onclick="unemployTechnician('${docSnap.id}')">
+        Unemploy
+      </button>
+    `
+    : `<span class="admin-badge">Admin</span>`
+}
+`;
 
       container.appendChild(div);
     });
@@ -571,6 +593,23 @@ window.openAssignModal = function (repairId) {
 
   document.body.appendChild(modal);
 };
+function loadTechnicians() {
+  onSnapshot(collection(db, "users"), (snapshot) => {
+    technicians = [];
+
+    snapshot.forEach((docSnap) => {
+      const u = docSnap.data();
+
+      if (u.role === "technician") {
+        technicians.push({
+          id: docSnap.id,
+          name: u.name || u.email || "Technician",
+          email: u.email || "",
+        });
+      }
+    });
+  });
+}
 window.assignTech = async function (repairId) {
   const select = document.getElementById("techSelect");
 
@@ -596,13 +635,6 @@ window.assignTech = async function (repairId) {
     showToast("Assignment failed");
   }
 };
-document.addEventListener("keydown", (e) => {
-  const modal = document.getElementById("techForm");
-
-  if (e.key === "Escape" && !modal.classList.contains("hidden")) {
-    closeTechForm();
-  }
-});
 /* =========================
    PROMOTE USER
 ========================= */
@@ -620,7 +652,20 @@ window.makeAdmin = async function (id) {
 
   showToast("User promoted to admin");
 };
+window.unemployTechnician = async function (id) {
+  if (!confirm("Remove this technician role?")) return;
 
+  try {
+    await updateDoc(doc(db, "users", id), {
+      role: "user",
+    });
+
+    showToast("Technician changed back to user");
+  } catch (err) {
+    console.error(err);
+    showToast("Could not update technician");
+  }
+};
 /* =========================
    TOAST SYSTEM
 ========================= */
@@ -655,7 +700,17 @@ window.showSection = function (section) {
   document.querySelectorAll(".bottom-nav button").forEach((btn) => {
     btn.classList.remove("active");
   });
+document.querySelectorAll(".sidebar button").forEach((btn) => {
+  btn.classList.remove("active");
+});
 
+const sidebarBtn = document.querySelector(
+  `.sidebar button[onclick="showSection('${section}')"]`
+);
+
+if (sidebarBtn) {
+  sidebarBtn.classList.add("active");
+}
   const activeBtn = document.getElementById("tab-" + section);
   if (activeBtn) {
     activeBtn.classList.add("active");
@@ -676,6 +731,7 @@ function loadAdminDashboard() {
   listenToNotifications();
   listenToRepairs();
   loadUsers();
+  loadTechnicians();
   showSection("overview");
 }
 window.logoutAdmin = async function () {
@@ -729,3 +785,22 @@ window.fixUsers = async function () {
 
   console.log("✅ Users fixed");
 };
+document.addEventListener("keydown", function (e) {
+  if (e.key === "Enter") {
+    const adminLoginBox = document.getElementById("adminLogin");
+
+    if (adminLoginBox && adminLoginBox.style.display !== "none") {
+      adminLogin();
+    }
+  }
+
+  if (e.key === "Escape") {
+    const techForm = document.getElementById("techForm");
+
+    if (techForm && !techForm.classList.contains("hidden")) {
+      closeTechForm();
+    }
+
+    document.querySelector(".modal")?.remove();
+  }
+});

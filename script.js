@@ -583,11 +583,11 @@ window.toggleNotif = function () {
 //login  switching settings
 window.showRegister = function () {
   document.getElementById("loginForm").style.display = "none";
-  document.getElementById("registerForm").style.display = "block";
+  document.getElementById("registerForm").style.display = "flex";
 };
 
 window.showLogin = function () {
-  document.getElementById("loginForm").style.display = "block";
+  document.getElementById("loginForm").style.display = "flex";
   document.getElementById("registerForm").style.display = "none";
 };
 window.signup = async function () {
@@ -801,7 +801,7 @@ function loadUserRepairs() {
         <div class="repair-top">
 
           <div>
-            <h3>${r.device}</h3>
+            <h3>${r.deviceName || r.device || "Unknown device"}</h3>
             <p>${r.issue}</p>
           </div>
 
@@ -1274,3 +1274,85 @@ async function loadProfileStats() {
   if (repairCountEl) repairCountEl.innerText = total;
   if (completedCountEl) completedCountEl.innerText = completed;
 }
+document.addEventListener("keydown", function (e) {
+  const activeTag = document.activeElement?.tagName?.toLowerCase();
+
+  // Ctrl/Cmd + K opens search
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+    e.preventDefault();
+
+    if (searchModal) {
+      searchModal.style.display = "block";
+      setTimeout(() => searchInput?.focus(), 50);
+    }
+
+    return;
+  }
+
+  // Escape closes open UI
+  if (e.key === "Escape") {
+    if (searchModal) searchModal.style.display = "none";
+    if (mega) mega.classList.remove("show");
+    if (navWrapper) navWrapper.classList.remove("open");
+
+    const repairOverlay = document.getElementById("repairOverlay");
+    if (repairOverlay) repairOverlay.classList.remove("show");
+
+    const accountPanel = document.getElementById("accountPanel");
+    const accountOverlay = document.getElementById("accountOverlay");
+
+    if (accountPanel) accountPanel.classList.remove("open");
+    if (accountOverlay) accountOverlay.classList.remove("show");
+
+    return;
+  }
+
+  // Enter submits auth forms
+  if (e.key === "Enter") {
+    const authModal = document.getElementById("authModal");
+    const loginForm = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
+
+    const authIsOpen = authModal && authModal.style.display !== "none";
+
+    if (authIsOpen) {
+      e.preventDefault();
+
+      if (registerForm && registerForm.style.display !== "none") {
+        signup();
+      } else if (loginForm && loginForm.style.display !== "none") {
+        login();
+      }
+
+      return;
+    }
+
+    // Enter controls repair modal steps
+    const repairOverlay = document.getElementById("repairOverlay");
+    const repairIsOpen = repairOverlay?.classList.contains("show");
+
+    if (repairIsOpen && activeTag !== "textarea") {
+      e.preventDefault();
+
+      if (currentStep >= 1 && currentStep < 6) {
+        nextStep(currentStep);
+      } else {
+        startRepair();
+      }
+    }
+  }
+
+  // Arrow navigation for repair modal
+  const repairOverlay = document.getElementById("repairOverlay");
+  const repairIsOpen = repairOverlay?.classList.contains("show");
+
+  if (repairIsOpen) {
+    if (e.key === "ArrowRight" && currentStep < 6) {
+      nextStep(currentStep);
+    }
+
+    if (e.key === "ArrowLeft" && currentStep > 1) {
+      prevStep(currentStep);
+    }
+  }
+});
