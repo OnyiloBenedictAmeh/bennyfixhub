@@ -58,7 +58,17 @@ function closeMega() {
 
   mega.classList.remove("show");
 }
+window.addEventListener("scroll", () => {
+  clearTimeout(scrollTimeout);
 
+  scrollTimeout = setTimeout(() => {
+    if (searchModal) {
+      searchModal.style.display = "none";
+    }
+
+    if (mega) mega.classList.remove("show");
+  }, 100);
+});
 // HOVER CONTROL
 document.addEventListener("DOMContentLoaded", () => {
   const mega = document.getElementById("mega");
@@ -279,12 +289,12 @@ window.logout = async function () {
   document.getElementById("password").value = "";
 
   // reset UI states
-  document.addEventListener("DOMContentLoaded", ()=>{
-  const dashboard = document.querySelector(".dashboard");
-  const navWrapper = document.getElementById("navWrapper");
-  const mega = document.getElementById("mega");
-  const searchModal = document.getElementById("searchModal");
-});
+  document.addEventListener("DOMContentLoaded", () => {
+    const dashboard = document.querySelector(".dashboard");
+    const navWrapper = document.getElementById("navWrapper");
+    const mega = document.getElementById("mega");
+    const searchModal = document.getElementById("searchModal");
+  });
   if (dashboard) dashboard.style.display = "none";
   if (navWrapper) navWrapper.classList.remove("open");
   if (mega) mega.classList.remove("show");
@@ -327,7 +337,7 @@ window.closeAccountPanel = function () {
   document.getElementById("accountOverlay").classList.remove("show");
 };
 onAuthStateChanged(auth, async (user) => {
-  console.log("AUTH STATE:", user);
+  // console.log("AUTH STATE:", user);
   currentUser = user;
 
   const authModal = document.getElementById("authModal");
@@ -369,7 +379,9 @@ onAuthStateChanged(auth, async (user) => {
   listenToNotifications();
   loadProfile();
   loadHeaderUser();
-  loadProfileStats();
+  if (document.getElementById("repairCount")) {
+    loadProfileStats();
+  }
 
   const heading = document.querySelector(".main h1");
   if (heading) heading.innerText = "Welcome, " + user.email;
@@ -425,13 +437,32 @@ function startAutoCheck() {
 window.resendVerification = async function () {
   const user = auth.currentUser;
 
-  if (!user) return;
+  if (!user) {
+    return showToast("Please login again first", "error");
+  }
 
   try {
+    await user.reload();
+
+    if (user.emailVerified) {
+      document.getElementById("verifyScreen").style.display = "none";
+      showToast("Email already verified", "success");
+      return;
+    }
+
     await sendEmailVerification(user);
-    showToast("Verification email resent", "success");
+
+    showToast("Verification email resent!", "success");
+
+    startResendTimer();
   } catch (err) {
-    showToast(err.message, "error");
+    console.error("Verification resend error:", err.code, err.message);
+
+    if (err.code === "auth/too-many-requests") {
+      showToast("Too many attempts. Please wait before trying again.", "error");
+    } else {
+      showToast(err.message, "error");
+    }
   }
 };
 function startResendTimer() {
@@ -465,6 +496,7 @@ window.rateRepair = async function (id) {
   try {
     await updateDoc(doc(db, "repairs", id), {
       rating: Number(rating),
+      ratedAt: serverTimestamp(),
     });
 
     showToast("Thanks for your feedback!");
@@ -697,15 +729,13 @@ window.openAccountPanel = function () {
 window.closeAccountPanel = function () {
   document.getElementById("accountPanel").classList.remove("open");
 };
-function showToast(message, type = "info") {
+window.showToast = function showToast(message, type = "info") {
   const container = document.getElementById("toastContainer");
 
   if (!container) return;
 
   const toast = document.createElement("div");
-
   toast.className = `toast ${type}`;
-
   toast.innerText = message;
 
   container.appendChild(toast);
@@ -713,7 +743,7 @@ function showToast(message, type = "info") {
   setTimeout(() => {
     toast.remove();
   }, 3000);
-}
+};
 window.toggleRepairForm = function () {
   const form = document.getElementById("repairForm");
   if (!form) return;
@@ -866,7 +896,7 @@ window.createTechnician = async function () {
   if (!email.includes("@")) return showToast("Enter valid email");
 
   try {
-    // const id = "tech_" + Date.now();
+    const id = "tech_" + Date.now();
 
     await setDoc(doc(db, "users", id), {
       name,
@@ -985,43 +1015,56 @@ function collectFormData() {
     serviceType: document.getElementById("serviceType")?.value || "",
   };
 }
-async function startRepair() {
+window.startRepair = async function startRepair() {
   try {
-    showToast("Submitting repair request... ⏳");
+    const user = auth.currentUser;
 
-    const file = document.getElementById("deviceImage")?.files[0];
-
-    let imageUrl = null;
-    if (file) {
-      imageUrl = await uploadImage(file);
+    if (!user) {
+      showToast("Please login first");
+      return;
     }
 
+    showToast("Submitting repair request...");
+
+    let imageUrl = null;
     const data = collectFormData();
 
-    const requestId = crypto.randomUUID(); // 🔥 FIX
+    const requestId = crypto.randomUUID();
 
     const finalData = {
       ...data,
+      uid: user.uid,
       imageUrl,
       status: "pending",
       createdAt: serverTimestamp(),
     };
 
-    await setDoc(doc(db, "repair_requests", requestId), finalData);
+    await setDoc(doc(db, "repairs", requestId), finalData);
 
-    await deleteDoc(doc(db, "repair_drafts", draftId));
+    const draftId = localStorage.getItem("repairDraftId");
 
-    localStorage.removeItem("repairDraftId");
+    if (draftId) {
+      try {
+        await deleteDoc(doc(db, "repair_drafts", draftId));
+      } catch (draftErr) {
+        console.warn("Could not delete draft:", draftErr);
+      }
 
-    showToast("Repair submitted successfully 🚀");
+      localStorage.removeItem("repairDraftId");
+    }
 
-    document.getElementById("repairForm").style.display = "none";
-    document.getElementById("repairOverlay").classList.remove("show");
+    showToast("Repair submitted successfully");
+
+    const repairForm = document.getElementById("repairForm");
+    const repairOverlay = document.getElementById("repairOverlay");
+
+    if (repairForm) repairForm.style.display = "none";
+    if (repairOverlay) repairOverlay.classList.remove("show");
   } catch (err) {
     console.error(err);
-    showToast("Submission failed ❌");
+    showToast("Submission failed");
   }
-}
+};
 window.addEventListener("DOMContentLoaded", () => {
   const draft = localStorage.getItem("repairDraft");
 
@@ -1043,9 +1086,20 @@ document.querySelectorAll("input, select").forEach((el) => {
 });
 function validateStep(step) {
   const stepEl = document.getElementById("step" + step);
-  const inputs = stepEl.querySelectorAll("input, select");
+  if (!stepEl) return false;
+
+  const inputs = stepEl.querySelectorAll("input, select, textarea");
 
   for (let input of inputs) {
+    // Image upload is disabled for now
+    if (input.type === "file" || input.id === "deviceImage") {
+      continue;
+    }
+
+    if (input.disabled) {
+      continue;
+    }
+
     if (input.value.trim() === "") {
       input.style.border = "2px solid red";
       return false;
@@ -1053,7 +1107,12 @@ function validateStep(step) {
       input.style.border = "1px solid #ddd";
     }
   }
+
   return true;
+}
+const deviceImageInput = document.getElementById("deviceImage");
+if (deviceImageInput) {
+  deviceImageInput.disabled = true;
 }
 function buildReview() {
   const data = collectFormData();
@@ -1092,10 +1151,7 @@ if (deviceImage) {
 async function uploadImage(file) {
   if (!file || !storage) return null;
 
-  const imageRef = ref(
-    storage,
-    `repair_images/${Date.now()}_${file.name}`
-  );
+  const imageRef = ref(storage, `repair_images/${Date.now()}_${file.name}`);
 
   await uploadBytes(imageRef, file);
 
@@ -1105,7 +1161,6 @@ window.switchTab = function (id) {
   console.log("switchTab running:", id);
 };
 if (uploadBox && fileInput) {
-
   // CLICK to open file picker
   uploadBox.addEventListener("click", () => {
     fileInput.click();
@@ -1134,7 +1189,6 @@ if (uploadBox && fileInput) {
     const file = e.target.files[0];
     handleFile(file);
   });
-
 }
 
 // HANDLE FILE
@@ -1150,11 +1204,9 @@ function handleFile(file) {
   reader.onload = (e) => {
     if (previewImg) previewImg.src = e.target.result;
 
-    if (uploadContent)
-      uploadContent.style.display = "none";
+    if (uploadContent) uploadContent.style.display = "none";
 
-    if (previewBox)
-      previewBox.style.display = "flex";
+    if (previewBox) previewBox.style.display = "flex";
   };
 
   reader.readAsDataURL(file);
@@ -1168,11 +1220,9 @@ if (removeBtn) {
     if (fileInput) fileInput.value = "";
     if (previewImg) previewImg.src = "";
 
-    if (previewBox)
-      previewBox.style.display = "none";
+    if (previewBox) previewBox.style.display = "none";
 
-    if (uploadContent)
-      uploadContent.style.display = "block";
+    if (uploadContent) uploadContent.style.display = "block";
   });
 }
 window.toggleRepairForm = function () {
@@ -1213,9 +1263,14 @@ async function loadProfileStats() {
 
   snap.forEach((doc) => {
     total++;
-    if (doc.data().status === "completed") completed++;
+    if ((doc.data().status || "").toLowerCase() === "completed") {
+      completed++;
+    }
   });
 
-  document.getElementById("repairCount").innerText = total;
-  document.getElementById("completedCount").innerText = completed;
+  const repairCountEl = document.getElementById("repairCount");
+  const completedCountEl = document.getElementById("completedCount");
+
+  if (repairCountEl) repairCountEl.innerText = total;
+  if (completedCountEl) completedCountEl.innerText = completed;
 }

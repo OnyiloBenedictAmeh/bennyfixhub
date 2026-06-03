@@ -6,12 +6,12 @@ body {
 .verify-screen {
   position: fixed;
   inset: 0;
-  background: #0f172a;
+  background: rgba(15, 23, 42, 0.95);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  z-index: 9999;
+  z-index: 10000;
 }
 
 .verify-box {
@@ -20,6 +20,8 @@ body {
   border-radius: 12px;
   text-align: center;
   width: 320px;
+  max-width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
 }
 
 .verify-box h2 {
@@ -765,6 +767,7 @@ transition: background-image 0.8s ease-in-out;
   font-weight: 500;
 }
 .upload-box {
+  display:none;
   border: 2px dashed #d1d5db;
   border-radius: 14px;
   padding: 20px;

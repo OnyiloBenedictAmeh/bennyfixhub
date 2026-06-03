@@ -91,16 +91,18 @@
         </div>
       </div>
     </div>
-    <div id="verifyScreen" style="display: none">
-      <h2>Verify your email</h2>
+    <div id="verifyScreen" class="verify-screen" style="display: none">
+  <div class="verify-box">
+    <h2>Verify your email</h2>
 
-      <p>We sent a verification link to:</p>
-      <h3 id="verifyEmail"></h3>
+    <p>We sent a verification link to:</p>
+    <h3 id="verifyEmail"></h3>
 
-      <button onclick="resendVerification()">Resend Email</button>
+    <button id="resendBtn" onclick="resendVerification()">Resend Email</button>
 
-      <p id="resendTimer"></p>
-    </div>
+    <p id="resendTimer" class="hint"></p>
+  </div>
+</div>
     <!-- SEARCH -->
     <div class="search-modal" id="searchModal">
       <div
@@ -227,14 +229,15 @@
 
               <select id="category">
                 <option value="">Select device type</option>
-                <option>Phone</option>
                 <option>Laptop</option>
                 <option>Desktop</option>
+                <option>Ear Buds</option>
+                <option>Home Appliance</option>
+                <option>Phone</option>
                 <option>Tablet</option>
                 <option>TV</option>
                 <option>Printer</option>
                 <option>Game Console</option>
-                <option>Home Appliance</option>
               </select>
 
               <button onclick="nextStep(1)">Next</button>
