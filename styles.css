@@ -763,7 +763,7 @@ transition: background-image 0.8s ease-in-out;
   font-weight: 500;
 }
 .upload-box {
-  display:none;
+  display:block;
   border: 2px dashed #d1d5db;
   border-radius: 14px;
   padding: 20px;

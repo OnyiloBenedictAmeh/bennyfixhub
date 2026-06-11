@@ -14,6 +14,7 @@ const searchInput = document.getElementById("searchInput");
 const navWrapper = document.getElementById("navWrapper");
 const authModal = document.getElementById("authModal");
 const dashboard = document.querySelector(".dashboard");
+const REPAIR_API_URL = "https://bennyfix-backend-v.vercel.app/api/create-repair";
 let currentUser = null;
 
 // =========================
@@ -125,6 +126,7 @@ window.addEventListener("resize", () => {
 // SEARCH FUNCTION
 // =========================
 function toggleSearch(e) {
+  if (!searchModal || !searchInput) return;
   e.stopPropagation();
 
   const isOpen = searchModal.style.display === "block";
@@ -164,7 +166,7 @@ window.addEventListener("scroll", () => {
         searchModal.style.display = "none";
       }
     }
-    mega.classList.remove("show");
+    if (mega) mega.classList.remove("show");
   }, 100);
 });
 
@@ -229,6 +231,12 @@ window.doc = doc;
 window.collection = collection;
 window.query = query;
 window.where = where;
+window.onSnapshot = onSnapshot;
+window.updateDoc = updateDoc;
+window.serverTimestamp = serverTimestamp;
+window.ref = ref;
+window.uploadBytes = uploadBytes;
+window.getDownloadURL = getDownloadURL;
 const uploadBox = document.getElementById("uploadBox");
 const fileInput = document.getElementById("deviceImage");
 const uploadContent = document.getElementById("uploadContent");
@@ -375,10 +383,10 @@ onAuthStateChanged(auth, async (user) => {
   if (userMenu) userMenu.style.display = "block";
   if (authModal) authModal.style.display = "none";
   if (dashboard) dashboard.style.display = "grid";
-  loadUserRepairs();
-  listenToNotifications();
-  loadProfile();
-  loadHeaderUser();
+  if (typeof loadUserRepairs === "function") loadUserRepairs();
+  if (typeof listenToNotifications === "function") listenToNotifications();
+  if (typeof window.loadProfile === "function") window.loadProfile();
+  if (typeof loadHeaderUser === "function") loadHeaderUser();
   if (document.getElementById("repairCount")) {
     loadProfileStats();
   }
@@ -411,9 +419,11 @@ window.toggleAccountMenu = function (e) {
 };
 function showVerifyScreen(user) {
   const screen = document.getElementById("verifyScreen");
+  if (!screen) return;
 
   screen.style.display = "flex";
-  document.getElementById("verifyEmail").innerText = user.email;
+  const verifyEmail = document.getElementById("verifyEmail");
+  if (verifyEmail) verifyEmail.innerText = user.email;
 
   startAutoCheck();
 }
@@ -744,6 +754,49 @@ window.showToast = function showToast(message, type = "info") {
     toast.remove();
   }, 3000);
 };
+
+function friendlyError(err) {
+  if (err?.code === "permission-denied") {
+    return "You do not have permission to do that";
+  }
+
+  if (err?.code === "unavailable") {
+    return "Network problem. Please try again";
+  }
+
+  if (err?.code?.startsWith("auth/")) {
+    return err.message;
+  }
+
+  return "Something went wrong. Please try again";
+}
+
+function setFieldError(input, message) {
+  input.style.border = "2px solid #ef4444";
+
+  let error = input.parentElement?.querySelector(
+    `.field-error[data-for="${input.id}"]`,
+  );
+
+  if (!error) {
+    error = document.createElement("small");
+    error.className = "field-error";
+    error.dataset.for = input.id;
+    input.insertAdjacentElement("afterend", error);
+  }
+
+  error.innerText = message;
+}
+
+function clearFieldError(input) {
+  input.style.border = "1px solid #ddd";
+
+  const error = input.parentElement?.querySelector(
+    `.field-error[data-for="${input.id}"]`,
+  );
+
+  if (error) error.remove();
+}
 window.toggleRepairForm = function () {
   const form = document.getElementById("repairForm");
   if (!form) return;
@@ -765,23 +818,31 @@ function loadUserRepairs() {
   );
 
   onSnapshot(q, (snapshot) => {
-    active.innerHTML = "";
-    completed.innerHTML = "";
+    active.innerHTML = `<p class="empty-text">Loading repairs...</p>`;
+    completed.innerHTML = `<p class="empty-text">Loading completed repairs...</p>`;
 
     if (snapshot.empty) {
       active.innerHTML = `
         <p class="empty-text">
-          No repair requests yet
+          No repairs yet
+        </p>
+      `;
+      completed.innerHTML = `
+        <p class="empty-text">
+          No completed repairs yet
         </p>
       `;
       return;
     }
+    active.innerHTML = "";
+    completed.innerHTML = "";
     let activeCount = 0;
     let completedCount = 0;
     snapshot.forEach((docSnap) => {
       const r = docSnap.data();
 
       const status = (r.status || "Pending").toLowerCase();
+      const timeline = r.timeline || [];
 
       const progressMap = {
         pending: 20,
@@ -842,8 +903,8 @@ function loadUserRepairs() {
 >
 
   ${
-    r.journey && r.journey.length
-      ? r.journey
+    timeline.length
+      ? timeline
           .map(
             (t) => `
 
@@ -879,9 +940,19 @@ function loadUserRepairs() {
         active.appendChild(card);
       }
     });
-    document.getElementById("activeCount").innerText = activeCount;
+    if (activeCount === 0) {
+      active.innerHTML = `<p class="empty-text">No active repairs yet</p>`;
+    }
 
-    document.getElementById("completedCount").innerText = completedCount;
+    if (completedCount === 0) {
+      completed.innerHTML = `<p class="empty-text">No completed repairs yet</p>`;
+    }
+
+    const activeCountEl = document.getElementById("activeCount");
+    const completedCountEl = document.getElementById("completedCount");
+
+    if (activeCountEl) activeCountEl.innerText = activeCount;
+    if (completedCountEl) completedCountEl.innerText = completedCount;
   });
 }
 //add technician code
@@ -942,18 +1013,20 @@ window.toggleJourney = function (id) {
   const ref = doc(db, "repairs", id);
   getDoc(ref).then((snap) => {
     const data = snap.data();
-    const journey = data.journey || [];
+    const timeline = data.timeline || [];
 
-    box.innerHTML = journey
-      .map(
-        (t) => `
+    box.innerHTML = timeline.length
+      ? timeline
+          .map(
+            (t) => `
       <div class="journey-step">
         <strong>${t.stage}</strong>
         <small>${t.time}</small>
       </div>
     `,
-      )
-      .join("");
+          )
+          .join("")
+      : `<p class="empty-journey">No updates yet</p>`;
 
     box.classList.toggle("hidden");
   });
@@ -983,9 +1056,9 @@ window.showStep = function (step) {
   el.classList.add("active");
 
   // 🔥 RESET IMAGE WHEN LEAVING STEP 1
-  if (step !== 1) {
-    resetImagePreview();
-  }
+  // if (step !== 1) {
+  //   resetImagePreview();
+  // }
 
   if (step === 7) buildReview();
 
@@ -1016,6 +1089,10 @@ function collectFormData() {
   };
 }
 window.startRepair = async function startRepair() {
+  const submitButtons = document.querySelectorAll(
+    'button[onclick="startRepair()"]',
+  );
+
   try {
     const user = auth.currentUser;
 
@@ -1024,45 +1101,53 @@ window.startRepair = async function startRepair() {
       return;
     }
 
+    submitButtons.forEach((btn) => {
+      btn.disabled = true;
+      btn.dataset.originalText = btn.innerText;
+      btn.innerText = "Submitting...";
+    });
+
     showToast("Submitting repair request...");
 
-    let imageUrl = null;
     const data = collectFormData();
+    const idToken = await user.getIdToken();
+    const imageFile = document.getElementById("deviceImage")?.files?.[0];
 
-    const requestId = crypto.randomUUID();
+    const formData = new FormData();
 
-    const finalData = {
-      ...data,
-      uid: user.uid,
-      imageUrl,
-      status: "Pending",
-      createdAt: serverTimestamp(),
-    };
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
 
-    await setDoc(doc(db, "repairs", requestId), finalData);
-
-    const draftId = localStorage.getItem("repairDraftId");
-
-    if (draftId) {
-      try {
-        await deleteDoc(doc(db, "repair_drafts", draftId));
-      } catch (draftErr) {
-        console.warn("Could not delete draft:", draftErr);
-      }
-
-      localStorage.removeItem("repairDraftId");
+    if (imageFile) {
+      formData.append("deviceImage", imageFile);
     }
 
-    showToast("Repair submitted successfully");
+    const response = await fetch(REPAIR_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: formData,
+    });
 
-    const repairForm = document.getElementById("repairForm");
-    const repairOverlay = document.getElementById("repairOverlay");
+    const result = await response.json();
 
-    if (repairForm) repairForm.style.display = "none";
-    if (repairOverlay) repairOverlay.classList.remove("show");
+    if (!response.ok) {
+      throw new Error(result.error || "Could not submit repair");
+    }
+
+    showToast("Repair submitted successfully", "success");
+    closeRepairForm();
+    resetImagePreview();
   } catch (err) {
     console.error(err);
-    showToast("Submission failed");
+    showToast(err.message || friendlyError(err), "error");
+  } finally {
+    submitButtons.forEach((btn) => {
+      btn.disabled = false;
+      btn.innerText = btn.dataset.originalText || "Submit";
+    });
   }
 };
 window.addEventListener("DOMContentLoaded", () => {
@@ -1079,6 +1164,8 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 document.querySelectorAll("input, select").forEach((el) => {
   el.addEventListener("change", () => {
+    clearFieldError(el);
+
     if (typeof saveDraft === "function") {
       saveDraft();
     }
@@ -1101,19 +1188,23 @@ function validateStep(step) {
     }
 
     if (input.value.trim() === "") {
-      input.style.border = "2px solid red";
+      const label =
+        input.placeholder ||
+        input.options?.[0]?.text ||
+        "This field";
+      setFieldError(input, `${label} is required`);
       return false;
     } else {
-      input.style.border = "1px solid #ddd";
+      clearFieldError(input);
     }
   }
 
   return true;
 }
-const deviceImageInput = document.getElementById("deviceImage");
-if (deviceImageInput) {
-  deviceImageInput.disabled = true;
-}
+// const deviceImageInput = document.getElementById("deviceImage");
+// if (deviceImageInput) {
+//   deviceImageInput.disabled = true;
+// }
 function buildReview() {
   const data = collectFormData();
 
@@ -1231,6 +1322,20 @@ window.toggleRepairForm = function () {
 
   overlay.classList.toggle("show");
 };
+
+window.closeRepairForm = function () {
+  const overlay = document.getElementById("repairOverlay");
+  if (overlay) overlay.classList.remove("show");
+};
+
+const repairOverlay = document.getElementById("repairOverlay");
+if (repairOverlay) {
+  repairOverlay.addEventListener("click", (event) => {
+    if (event.target === repairOverlay) {
+      window.closeRepairForm();
+    }
+  });
+}
 async function loadHeaderUser() {
   const user = auth.currentUser;
   if (!user) return;
@@ -1270,9 +1375,11 @@ async function loadProfileStats() {
 
   const repairCountEl = document.getElementById("repairCount");
   const completedCountEl = document.getElementById("completedCount");
+  const profileCompletedCountEl = document.getElementById("profileCompletedCount");
 
   if (repairCountEl) repairCountEl.innerText = total;
   if (completedCountEl) completedCountEl.innerText = completed;
+  if (profileCompletedCountEl) profileCompletedCountEl.innerText = completed;
 }
 document.addEventListener("keydown", function (e) {
   const activeTag = document.activeElement?.tagName?.toLowerCase();

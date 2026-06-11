@@ -75,28 +75,6 @@
     <span>Logout</span>
   </button>
 </div>
-<div class="bottom-nav">
-  <button onclick="showSection('overview')" id="tab-overview">
-    <i class="bx bx-home"></i>
-    <span>Overview</span>
-  </button>
-
-  <button onclick="showSection('repairs')" id="tab-repairs">
-    <i class="bx bx-wrench"></i>
-    <span>Repairs</span>
-  </button>
-
-  <button onclick="showSection('users')" id="tab-users">
-    <i class="bx bx-user"></i>
-    <span>Users</span>
-  </button>
-
-  <button onclick="toggleNotifications()" id="tab-bell">
-    <i class="bx bx-bell"></i>
-    <span>Notifications</span>
-    <span id="notifBadge" class="badge">0</span>
-  </button>
-</div>
   
  <!-- OVERVIEW SECTION -->
 <div id="overview" class="section">
@@ -137,13 +115,17 @@
 </div> -->
 <!-- REPAIRS SECTION -->
 <div id="repairs" class="section" style="display:none;">
-  <div id="repairsContainer" class="repairs-container"></div>
+  <div id="repairsContainer" class="repairs-container">
+    <p class="empty-state">Loading repairs...</p>
+  </div>
 </div>
 
 <!-- USERS SECTION -->
 <!-- USERS SECTION -->
 <div id="users" class="section" style="display:none;">
-  <div id="usersContainer"></div>
+  <div id="usersContainer">
+    <p class="empty-state">Loading users...</p>
+  </div>
 </div>
 
 <div id="techForm" class="modal hidden">
@@ -151,13 +133,13 @@
     <button class="close-btn" onclick="closeTechForm()">×</button>
 
     <h3>Add Technician</h3>
+    <p>Promote an existing user from the Users section instead of creating technician accounts here.</p>
 
     <input id="techName" placeholder="Full Name">
     <input id="techEmail" placeholder="Email">
-    <input id="techPassword" placeholder="Password">
 
     <button class="btn btn-primary" onclick="createTechnician()">
-  Create Technician
+  Find Existing User
 </button>
 
 <button class="btn btn-secondary" onclick="closeTechForm()">

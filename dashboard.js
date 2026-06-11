@@ -1,9 +1,21 @@
 const auth = window.auth;
 const db = window.db;
 const storage = window.storage;
+const doc = window.doc;
+const getDoc = window.getDoc;
+const getDocs = window.getDocs;
+const collection = window.collection;
+const query = window.query;
+const where = window.where;
+const onSnapshot = window.onSnapshot;
+const updateDoc = window.updateDoc;
+const ref = window.ref;
+const uploadBytes = window.uploadBytes;
+const getDownloadURL = window.getDownloadURL;
 window.avatarBlob = null
 function loadUserRepairs() {
 
+  const currentUser = auth?.currentUser;
   if (!currentUser) return;
 
   const active = document.getElementById("activeRepairs");
@@ -18,17 +30,24 @@ function loadUserRepairs() {
 
   onSnapshot(q, (snapshot) => {
 
-    active.innerHTML = "";
-    completed.innerHTML = "";
+    active.innerHTML = `<p class="empty-text">Loading repairs...</p>`;
+    completed.innerHTML = `<p class="empty-text">Loading completed repairs...</p>`;
 
     if (snapshot.empty) {
       active.innerHTML = `
         <p class="empty-text">
-          No repair requests yet
+          No repairs yet
+        </p>
+      `;
+      completed.innerHTML = `
+        <p class="empty-text">
+          No completed repairs yet
         </p>
       `;
       return;
     }
+    active.innerHTML = "";
+    completed.innerHTML = "";
 let activeCount = 0;
 let completedCount = 0;
     snapshot.forEach((docSnap) => {
@@ -36,6 +55,7 @@ let completedCount = 0;
       const r = docSnap.data();
 
       const status = (r.status || "Pending").toLowerCase();
+      const timeline = r.timeline || [];
 
       const progressMap = {
         pending: 20,
@@ -91,9 +111,9 @@ let completedCount = 0;
 
 <button
   class="journey-btn"
-  onclick="togglejourney('${docSnap.id}')"
+  onclick="toggleJourney('${docSnap.id}')"
 >
-  View Repair Journey
+  View Repair Timeline
 </button>
 
 <div
@@ -102,8 +122,8 @@ let completedCount = 0;
 >
 
   ${
-    r.journey && r.journey.length
-    ? r.journey.map(t => `
+    timeline.length
+    ? timeline.map(t => `
 
       <div class="journey-step">
 
@@ -141,6 +161,14 @@ document.getElementById("activeCount").innerText =
 
 document.getElementById("completedCount").innerText =
   completedCount;
+
+if (activeCount === 0) {
+  active.innerHTML = `<p class="empty-text">No active repairs yet</p>`;
+}
+
+if (completedCount === 0) {
+  completed.innerHTML = `<p class="empty-text">No completed repairs yet</p>`;
+}
   });
 
 }
@@ -229,7 +257,7 @@ window.saveProfile = async function () {
 
   const ref = doc(db, "users", user.uid);
 
-  const btn = document.querySelector("saveProfileBtn");
+  const btn = document.querySelector("#saveProfileBtn");
   if (btn) {
     btn.disabled = true;
     btn.innerText = "Saving...";

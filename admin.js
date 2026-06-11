@@ -28,6 +28,25 @@ const loadingTexts = [
   "Syncing repair data...",
   "Preparing dashboard interface...",
 ];
+
+function friendlyError(err) {
+  if (err?.code === "permission-denied") {
+    return "You do not have permission to do that";
+  }
+
+  if (err?.code === "unavailable") {
+    return "Network problem. Please try again";
+  }
+
+  return "Something went wrong. Please try again";
+}
+
+function formatDate(value) {
+  if (!value) return "Not recorded";
+  if (value.toDate) return value.toDate().toLocaleString();
+  if (value.seconds) return new Date(value.seconds * 1000).toLocaleString();
+  return String(value);
+}
 /* =========================
    UI STATES
 ========================= */
@@ -84,6 +103,7 @@ import {
   onSnapshot,
   updateDoc,
   query,
+  where,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -303,16 +323,16 @@ onSnapshot(collection(db, "repairs"), (snapshot) => {
 function listenToNotifications() {
   const badge = document.getElementById("notifBadge");
 
-  const q = query(collection(db, "notifications"));
+  const q = query(
+    collection(db, "notifications"),
+    where("audience", "==", "admin")
+  );
 
-  onSnapshot(
-  q,
-  (snapshot) => {
+  onSnapshot(q, (snapshot) => {
     let unread = 0;
 
     snapshot.forEach((docSnap) => {
       const n = docSnap.data();
-
       if (!n.read) unread++;
     });
 
@@ -322,13 +342,10 @@ function listenToNotifications() {
       badge.innerText = unread;
       badge.style.display = unread > 0 ? "flex" : "none";
     }
-
-    },
-  (err) => {
+  }, (err) => {
     console.error("Notifications listener failed:", err);
     showToast("Could not load notifications");
-  }
-);
+  });
 }
 window.toggleJourney = async function (id) {
   const box = document.getElementById(`journey-${id}`);
@@ -484,11 +501,12 @@ updateData.completedBy = auth.currentUser?.email || "Admin";
 async function notifyUser(repairData) {
   try {
     await addDoc(collection(db, "notifications"), {
-      uid: repairData.uid,
-      message: "✅ Your repair has been completed",
-createdAt: serverTimestamp(),
-      read: false
-    });
+  audience: "user",
+  uid: repairData.uid,
+  message: "Your repair has been completed",
+  createdAt: serverTimestamp(),
+  read: false
+});
   } catch (err) {
     console.error("Notification failed", err);
   }
@@ -804,3 +822,58 @@ document.addEventListener("keydown", function (e) {
     document.querySelector(".modal")?.remove();
   }
 });
+// functions/index.js
+const admin = require("firebase-admin");
+const twilio = require("twilio");
+const { onDocumentCreated } = require("firebase-functions/v2/firestore");
+const { defineSecret } = require("firebase-functions/params");
+
+admin.initializeApp();
+
+const TWILIO_ACCOUNT_SID = defineSecret("TWILIO_ACCOUNT_SID");
+const TWILIO_AUTH_TOKEN = defineSecret("TWILIO_AUTH_TOKEN");
+const TWILIO_FROM_NUMBER = defineSecret("TWILIO_FROM_NUMBER");
+const ADMIN_PHONE_NUMBER = defineSecret("ADMIN_PHONE_NUMBER");
+
+exports.sendAdminSmsOnNewRepair = onDocumentCreated(
+  {
+    document: "repairs/{repairId}",
+    secrets: [
+      TWILIO_ACCOUNT_SID,
+      TWILIO_AUTH_TOKEN,
+      TWILIO_FROM_NUMBER,
+      ADMIN_PHONE_NUMBER,
+    ],
+  },
+  async (event) => {
+    const repair = event.data?.data();
+    if (!repair) return;
+
+    const repairId = event.params.repairId;
+    const device = repair.deviceName || repair.device || "Unknown device";
+    const issue = repair.issue || "No issue provided";
+
+    const message = `New repair request: ${device}. Issue: ${issue}`;
+
+    const client = twilio(
+      TWILIO_ACCOUNT_SID.value(),
+      TWILIO_AUTH_TOKEN.value()
+    );
+
+    await client.messages.create({
+      body: message,
+      from: TWILIO_FROM_NUMBER.value(),
+      to: ADMIN_PHONE_NUMBER.value(),
+    });
+
+    await admin.firestore().collection("notifications").add({
+      audience: "admin",
+      type: "new_repair",
+      repairId,
+      message,
+      smsSent: true,
+      read: false,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+  }
+);
