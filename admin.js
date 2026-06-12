@@ -822,58 +822,72 @@ document.addEventListener("keydown", function (e) {
     document.querySelector(".modal")?.remove();
   }
 });
-// functions/index.js
-const admin = require("firebase-admin");
-const twilio = require("twilio");
-const { onDocumentCreated } = require("firebase-functions/v2/firestore");
-const { defineSecret } = require("firebase-functions/params");
+const PUSH_REGISTER_API_URL = "https://bennyfix-backend-v.vercel.app/api/register-push";
+const VAPID_PUBLIC_KEY = "BB5fTQvkGS165grJnDvi1bgriXXUcG0O3bgErqy-uFNVT2eNh9397r5oFqpPhGXK-UlbHjpLDQu-fx5lMB6MpX8";
 
-admin.initializeApp();
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
 
-const TWILIO_ACCOUNT_SID = defineSecret("TWILIO_ACCOUNT_SID");
-const TWILIO_AUTH_TOKEN = defineSecret("TWILIO_AUTH_TOKEN");
-const TWILIO_FROM_NUMBER = defineSecret("TWILIO_FROM_NUMBER");
-const ADMIN_PHONE_NUMBER = defineSecret("ADMIN_PHONE_NUMBER");
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
 
-exports.sendAdminSmsOnNewRepair = onDocumentCreated(
-  {
-    document: "repairs/{repairId}",
-    secrets: [
-      TWILIO_ACCOUNT_SID,
-      TWILIO_AUTH_TOKEN,
-      TWILIO_FROM_NUMBER,
-      ADMIN_PHONE_NUMBER,
-    ],
-  },
-  async (event) => {
-    const repair = event.data?.data();
-    if (!repair) return;
-
-    const repairId = event.params.repairId;
-    const device = repair.deviceName || repair.device || "Unknown device";
-    const issue = repair.issue || "No issue provided";
-
-    const message = `New repair request: ${device}. Issue: ${issue}`;
-
-    const client = twilio(
-      TWILIO_ACCOUNT_SID.value(),
-      TWILIO_AUTH_TOKEN.value()
-    );
-
-    await client.messages.create({
-      body: message,
-      from: TWILIO_FROM_NUMBER.value(),
-      to: ADMIN_PHONE_NUMBER.value(),
-    });
-
-    await admin.firestore().collection("notifications").add({
-      audience: "admin",
-      type: "new_repair",
-      repairId,
-      message,
-      smsSent: true,
-      read: false,
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
+  for (let i = 0; i < rawData.length; i++) {
+    outputArray[i] = rawData.charCodeAt(i);
   }
-);
+
+  return outputArray;
+}
+
+window.enableAdminPushNotifications = async function () {
+  try {
+    const user = auth.currentUser;
+
+    if (!user) {
+      return showToast("Login first");
+    }
+
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      return showToast("Push notifications are not supported on this browser");
+    }
+
+    const permission = await Notification.requestPermission();
+
+    if (permission !== "granted") {
+      return showToast("Notification permission was not granted");
+    }
+
+    const registration = await navigator.serviceWorker.register("sw.js");
+
+    let subscription = await registration.pushManager.getSubscription();
+
+if (!subscription) {
+  subscription = await registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+  });
+}
+
+    const idToken = await user.getIdToken();
+
+    const response = await fetch(PUSH_REGISTER_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ subscription }),
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Could not enable notifications");
+    }
+
+    showToast("Phone alerts enabled");
+  } catch (err) {
+    console.error(err);
+    showToast(err.message || "Could not enable phone alerts");
+  }
+};

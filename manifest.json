@@ -1,0 +1,20 @@
+{
+  "name": "BennyFix Admin",
+  "short_name": "BennyFix",
+  "start_url": "/admin.html",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "icons": [
+    {
+      "src": "bennyfix logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "bennyfix logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
