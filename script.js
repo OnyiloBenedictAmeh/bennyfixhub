@@ -254,26 +254,24 @@ export async function getUserProfile(uid) {
   }
 
   return null;
-}
-window.login = async function () {
-  const email = document.getElementById("email").value;
+}window.login = async function () {
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
 
-  const password = document.getElementById("password").value;
+  const emailIsValid = validateEmailField(emailInput);
+  const passwordIsValid = validatePasswordField(passwordInput);
 
-  if (!email || !password) {
-    return showToast("Fill all fields");
-  }
+  if (!emailIsValid || !passwordIsValid) return;
 
   try {
     const userCredential = await signInWithEmailAndPassword(
       auth,
-      email,
-      password,
+      emailInput.value.trim(),
+      passwordInput.value,
     );
 
     const user = userCredential.user;
 
-    // Refresh verification status
     await user.reload();
 
     if (!user.emailVerified) {
@@ -460,8 +458,15 @@ window.resendVerification = async function () {
       return;
     }
 
-    await sendEmailVerification(user);
+const idToken = await user.getIdToken();
 
+await fetch("https://bennyfix-backend-v.vercel.app/api/send-verification-email", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${idToken}`,
+    "Content-Type": "application/json",
+  },
+});
     showToast("Verification email resent!", "success");
 
     startResendTimer();
@@ -601,62 +606,62 @@ window.showLogin = function () {
   document.getElementById("registerForm").style.display = "none";
 };
 window.signup = async function () {
-  const name = document.getElementById("regName").value;
-  const email = document.getElementById("regEmail").value;
-  const password = document.getElementById("regPassword").value;
-  const confirm = document.getElementById("regConfirm").value;
+  const nameInput = document.getElementById("regName");
+  const emailInput = document.getElementById("regEmail");
+  const phoneInput = document.getElementById("regphone");
+  const passwordInput = document.getElementById("regPassword");
+  const confirmInput = document.getElementById("regConfirm");
 
-  if (!name || !email || !password || !confirm) {
-    return showToast("Fill all fields", "error");
+  const nameIsValid = validateRequiredField(nameInput, "Full name is required");
+  const emailIsValid = validateEmailField(emailInput);
+  const phoneIsValid = validatePhoneField(phoneInput);
+  const passwordIsValid = validatePasswordField(passwordInput);
+  const confirmIsValid = validateRequiredField(confirmInput, "Confirm your password");
+
+  if (!nameIsValid || !emailIsValid || !phoneIsValid || !passwordIsValid || !confirmIsValid) {
+    return;
   }
 
-  if (password !== confirm) {
-    return showToast("Passwords do not match", "error");
+  if (passwordInput.value !== confirmInput.value) {
+    setFieldError(confirmInput, "Passwords do not match");
+    return;
   }
 
   try {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
-      email,
-      password,
+      emailInput.value.trim(),
+      passwordInput.value,
     );
 
     const user = userCredential.user;
 
     await setDoc(doc(db, "users", user.uid), {
       uid: user.uid,
-      name,
+      name: nameInput.value.trim(),
       email: user.email,
+      phone: phoneInput.value.trim(),
       role: "user",
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=487DE7&color=fff`,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(nameInput.value.trim())}&background=487DE7&color=fff`,
       createdAt: serverTimestamp(),
     });
 
-    await sendEmailVerification(user);
+const idToken = await user.getIdToken();
 
+await fetch("https://bennyfix-backend-v.vercel.app/api/send-verification-email", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${idToken}`,
+    "Content-Type": "application/json",
+  },
+});
     showToast("Verification email sent", "success");
-
-    // IMPORTANT: DO NOT LOG OUT
     showVerifyScreen(user);
   } catch (err) {
     showToast(err.message, "error");
   }
 };
-window.resendVerification = async function () {
-  const user = auth.currentUser;
 
-  if (!user) {
-    return showToast("Login first", "error");
-  }
-
-  try {
-    await sendEmailVerification(user);
-
-    showToast("Verification email resent!", "success");
-  } catch (err) {
-    showToast(err.message, "error");
-  }
-};
 window.forgotPassword = async function () {
   const email = document.getElementById("email").value;
 
@@ -772,7 +777,7 @@ function friendlyError(err) {
 }
 
 function setFieldError(input, message) {
-  input.style.border = "2px solid #ef4444";
+  input.classList.add("field-invalid");
 
   let error = input.parentElement?.querySelector(
     `.field-error[data-for="${input.id}"]`,
@@ -789,7 +794,7 @@ function setFieldError(input, message) {
 }
 
 function clearFieldError(input) {
-  input.style.border = "1px solid #ddd";
+  input.classList.remove("field-invalid");
 
   const error = input.parentElement?.querySelector(
     `.field-error[data-for="${input.id}"]`,
@@ -797,12 +802,6 @@ function clearFieldError(input) {
 
   if (error) error.remove();
 }
-window.toggleRepairForm = function () {
-  const form = document.getElementById("repairForm");
-  if (!form) return;
-
-  form.classList.toggle("show");
-};
 
 function loadUserRepairs() {
   if (!currentUser) return;
@@ -1032,8 +1031,8 @@ window.toggleJourney = function (id) {
   });
 };
 let currentStep = 1;
+let isSubmittingRepair = false;
 const totalSteps = 7;
-
 window.nextStep = function (step) {
   if (!validateStep(step)) return;
   currentStep = step + 1;
@@ -1089,6 +1088,11 @@ function collectFormData() {
   };
 }
 window.startRepair = async function startRepair() {
+  if (isSubmittingRepair) {
+    showToast("Repair request is already submitting");
+    return;
+  }
+
   const submitButtons = document.querySelectorAll(
     'button[onclick="startRepair()"]',
   );
@@ -1100,8 +1104,31 @@ window.startRepair = async function startRepair() {
       showToast("Please login first");
       return;
     }
+    for (let step = 1; step <= 6; step++) {
+  if (!validateStep(step)) {
+    currentStep = step;
+    showStep(step);
+    return;
+  }
+}
 
-    submitButtons.forEach((btn) => {
+if (!validateRepairImage()) {
+  currentStep = 1;
+  showStep(1);
+  return;
+}
+
+const confirmed = confirm(
+  "Submit this repair request now? Please confirm all details are correct."
+);
+
+if (!confirmed) {
+  return;
+}
+
+isSubmittingRepair = true;
+
+submitButtons.forEach((btn) => {
       btn.disabled = true;
       btn.dataset.originalText = btn.innerText;
       btn.innerText = "Submitting...";
@@ -1144,7 +1171,9 @@ window.startRepair = async function startRepair() {
     console.error(err);
     showToast(err.message || friendlyError(err), "error");
   } finally {
-    submitButtons.forEach((btn) => {
+  isSubmittingRepair = false;
+
+  submitButtons.forEach((btn) => {
       btn.disabled = false;
       btn.innerText = btn.dataset.originalText || "Submit";
     });
@@ -1178,33 +1207,130 @@ function validateStep(step) {
   const inputs = stepEl.querySelectorAll("input, select, textarea");
 
   for (let input of inputs) {
-    // Image upload is disabled for now
-    if (input.type === "file" || input.id === "deviceImage") {
-      continue;
-    }
+    if (input.type === "file" || input.id === "deviceImage") continue;
+    if (input.disabled) continue;
 
-    if (input.disabled) {
-      continue;
-    }
+    const value = input.value.trim();
+    const label =
+      input.placeholder ||
+      input.options?.[0]?.text ||
+      "This field";
 
-    if (input.value.trim() === "") {
-      const label =
-        input.placeholder ||
-        input.options?.[0]?.text ||
-        "This field";
-      setFieldError(input, `${label} is required`);
+    clearFieldError(input);
+
+    if (!value) {
+      setFieldError(input, "This field is required");
       return false;
-    } else {
-      clearFieldError(input);
+    }
+
+    if (input.id === "contact") {
+      const phone = value.replace(/\s+/g, "");
+
+      if (!/^\+?\d{10,15}$/.test(phone)) {
+        setFieldError(input, "Enter a valid phone number");
+        return false;
+      }
+    }
+
+    if (input.id === "deviceName" && value.length < 2) {
+      setFieldError(input, "Device model is too short");
+      return false;
+    }
+
+    if (input.id === "issue" && value.length < 10) {
+      setFieldError(input, "Please describe the issue in at least 10 characters");
+      return false;
     }
   }
 
   return true;
 }
-// const deviceImageInput = document.getElementById("deviceImage");
-// if (deviceImageInput) {
-//   deviceImageInput.disabled = true;
-// }
+function validateRepairImage() {
+  const imageFile = document.getElementById("deviceImage")?.files?.[0];
+
+  if (!imageFile) return true;
+
+  if (!imageFile.type.startsWith("image/")) {
+    showToast("Only image files are allowed", "error");
+    return false;
+  }
+
+  const maxSize = 5 * 1024 * 1024;
+
+  if (imageFile.size > maxSize) {
+    showToast("Image must be 5MB or less", "error");
+    return false;
+  }
+
+  return true;
+}
+function validateRequiredField(input, message = "This field is required") {
+  clearFieldError(input);
+
+  if (!input.value.trim()) {
+    setFieldError(input, message);
+    return false;
+  }
+
+  return true;
+}
+
+function validateEmailField(input) {
+  clearFieldError(input);
+
+  const value = input.value.trim();
+
+  if (!value) {
+    setFieldError(input, "Email is required");
+    return false;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+    setFieldError(input, "Enter a valid email address");
+    return false;
+  }
+
+  return true;
+}
+
+function validatePasswordField(input, minLength = 6) {
+  clearFieldError(input);
+
+  const value = input.value;
+
+  if (!value.trim()) {
+    setFieldError(input, "Password is required");
+    return false;
+  }
+
+  if (value.length < minLength) {
+    setFieldError(input, `Password must be at least ${minLength} characters`);
+    return false;
+  }
+
+  return true;
+}
+function validatePhoneField(input) {
+  clearFieldError(input);
+
+  const value = input.value.trim().replace(/\s+/g, "");
+
+  if (!value) {
+    setFieldError(input, "Phone number is required");
+    return false;
+  }
+
+  if (!/^\+?\d{10,15}$/.test(value)) {
+    setFieldError(input, "Enter a valid phone number");
+    return false;
+  }
+
+  return true;
+}
+document.querySelectorAll("input, select, textarea").forEach((input) => {
+  input.addEventListener("input", () => clearFieldError(input));
+  input.addEventListener("change", () => clearFieldError(input));
+});
 function buildReview() {
   const data = collectFormData();
 
@@ -1248,9 +1374,7 @@ async function uploadImage(file) {
 
   return await getDownloadURL(imageRef);
 }
-window.switchTab = function (id) {
-  console.log("switchTab running:", id);
-};
+window.switchTab = switchTab;
 if (uploadBox && fileInput) {
   // CLICK to open file picker
   uploadBox.addEventListener("click", () => {

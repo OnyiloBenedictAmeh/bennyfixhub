@@ -90,16 +90,33 @@
         </div>
       </div>
     </div>
-    <div id="verifyScreen" class="verify-screen" style="display: none">
-  <div class="verify-box">
-    <h2>Verify your email</h2>
+   <div id="verifyScreen" class="verify-screen" style="display: none">
+  <div class="verify-card">
+    <div class="verify-icon">
+      <i class="bx bx-envelope"></i>
+    </div>
 
-    <p>We sent a verification link to:</p>
-    <h3 id="verifyEmail"></h3>
+    <h2>Check your email</h2>
 
-    <button id="resendBtn" onclick="resendVerification()">Resend Email</button>
+    <p class="verify-text">
+      We sent a verification link to
+    </p>
 
-    <p id="resendTimer" class="hint"></p>
+    <div class="verify-email" id="verifyEmail"></div>
+
+    <p class="verify-hint">
+      Click the link in your inbox to activate your BennyFix Hub account.
+    </p>
+
+    <button id="resendBtn" onclick="resendVerification()">
+      Resend verification email
+    </button>
+
+    <p id="resendTimer" class="verify-timer"></p>
+
+    <button class="verify-secondary" onclick="logout()">
+      Use another email
+    </button>
   </div>
 </div>
     <!-- SEARCH -->
@@ -352,20 +369,19 @@
 
               <div class="btn-row">
                 <button onclick="prevStep(6)">Back</button>
-                <button onclick="startRepair()">Submit</button>
-              </div>
+<button onclick="nextStep(6)">Review</button>              </div>
             </div>
 
             <div class="step" id="step7">
-              <h2>Review Your Request</h2>
+  <h2>Review Your Request</h2>
 
-              <div id="reviewBox"></div>
+  <div id="reviewBox"></div>
 
-              <div class="btn-row">
-                <button onclick="prevStep(7)">Back</button>
-                <button onclick="startRepair()">Submit</button>
-              </div>
-            </div>
+  <div class="btn-row">
+    <button onclick="prevStep(7)">Back</button>
+    <button onclick="startRepair()">Submit</button>
+  </div>
+</div>
           </div>
         </div>
       </div>

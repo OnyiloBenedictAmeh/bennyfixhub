@@ -1236,3 +1236,113 @@ button:hover {
   opacity: 1;
 }
 /* start repair styles */
+.field-error {
+  display: block;
+  margin-top: -8px;
+  margin-bottom: 10px;
+  color: #dc2626;
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.field-invalid {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+}
+
+.field-invalid:focus {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.2) !important;
+}
+.verify-screen {
+  position: fixed;
+  inset: 0;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 10000;
+}
+
+.verify-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-top: 4px solid #f97316;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+}
+
+.verify-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: #fff7ed;
+  color: #f97316;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+}
+
+.verify-card h2 {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: 24px;
+}
+
+.verify-text,
+.verify-hint,
+.verify-timer {
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.verify-email {
+  margin: 14px 0;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  color: #111827;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.verify-card button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background: #111827;
+  color: #ffffff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.verify-card button:hover {
+  background: #1f2937;
+}
+
+.verify-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.verify-card .verify-secondary {
+  background: transparent;
+  color: #475569;
+  border: 1px solid #e5e7eb;
+}
+
+.verify-card .verify-secondary:hover {
+  background: #f8fafc;
+}
