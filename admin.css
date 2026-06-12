@@ -1109,3 +1109,169 @@ body {
   /* font-size: 24px; */
   opacity: 0.8;
 }
+/* ===== RESPONSIVE ADMIN FIX ===== */
+
+.admin-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.section {
+  flex: 1;
+  min-width: 0;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.repair-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.repair-left,
+.repair-right {
+  min-width: 0;
+}
+
+.repair-right {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.repair-right select,
+.repair-right button {
+  min-height: 36px;
+}
+
+/* Tablets */
+@media (max-width: 1024px) {
+  .admin-wrapper {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+    min-height: 64px;
+    height: auto;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    padding: 10px;
+  }
+
+  .sidebar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sidebar h2,
+  .sidebar hr {
+    display: none;
+  }
+
+  .sidebar button {
+    width: auto;
+    flex: 0 0 auto;
+    min-height: 42px;
+    padding: 0 14px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chart-container {
+    height: 280px;
+  }
+}
+
+/* Phones */
+@media (max-width: 700px) {
+  .section {
+    padding: 14px;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stat-card {
+    padding: 14px;
+  }
+
+  .repair-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .repair-left h3,
+  .repair-left p,
+  .repair-left small {
+    word-break: break-word;
+  }
+
+  .repair-right {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .repair-right select,
+  .repair-right button,
+  .assigned-label {
+    width: 100%;
+    text-align: center;
+  }
+
+  #usersContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-container {
+    height: 230px;
+  }
+
+  .modal-box {
+    width: 92%;
+    max-width: 380px;
+    margin: 0 auto;
+  }
+
+  .toast {
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    text-align: center;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 420px) {
+  .sidebar button {
+    padding: 0 10px;
+    font-size: 13px;
+  }
+
+  .sidebar button i {
+    font-size: 18px;
+  }
+
+  .chart-container {
+    height: 200px;
+  }
+}
