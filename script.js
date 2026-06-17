@@ -415,6 +415,28 @@ window.toggleAccountMenu = function (e) {
     authModal.style.display = "flex";
   }
 };
+async function sendCustomVerificationEmail(user) {
+  const idToken = await user.getIdToken();
+
+  const response = await fetch(
+    "https://bennyfix-backend-v.vercel.app/api/send-verification-email",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+        "Content-Type": "application/json",
+      },
+    }
+  );
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || "Could not send verification email");
+  }
+
+  return result;
+}
 function showVerifyScreen(user) {
   const screen = document.getElementById("verifyScreen");
   if (!screen) return;
@@ -458,15 +480,8 @@ window.resendVerification = async function () {
       return;
     }
 
-const idToken = await user.getIdToken();
+    await sendCustomVerificationEmail(user);
 
-await fetch("https://bennyfix-backend-v.vercel.app/api/send-verification-email", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${idToken}`,
-    "Content-Type": "application/json",
-  },
-});
     showToast("Verification email resent!", "success");
 
     startResendTimer();
@@ -635,16 +650,20 @@ window.signup = async function () {
     );
 
     const user = userCredential.user;
+await setDoc(doc(db, "users", user.uid), {
+  uid: user.uid,
+  name: nameInput.value.trim(),
+  email: user.email,
+  phone: phoneInput.value.trim(),
+  role: "user",
+  avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(nameInput.value.trim())}&background=487DE7&color=fff`,
+  createdAt: serverTimestamp(),
+});
 
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid,
-      name: nameInput.value.trim(),
-      email: user.email,
-      phone: phoneInput.value.trim(),
-      role: "user",
-      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(nameInput.value.trim())}&background=487DE7&color=fff`,
-      createdAt: serverTimestamp(),
-    });
+await sendCustomVerificationEmail(user);
+
+showToast("Verification email sent", "success");
+showVerifyScreen(user);
 
 const idToken = await user.getIdToken();
 
@@ -954,6 +973,56 @@ function loadUserRepairs() {
     if (completedCountEl) completedCountEl.innerText = completedCount;
   });
 }
+window.handleAvatarUpload = async function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    showToast("Only image files are allowed", "error");
+    event.target.value = "";
+    return;
+  }
+
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    showToast("Image must be 5MB or less", "error");
+    event.target.value = "";
+    return;
+  }
+
+  const user = auth.currentUser;
+  if (!user) {
+    showToast("Please login first", "error");
+    return;
+  }
+
+  const avatarCircle = document.getElementById("avatarCircle");
+
+  // optimistic local preview while it uploads
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    if (avatarCircle) {
+      avatarCircle.innerHTML = `<img src="${e.target.result}" alt="User avatar" />`;
+    }
+  };
+  reader.readAsDataURL(file);
+
+  try {
+    const avatarRef = ref(storage, `avatars/${user.uid}`);
+    await uploadBytes(avatarRef, file);
+    const url = await getDownloadURL(avatarRef);
+
+    await updateDoc(doc(db, "users", user.uid), { avatar: url });
+
+    showToast("Profile photo updated!", "success");
+  } catch (err) {
+    console.error(err);
+    showToast("Could not upload photo. Please try again.", "error");
+    loadHeaderUser(); // revert avatar back to whatever was last saved
+  } finally {
+    event.target.value = "";
+  }
+};
 //add technician code
 window.createTechnician = async function () {
   const nameEl = document.getElementById("techName");
@@ -1365,15 +1434,73 @@ if (deviceImage) {
     reader.readAsDataURL(file);
   });
 }
-async function uploadImage(file) {
-  if (!file || !storage) return null;
+const AVATAR_API_URL = "https://bennyfix-backend-v.vercel.app/api/upload-avatar";
 
-  const imageRef = ref(storage, `repair_images/${Date.now()}_${file.name}`);
+window.handleAvatarUpload = async function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-  await uploadBytes(imageRef, file);
+  if (!file.type.startsWith("image/")) {
+    showToast("Only image files are allowed", "error");
+    event.target.value = "";
+    return;
+  }
 
-  return await getDownloadURL(imageRef);
-}
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    showToast("Image must be 5MB or less", "error");
+    event.target.value = "";
+    return;
+  }
+
+  const user = auth.currentUser;
+  if (!user) {
+    showToast("Please login first", "error");
+    return;
+  }
+
+  const avatarCircle = document.getElementById("avatarCircle");
+
+  // optimistic preview while it uploads
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    if (avatarCircle) {
+      avatarCircle.innerHTML = `<img src="${e.target.result}" alt="User avatar" />`;
+    }
+  };
+  reader.readAsDataURL(file);
+
+  try {
+    const idToken = await user.getIdToken();
+
+    const formData = new FormData();
+    formData.append("avatar", file);
+
+    const response = await fetch(AVATAR_API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: formData,
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(result.error || "Could not upload photo");
+    }
+
+    await updateDoc(doc(db, "users", user.uid), { avatar: result.avatarUrl });
+
+    showToast("Profile photo updated!", "success");
+  } catch (err) {
+    console.error(err);
+    showToast(err.message || "Could not upload photo. Please try again.", "error");
+    loadHeaderUser();
+  } finally {
+    event.target.value = "";
+  }
+};
 window.switchTab = switchTab;
 if (uploadBox && fileInput) {
   // CLICK to open file picker
@@ -1471,6 +1598,7 @@ async function loadHeaderUser() {
 
   const nameEl = document.getElementById("userName");
   const roleEl = document.getElementById("userRole");
+  const avatarCircle = document.getElementById("avatarCircle");
 
   if (nameEl) {
     nameEl.innerText = data.name || user.email.split("@")[0];
@@ -1478,6 +1606,12 @@ async function loadHeaderUser() {
 
   if (roleEl) {
     roleEl.innerText = data.role || "User";
+  }
+
+  if (avatarCircle) {
+    avatarCircle.innerHTML = data.avatar
+      ? `<img src="${data.avatar}" alt="User avatar" />`
+      : `<i class="bx bx-user"></i>`;
   }
 }
 async function loadProfileStats() {
@@ -1587,3 +1721,47 @@ document.addEventListener("keydown", function (e) {
     }
   }
 });
+// NEWSLETTER
+const subscribeBtn = document.getElementById("subscribeBtn");
+
+if (subscribeBtn) {
+  subscribeBtn.addEventListener("click", async () => {
+    const email = document.getElementById("newsletterEmail").value.trim();
+
+    if (!email) {
+      showToast("Enter an email address", "error");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "newsletter"), {
+        email,
+        createdAt: serverTimestamp(),
+      });
+
+      showToast("Subscribed successfully!", "success");
+      document.getElementById("newsletterEmail").value = "";
+    } catch (err) {
+      console.error(err);
+      showToast("Subscription failed", "error");
+    }
+  });
+}
+const btn = document.getElementById("backToTop");
+
+window.addEventListener("scroll", () => {
+  if (!btn) return;
+  btn.style.display = window.scrollY > 300 ? "block" : "none";
+});
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+document.querySelectorAll(".footer-section h4").forEach((h4) => {
+  h4.addEventListener("click", () => {
+    h4.parentElement.classList.toggle("active");
+  });
+});
+
+document.querySelector(".credit").innerHTML =
+  `© ${new Date().getFullYear()} <span>Bennyfix Hub</span>`;

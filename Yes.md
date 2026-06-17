@@ -7,11 +7,6 @@ Yes. The site is already taking shape, but these upgrades would make it feel muc
    - `dashboard.js` for user dashboard
    - `admin.js` for admin dashboard
 
-2. **Fix naming consistency**
-   Use one set of field names everywhere:
-   - `deviceName`, not sometimes `device`
-   - `status: "Pending"`, not sometimes `"pending"`
-   - `timeline`, not sometimes `journey`
 
 3. **Improve admin repair cards**
    Add clearer details:
@@ -32,41 +27,99 @@ Yes. The site is already taking shape, but these upgrades would make it feel muc
    Loading repairs...
    ```
 
-5. **Make Firestore errors user-friendly**
-   Keep `console.error(err)`, but show better messages:
-   ```js
-   showToast("You do not have permission to do that");
-   ```
+Yes. Now that you have repairs, images, admin alerts, and push notifications working, I’d add features that make the site feel more like a real repair platform.
 
-6. **Improve form validation**
-   Instead of red border only, show a message under the field:
-   ```txt
-   Please select a device type
-   ```
+**Best Next Ideas**
 
-7. **Add cancel/close button to repair modal**
-   Users need a clear way to exit the repair form besides Escape/clicking elsewhere.
+1. **Repair Quote / Estimate**
+After admin reviews a request, admin can add:
 
-8. **Disable buttons while submitting**
-   Prevent double repair submissions:
-   ```js
-   submitBtn.disabled = true;
-   submitBtn.innerText = "Submitting...";
-   ```
-
-9. **Admin notification cleanup**
-   Now that the sidebar has notifications, remove the bottom nav or fully commit to one mobile nav system. Two nav systems will keep causing layout confusion.
-
-10. **Security improvement**
-   Do not create technician accounts directly from frontend auth. Better to promote existing users to technician, or later use Firebase Cloud Functions.
-
-**Nice Next Upgrade**
-Add a proper repair status timeline for users:
-
-```txt
-Pending → Diagnosing → Fixing → Completed
+```text
+Estimated cost
+Estimated completion time
+Notes
 ```
 
-That would make the site feel much more professional, especially because you already store timeline/journey data.
+User sees it in their dashboard.
 
-If I were choosing the next practical move, I’d clean the data consistency first: `repairs`, `deviceName`, `status`, and `timeline`. That will remove a lot of the weird bugs before adding more features.
+2. **Accept / Decline Quote**
+User gets a notification:
+
+```text
+Your repair estimate is ready
+```
+
+Then they can accept or decline before work starts.
+
+3. **Repair Timeline Upgrade**
+Your timeline already exists, but make it richer:
+
+```text
+Request received
+Diagnosis started
+Estimate sent
+Repair approved
+Fixing
+Quality check
+Ready for pickup
+Completed
+```
+
+4. **Technician Dashboard**
+Separate page for technicians where they only see assigned repairs.
+
+5. **Repair Image Gallery**
+Since image uploads now work, allow multiple images:
+
+```text
+front photo
+back photo
+damage close-up
+receipt/warranty image
+```
+
+6. **Admin Quick Filters**
+On admin repairs:
+
+```text
+Pending
+Urgent
+Unassigned
+Assigned
+Completed
+```
+
+This will become very useful as requests grow.
+
+7. **Customer Pickup Code**
+When repair is completed, generate a pickup code like:
+
+```text
+BFH-4921
+```
+
+Customer shows it when collecting the device.
+
+8. **Service Areas / Pickup Location**
+If user selects Home pickup, ask for:
+
+```text
+address
+nearest landmark
+preferred pickup time
+```
+
+9. **Repair Receipt PDF**
+When completed, generate a receipt/invoice the customer can download.
+
+10. **Trust Section On Homepage**
+Add real sections like:
+
+```text
+Warranty on repairs
+Genuine parts where available
+Diagnosis before pricing
+Secure device handling
+```
+
+My top recommendation: **Repair Estimate + Accept/Decline Quote**. That would make the whole workflow feel professional and protect you from starting repairs before the customer agrees to the price.
