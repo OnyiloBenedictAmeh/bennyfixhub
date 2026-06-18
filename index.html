@@ -6,7 +6,7 @@
     <title>BennyFix Hub</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="dashboard.css" />
-    <link rel="icon" type="image/png" href="bennyfix logo.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="bennyfix logo.png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css"
@@ -149,66 +149,38 @@
         <div class="nav-wrapper" id="navWrapper">
           <div class="nav">
             <div class="nav-item" data-menu="support">
-              <span>Support <i class="bx bx-chevron-down"></i></span>
+              <span>Get Tech Support <i class="bx bx-chevron-down"></i></span>
             </div>
 
             <div class="nav-item" data-menu="repairs">
-              <span>Repairs <i class="bx bx-chevron-down"></i></span>
+              <span>Repair a device <i class="bx bx-chevron-down"></i></span>
+            </div>
+            <div class="nav-item" data-menu="sales">
+              <span>Sell a device <i class="bx bx-chevron-down"></i></span>
             </div>
 
             <div class="nav-item" onclick="toggleSearch(event)">
               <span><i class="bx bx-search"></i></span>
             </div>
           </div>
-
-          <!-- MEGA MENU INSIDE WRAPPER (IMPORTANT FIX) -->
-          <div class="mega-overlay" id="mega">
-            <div class="mega-inner">
-              <div class="mega-tabs">
-                <div onclick="switchTab('support')">Support</div>
-                <div onclick="switchTab('repairs')">Repairs</div>
-              </div>
-
-              <div id="support" class="mega-content active">
-                <div class="mega-box">
-                  <h4>Devices</h4>
-
-                  <div class="mega-item">
-                    <img src="phone.jpg" />
-                    <span>Phones</span>
-                  </div>
-
-                  <div class="mega-item">
-                    <img src="laptop.jpg" />
-                    <span>Laptops</span>
-                  </div>
-                </div>
-                <div class="mega-box">
-                  <h4>Help</h4>
-                  <a href="#">Fix Issues</a>
-                </div>
-              </div>
-
-              <div id="repairs" class="mega-content">
-                <div class="mega-box">
-                  <h4>Repair Services</h4>
-
-                  <div class="mega-item">
-                    <img src="repair-phone.jpg" />
-                    <span>Phone Repair</span>
-                  </div>
-
-                  <div class="mega-item">
-                    <img src="repair-laptop.jpg" />
-                    <span>Laptop Repair</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </header>
+    <!-- <div class="mega-backdrop"></div> -->
+
+    <!-- MEGA MENU I-->
+    <div class="mega-overlay" id="mega">
+      <div class="mega-inner">
+        <div class="mega-context">
+          <h2 id="megaTitle">Support</h2>
+          <p id="megaText">Default text</p>
+
+          <button class="mega-btn">Get Started</button>
+        </div>
+
+        <div class="mega-grid" id="megaGrid"></div>
+      </div>
+    </div>
     <section class="hero-premium">
       <div class="hero-overlay"></div>
 
@@ -422,47 +394,43 @@
         </article>
       </div>
     </div>
-   <footer>
-  <div class="footer-grid">
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h4>Company</h4>
+          <a href="#">About</a>
+          <a href="#">Careers</a>
+          <a href="#">Blog</a>
+        </div>
 
-    <div class="footer-section">
-      <h4>Company</h4>
-      <a href="#">About</a>
-      <a href="#">Careers</a>
-      <a href="#">Blog</a>
-    </div>
+        <div class="footer-section">
+          <h4>Support</h4>
+          <a href="#">Help Center</a>
+          <a href="#">Contact</a>
+          <a href="#">FAQ</a>
+        </div>
 
-    <div class="footer-section">
-      <h4>Support</h4>
-      <a href="#">Help Center</a>
-      <a href="#">Contact</a>
-      <a href="#">FAQ</a>
-    </div>
+        <div class="footer-section">
+          <h4>Social</h4>
+          <a href="#">WhatsApp</a>
+          <a href="#">Instagram</a>
+          <a href="#">X (Twitter)</a>
+        </div>
 
-    <div class="footer-section">
-      <h4>Social</h4>
-      <a href="#">WhatsApp</a>
-      <a href="#">Instagram</a>
-      <a href="#">X (Twitter)</a>
-    </div>
+        <div class="footer-section newsletter">
+          <h4>Newsletter</h4>
 
-    <div class="footer-section newsletter">
-  <h4>Newsletter</h4>
+          <div class="newsletter-box">
+            <input type="email" placeholder="Enter email" />
+            <button>Subscribe</button>
+          </div>
+        </div>
+      </div>
 
-  <div class="newsletter-box">
-    <input type="email" placeholder="Enter email">
-    <button>Subscribe</button>
-  </div>
-</div>
+      <button class="back-to-top" onclick="scrollToTop()">↑ Back to Top</button>
 
-  </div>
-
-  <button class="back-to-top" onclick="scrollToTop()">↑ Back to Top</button>
-
-  <div class="credit">
-  © <span id="year"></span>
-</div>
-</footer>
+      <div class="credit">© <span id="year"></span></div>
+    </footer>
 
     <script type="module" src="script.js"></script>
     <script type="module">

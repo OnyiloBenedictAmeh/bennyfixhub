@@ -8,7 +8,7 @@ function hideAllAuthUI() {
 // =========================
 const guestMenu = document.getElementById("guestMenu");
 const userMenu = document.getElementById("userMenu");
-const mega = document.getElementById("mega");
+// const mega = document.getElementById("mega");
 const searchModal = document.getElementById("searchModal");
 const searchInput = document.getElementById("searchInput");
 const navWrapper = document.getElementById("navWrapper");
@@ -20,44 +20,86 @@ let currentUser = null;
 // =========================
 // MEGA MENU FUNCTIONALITY
 // =========================
-let megaTimeout;
 let resizeTimeout;
 let scrollTimeout;
 let resendCooldown = 30;
 let resendInterval;
 let verifyInterval;
-// SWITCH TAB
-function switchTab(id) {
-  document.querySelectorAll(".mega-content").forEach((el) => {
-    el.classList.remove("active");
+let mega;
+let backdrop;
+let megaTimeout;
+const megaData = {
+  support: {
+    title: "Get expert help anytime, anywhere",
+    text: "Our experts help you get the most out of your plan with premium expert tech support.",
+    cards: [
+      { img: "phone.jpg", label: "Phones" },
+      { img: "laptop.jpg", label: "Laptops" },
+      { img: "tablet.jpg", label: "Tablets" },
+      { img: "diagnostic.jpg", label: "Diagnostics" }
+    ]
+  },
+
+  repairs: {
+    title: "Fast & Reliable Repairs",
+    text: "Certified technicians ready to fix your devices with warranty protection.",
+    cards: [
+      { img: "repair-phone.jpg", label: "Phone Repair" },
+      { img: "repair-laptop.jpg", label: "Laptop Repair" },
+      { img: "repair-tablet.jpg", label: "Tablet Repair" },
+      { img: "repair-pc.jpg", label: "PC Repair" }
+    ]
+  },
+
+  sales: {
+    title: "Maximize Your Device's Value",
+    text: "Sell your old devices and get cash for them. We buy used devices at fair prices.",
+    cards: [
+      { img: "sell-phone.jpg", label: "Sell Phone" },
+      { img: "sell-laptop.jpg", label: "Sell Laptop" },
+      { img: "sell-tablet.jpg", label: "Sell Tablet" },
+      { img: "sell-pc.jpg", label: "Sell PC" }
+    ]
+  }
+};
+function loadMega(menu) {
+  const data = megaData[menu];
+  if (!data) return;
+
+  document.getElementById("megaTitle").textContent = data.title;
+  document.getElementById("megaText").textContent = data.text;
+
+  const grid = document.getElementById("megaGrid");
+  grid.innerHTML = "";
+
+  data.cards.forEach(card => {
+    const el = document.createElement("div");
+    el.className = "mega-card";
+
+    el.innerHTML = `
+      <img src="${card.img}">
+      <span>${card.label}</span>
+    `;
+
+    grid.appendChild(el);
   });
-
-  const activeTab = document.getElementById(id);
-
-  if (!activeTab) {
-    console.warn("Mega tab not found:", id);
-    return;
-  }
-
-  activeTab.classList.add("active");
-
-  if (typeof updateMegaLayout === "function") {
-    updateMegaLayout();
-  }
 }
+// MEGA BACK-DROP
 
-// OPEN MEGA & CLOSE
+
 function openMega(tab) {
   if (!mega) return;
 
   mega.classList.add("show");
-  switchTab(tab);
-}
+  backdrop?.classList.add("show");
 
+  loadMega(tab);
+}
 function closeMega() {
   if (!mega) return;
 
   mega.classList.remove("show");
+  backdrop?.classList.remove("show");
 }
 window.addEventListener("scroll", () => {
   clearTimeout(scrollTimeout);
@@ -71,36 +113,44 @@ window.addEventListener("scroll", () => {
   }, 100);
 });
 // HOVER CONTROL
-document.addEventListener("DOMContentLoaded", () => {
-  const mega = document.getElementById("mega");
+ document.addEventListener("DOMContentLoaded", () => {
+  mega = document.getElementById("mega");
+  backdrop = document.querySelector(".mega-backdrop");
 
-  if (mega) {
-    mega.addEventListener("mouseenter", () => clearTimeout(megaTimeout));
-    mega.addEventListener("mouseleave", closeMega);
-  }
+  const items = document.querySelectorAll(".nav-item");
+
+  items.forEach((item) => {
+    const menu = item.dataset.menu;
+    if (!menu) return;
+
+    item.addEventListener("mouseenter", () => {
+      if (window.innerWidth > 900) {
+        clearTimeout(megaTimeout);
+        openMega(menu);
+      }
+    });
+
+    item.addEventListener("mouseleave", () => {
+      if (window.innerWidth > 900) {
+        megaTimeout = setTimeout(closeMega, 200);
+      }
+    });
+
+    item.addEventListener("click", (e) => {
+      if (window.innerWidth <= 900) {
+        e.preventDefault();
+        e.stopPropagation();
+        openMega(menu);
+      }
+    });
+  });
+
+  mega?.addEventListener("mouseenter", () => clearTimeout(megaTimeout));
+  mega?.addEventListener("mouseleave", closeMega);
+
+  backdrop?.addEventListener("click", closeMega);
+  console.log("Mega menu loaded");
 });
-document.querySelectorAll(".nav-item").forEach((item) => {
-  const menu = item.dataset.menu;
-
-  if (!menu) return;
-
-  item.addEventListener("mouseenter", () => {
-    if (window.innerWidth > 900) openMega(menu);
-  });
-
-  item.addEventListener("mouseleave", () => {
-    if (window.innerWidth > 900) closeMega();
-  });
-
-  item.addEventListener("click", (e) => {
-    if (window.innerWidth <= 900) {
-      e.preventDefault();
-      e.stopPropagation();
-      openMega(menu);
-    }
-  });
-});
-
 // =========================
 // RESPONSIVE LAYOUT
 // =========================
@@ -415,27 +465,45 @@ window.toggleAccountMenu = function (e) {
     authModal.style.display = "flex";
   }
 };
+// =====================================================================
+// RESEND-BASED VERIFICATION (commented out for now)
+// Switch back to this once you've got a verified domain in Resend.
+// =====================================================================
+// async function sendCustomVerificationEmail(user) {
+//   const idToken = await user.getIdToken();
+//
+//   const response = await fetch(
+//     "https://bennyfix-backend-v.vercel.app/api/send-verification-email.js",
+//     {
+//       method: "POST",
+//       headers: {
+//         Authorization: `Bearer ${idToken}`,
+//         "Content-Type": "application/json",
+//       },
+//     }
+//   );
+//
+//   const result = await response.json();
+//
+//   if (!response.ok) {
+//     throw new Error(result.error || "Could not send verification email");
+//   }
+//
+//   return result;
+// }
+
+// =====================================================================
+// FIREBASE NATIVE VERIFICATION (active — free, no domain required)
+// =====================================================================
 async function sendCustomVerificationEmail(user) {
-  const idToken = await user.getIdToken();
+  const actionCodeSettings = {
+    url: "https://onyilobenedictameh.github.io/bennyfixhub/index.html",
+    handleCodeInApp: false,
+  };
 
-  const response = await fetch(
-    "https://bennyfix-backend-v.vercel.app/api/send-verification-email",
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  await sendEmailVerification(user, actionCodeSettings);
 
-  const result = await response.json();
-
-  if (!response.ok) {
-    throw new Error(result.error || "Could not send verification email");
-  }
-
-  return result;
+  return { success: true };
 }
 function showVerifyScreen(user) {
   const screen = document.getElementById("verifyScreen");
@@ -463,8 +531,7 @@ function startAutoCheck() {
       document.getElementById("verifyScreen").style.display = "none";
     }
   }, 5000);
-}
-window.resendVerification = async function () {
+}window.resendVerification = async function () {
   const user = auth.currentUser;
 
   if (!user) {
@@ -475,23 +542,27 @@ window.resendVerification = async function () {
     await user.reload();
 
     if (user.emailVerified) {
-      document.getElementById("verifyScreen").style.display = "none";
-      showToast("Email already verified", "success");
-      return;
+      const screen = document.getElementById("verifyScreen");
+      if (screen) screen.style.display = "none";
+
+      return showToast("Email already verified", "success");
     }
 
-    await sendCustomVerificationEmail(user);
+    const res = await sendCustomVerificationEmail(user);
+
+    console.log("Resend response:", res);
 
     showToast("Verification email resent!", "success");
 
     startResendTimer();
-  } catch (err) {
-    console.error("Verification resend error:", err.code, err.message);
 
-    if (err.code === "auth/too-many-requests") {
+  } catch (err) {
+    console.error("Resend error:", err);
+
+    if (err?.code === "auth/too-many-requests") {
       showToast("Too many attempts. Please wait before trying again.", "error");
     } else {
-      showToast(err.message, "error");
+      showToast(err?.message || "Failed to resend verification email", "error");
     }
   }
 };
