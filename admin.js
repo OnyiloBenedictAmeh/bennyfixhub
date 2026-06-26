@@ -546,7 +546,7 @@ div.innerHTML = `
 
   <span class="role">${role}</span>
 
-  <button onclick="location.href='profile.html?uid=${docSnap.id}'">
+  <button onclick="location.href='user-profile.html?uid=${docSnap.id}'">
     View Profile
   </button>
 
