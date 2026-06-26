@@ -6,7 +6,7 @@
     <title>BennyFix Hub</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="dashboard.css" />
-    <link rel="icon" type="image/png" sizes="512x512" href="bennyfix logo.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="bennyfix hub white-logo-tr.png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css"
@@ -16,7 +16,7 @@
     <div class="auth-overlay" id="authModal">
       <div class="auth-box">
         <!-- LOGO -->
-        <img src="bennyfix logo.png" class="auth-logo" alt="Logo" />
+        <img src="bennyfix hub white-logo-tr.png" class="auth-logo" alt="Logo" />
 
         <!-- LOGIN FORM -->
         <div id="loginForm" class="form-group">
@@ -136,7 +136,7 @@
       <div class="wrap header-inner">
         <div class="logo">
           <img
-            src="bennyfix logo.png"
+            src="bennyfix hub white-logo.png"
             alt="BennyFix Hub Logo"
             class="logo-img"
           />
@@ -150,37 +150,43 @@
           <div class="nav">
             <div class="nav-item" data-menu="support">
               <span>Get Tech Support <i class="bx bx-chevron-down"></i></span>
+              <div class="mobile-mega"></div>
             </div>
 
             <div class="nav-item" data-menu="repairs">
               <span>Repair a device <i class="bx bx-chevron-down"></i></span>
+              <div class="mobile-mega"></div>
             </div>
             <div class="nav-item" data-menu="sales">
               <span>Sell a device <i class="bx bx-chevron-down"></i></span>
+              <div class="mobile-mega"></div>
             </div>
 
             <div class="nav-item" onclick="toggleSearch(event)">
               <span><i class="bx bx-search"></i></span>
             </div>
+            
           </div>
         </div>
-      </div>
-    </header>
-    <!-- <div class="mega-backdrop"></div> -->
-
-    <!-- MEGA MENU I-->
-    <div class="mega-overlay" id="mega">
-      <div class="mega-inner">
-        <div class="mega-context">
-          <h2 id="megaTitle">Support</h2>
-          <p id="megaText">Default text</p>
-
-          <button class="mega-btn">Get Started</button>
+        <!-- <div class="mega-backdrop"></div> -->
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+        <!-- MEGA MENU I-->
+        <div class="mega-overlay" id="mega">
+          <div class="mega-inner">
+            <div class="mega-context">
+              <h2 id="megaTitle">Support</h2>
+                <span class="mega-tag">BENNYFIX HUB</span>
+              <p id="megaText">Default text</p>
+    
+              <button class="mega-btn">Get Started</button>
+              <img src="support-banner.jpg" class="context-banner" alt="context banner" >
+            </div>
+    
+            <div class="mega-grid" id="megaGrid"></div>
+          </div>
         </div>
-
-        <div class="mega-grid" id="megaGrid"></div>
-      </div>
-    </div>
+        </div>
+    </header>
     <section class="hero-premium">
       <div class="hero-overlay"></div>
 
@@ -196,7 +202,7 @@
         </p>
 
         <div class="hero-actions">
-          <button class="primary-btn" onclick="toggleRepairForm()">
+          <button class="primary-btn" onclick="window.toggleRepairForm()">
             Start a Repair
           </button>
           <button class="ghost-btn">Explore Services</button>
@@ -207,7 +213,7 @@
             <button
               type="button"
               class="repair-close-btn"
-              onclick="closeRepairForm()"
+              onclick="window.closeRepairForm()"
               aria-label="Close repair form"
             >
               &times;
@@ -417,23 +423,45 @@
           <a href="#">X (Twitter)</a>
         </div>
 
-        <div class="footer-section newsletter">
-          <h4>Newsletter</h4>
-
-          <div class="newsletter-box">
-            <input type="email" placeholder="Enter email" />
-            <button>Subscribe</button>
-          </div>
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <a href="#">Terms of Use</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Cookie Policy</a>
         </div>
       </div>
 
-      <button class="back-to-top" onclick="scrollToTop()">↑ Back to Top</button>
+      <hr>
 
-      <div class="credit">© <span id="year"></span></div>
+<div class="footer-bottom">
+  <div class="footer-links">
+    <a href="#">Terms of Use</a>
+    <a href="#">Privacy Notice</a>
+    <a href="#">Cookie Preferences</a>
+    <div class="copyright"></div>
+  </div>
+  <div class="footer-social">
+    <a href="#"><i class="bx bxl-instagram"></i></a>
+    <a href="#"><i class="bx bxl-twitter"></i></a>
+    <a href="#"><i class="bx bxl-facebook"></i></a>
+    <a href="#"><i class="bx bxl-youtube"></i></a>
+    <a href="#"><i class="bx bxl-linkedin"></i></a>
+  </div>
+</div>
+
+</div>      <button class="back-to-top" onclick="scrollToTop()">↑ Back to Top</button>
+
     </footer>
-
-    <script type="module" src="script.js"></script>
-    <script type="module">
+<script>
+document.querySelector(".copyright").textContent =
+  `© ${new Date().getFullYear()} BennyFix Hub`;
+</script>
+<!-- Load all modules. Type="module" gives you import/export support -->
+<script type="module" src="./js/firebase.js"></script>
+<script type="module" src="./js/ui.js"></script>
+<script type="module" src="./js/mega.js"></script>
+<script type="module" src="./js/auth.js"></script>
+<script type="module" src="./js/repairs.js"></script>    <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
       import {
         getAuth,

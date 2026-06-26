@@ -1,5 +1,4 @@
-avatar:
-`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=487DE7&color=fff`
+avatar:`https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=487DE7&color=fff`
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore,
@@ -22,80 +21,45 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+import {
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// get UID from URL
-const urlParams = new URLSearchParams(window.location.search);
-const uid = urlParams.get("uid");
 
-async function loadProfile() {
-  if (!uid) {
-    document.body.innerHTML = "No user selected";
-    return;
-  }
-
-  const ref = doc(db, "users", uid);
-  const snap = await getDoc(ref);
-
-  if (!snap.exists()) {
-    document.body.innerHTML = "User not found";
-    return;
-  }
-
-  const u = snap.data();
-
-  document.getElementById("name").innerText = u.name || "User";
-  document.getElementById("email").innerText = u.email || "";
-  document.getElementById("role").innerText = u.role || "user";
-
-  document.getElementById("avatar").src =
-    u.avatar ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(u.name || "User")}`;
-
-  document.getElementById("joined").innerText =
-    u.createdAt?.toDate?.().toLocaleDateString() || "Unknown";
-}
-
-loadProfile();
-const auth = getAuth();
-const db = getFirestore();
+const uid =
+  new URLSearchParams(window.location.search)
+    .get("uid");
 
 async function loadProfile() {
+  if (!uid) return;
 
-  const user = auth.currentUser;
-
-  if (!user) return;
-
-  const ref = doc(db, "users", user.uid);
-
-  const snap = await getDoc(ref);
+  const snap =
+    await getDoc(doc(db, "users", uid));
 
   if (!snap.exists()) return;
 
   const data = snap.data();
 
-  document.getElementById("profileName").innerText =
+  profileName.textContent =
     data.name || "User";
 
-  document.getElementById("profileBio").innerText =
+  profileBio.textContent =
     data.bio || "No bio yet";
 
-  document.getElementById("profileEmail").innerText =
-    data.email || "";
+  profileEmail.innerHTML =
+    `<strong>Email:</strong> ${data.email || ""}`;
 
-  document.getElementById("profileLocation").innerText =
-    data.location || "No location";
+  profileLocation.innerHTML =
+    `<strong>Location:</strong> ${
+      data.location || "Not provided"
+    }`;
 
-  document.getElementById("profileAvatar").src =
-    data.avatar;
-
-  document.getElementById("coverImg").src =
-    data.coverPhoto ||
-    "images/default-cover.jpg";
+  profileAvatar.src =
+    data.avatar ||
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      data.name || "User"
+    )}&background=487DE7&color=fff`;
 }
-import {
-  updateDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
 window.saveProfile = async function () {
 
   const user = auth.currentUser;

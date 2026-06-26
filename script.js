@@ -14,7 +14,8 @@ const searchInput = document.getElementById("searchInput");
 const navWrapper = document.getElementById("navWrapper");
 const authModal = document.getElementById("authModal");
 const dashboard = document.querySelector(".dashboard");
-const REPAIR_API_URL = "https://bennyfix-backend-v.vercel.app/api/create-repair";
+const REPAIR_API_URL =
+  "https://bennyfix-backend-v.vercel.app/api/create-repair";
 let currentUser = null;
 
 // =========================
@@ -33,34 +34,78 @@ const megaData = {
     title: "Get expert help anytime, anywhere",
     text: "Our experts help you get the most out of your plan with premium expert tech support.",
     cards: [
-      { img: "phone.jpg", label: "Phones" },
-      { img: "laptop.jpg", label: "Laptops" },
-      { img: "tablet.jpg", label: "Tablets" },
-      { img: "diagnostic.jpg", label: "Diagnostics" }
-    ]
+      {
+        img: "phone.jpg",
+        title: "Phone Support",
+        desc: "Fix software and hardware issues.",
+      },
+      {
+        img: "laptop.jpg",
+        title: "Laptop Support",
+        desc: "Troubleshoot Windows and Mac devices.",
+      },
+      {
+        img: "tablet.jpg",
+        title: "Tablet Support",
+        desc: "Get help with tablets and accessories.",
+      },
+      {
+        img: "diagnostic.jpg",
+        title: "Diagnostics",
+        desc: "Run tests and identify problems.",
+      },
+    ],
   },
 
   repairs: {
     title: "Fast & Reliable Repairs",
     text: "Certified technicians ready to fix your devices with warranty protection.",
     cards: [
-      { img: "repair-phone.jpg", label: "Phone Repair" },
-      { img: "repair-laptop.jpg", label: "Laptop Repair" },
-      { img: "repair-tablet.jpg", label: "Tablet Repair" },
-      { img: "repair-pc.jpg", label: "PC Repair" }
-    ]
+      {
+        img: "repair-phone.jpg",
+        title: "Phone Repair",
+        desc: "Fix your phone's issues.",
+      },
+      {
+        img: "repair-laptop.jpg",
+        title: "Laptop Repair",
+        desc: "Get your laptop fixed.",
+      },
+      {
+        img: "repair-tablet.jpg",
+        title: "Tablet Repair",
+        desc: "Repair your tablet.",
+      },
+      { img: "repair-pc.jpg", title: "PC Repair", desc: "Fix your PC issues." },
+    ],
   },
 
   sales: {
     title: "Maximize Your Device's Value",
     text: "Sell your old devices and get cash for them. We buy used devices at fair prices.",
     cards: [
-      { img: "sell-phone.jpg", label: "Sell Phone" },
-      { img: "sell-laptop.jpg", label: "Sell Laptop" },
-      { img: "sell-tablet.jpg", label: "Sell Tablet" },
-      { img: "sell-pc.jpg", label: "Sell PC" }
-    ]
-  }
+      {
+        img: "sell-phone.jpg",
+        title: "Sell Phone",
+        desc: "Get cash for your old phone.",
+      },
+      {
+        img: "sell-laptop.jpg",
+        title: "Sell Laptop",
+        desc: "Maximize the value of your old laptop.",
+      },
+      {
+        img: "sell-tablet.jpg",
+        title: "Sell Tablet",
+        desc: "Turn your unused tablet into cash.",
+      },
+      {
+        img: "sell-pc.jpg",
+        title: "Sell PC",
+        desc: "Sell your old PC and get a fair price.",
+      },
+    ],
+  },
 };
 function loadMega(menu) {
   const data = megaData[menu];
@@ -72,21 +117,43 @@ function loadMega(menu) {
   const grid = document.getElementById("megaGrid");
   grid.innerHTML = "";
 
-  data.cards.forEach(card => {
+  data.cards.forEach((card) => {
     const el = document.createElement("div");
     el.className = "mega-card";
 
     el.innerHTML = `
-      <img src="${card.img}">
-      <span>${card.label}</span>
-    `;
+  <img src="${card.img}" alt="${card.title}">
+
+  <div class="mega-card-content">
+    <h4>${card.title}</h4>
+    <p>${card.desc}</p>
+  </div>
+`;
 
     grid.appendChild(el);
   });
 }
 // MEGA BACK-DROP
+let navwrapper;
+let drawerBackdrop;
+document.addEventListener("DOMContentLoaded", () => {
+  navWrapper = document.getElementById("navWrapper");
+  drawerBackdrop = document.querySelector(".drawer-backdrop");
+  drawerBackdrop?.addEventListener("click", () => {
+    navWrapper.classList.remove("open");
+    drawerBackdrop.classList.remove("show");
 
+    document.querySelector(".hamburger i")?.classList.remove("bx-x");
+    document.querySelector(".hamburger i")?.classList.add("bx-menu");
 
+    document.querySelectorAll(".nav-item").forEach((item) => {
+      item.classList.remove("open");
+
+      const mobileMega = item.querySelector(".mobile-mega");
+      if (mobileMega) mobileMega.innerHTML = "";
+    });
+  });
+});
 function openMega(tab) {
   if (!mega) return;
 
@@ -113,7 +180,7 @@ window.addEventListener("scroll", () => {
   }, 100);
 });
 // HOVER CONTROL
- document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
   mega = document.getElementById("mega");
   backdrop = document.querySelector(".mega-backdrop");
 
@@ -126,6 +193,13 @@ window.addEventListener("scroll", () => {
     item.addEventListener("mouseenter", () => {
       if (window.innerWidth > 900) {
         clearTimeout(megaTimeout);
+
+        document.querySelectorAll(".nav-item").forEach((nav) => {
+          nav.classList.remove("active");
+        });
+
+        item.classList.add("active");
+
         openMega(menu);
       }
     });
@@ -135,12 +209,54 @@ window.addEventListener("scroll", () => {
         megaTimeout = setTimeout(closeMega, 200);
       }
     });
-
     item.addEventListener("click", (e) => {
       if (window.innerWidth <= 900) {
         e.preventDefault();
-        e.stopPropagation();
-        openMega(menu);
+
+        const mobileMega = item.querySelector(".mobile-mega");
+        const data = megaData[menu];
+
+        // close other open menus
+        document.querySelectorAll(".nav-item").forEach((nav) => {
+          if (nav !== item) {
+            nav.classList.remove("open");
+
+            const mobileMegaBox = nav.querySelector(".mobile-mega");
+            if (mobileMegaBox) mobileMegaBox.innerHTML = "";
+          }
+        });
+
+        // toggle current one
+        if (item.classList.contains("open")) {
+          item.classList.remove("open");
+          mobileMega.innerHTML = "";
+          return;
+        }
+
+        item.classList.add("open");
+
+        mobileMega.innerHTML = `
+      <div class="mobile-mega-header">
+        <h4>${data.title}</h4>
+        <p>${data.text}</p>
+      </div>
+
+      <div class="mega-grid">
+        ${data.cards
+          .map(
+            (card) => `
+          <div class="mega-card">
+            <img src="${card.img}" alt="${card.title}">
+            <div class="mega-card-content">
+              <h4>${card.title}</h4>
+              <p>${card.desc}</p>
+            </div>
+          </div>
+        `,
+          )
+          .join("")}
+      </div>
+    `;
       }
     });
   });
@@ -149,7 +265,6 @@ window.addEventListener("scroll", () => {
   mega?.addEventListener("mouseleave", closeMega);
 
   backdrop?.addEventListener("click", closeMega);
-  console.log("Mega menu loaded");
 });
 // =========================
 // RESPONSIVE LAYOUT
@@ -200,11 +315,22 @@ document.addEventListener("click", (e) => {
 // =========================
 window.toggleMenu = function () {
   const navWrapper = document.getElementById("navWrapper");
-  if (!navWrapper) return;
+  const drawerBackdrop = document.getElementById("drawerBackdrop");
+  const icon = document.querySelector(".hamburger i");
+
+  if (!navWrapper || !icon) return;
 
   navWrapper.classList.toggle("open");
-};
+  drawerBackdrop?.classList.toggle("show");
 
+  if (navWrapper.classList.contains("open")) {
+    icon.classList.remove("bx-menu");
+    icon.classList.add("bx-x");
+  } else {
+    icon.classList.remove("bx-x");
+    icon.classList.add("bx-menu");
+  }
+};
 // =========================
 // SCROLL BEHAVIOR
 // =========================
@@ -304,7 +430,8 @@ export async function getUserProfile(uid) {
   }
 
   return null;
-}window.login = async function () {
+}
+window.login = async function () {
   const emailInput = document.getElementById("email");
   const passwordInput = document.getElementById("password");
 
@@ -531,7 +658,8 @@ function startAutoCheck() {
       document.getElementById("verifyScreen").style.display = "none";
     }
   }, 5000);
-}window.resendVerification = async function () {
+}
+window.resendVerification = async function () {
   const user = auth.currentUser;
 
   if (!user) {
@@ -555,7 +683,6 @@ function startAutoCheck() {
     showToast("Verification email resent!", "success");
 
     startResendTimer();
-
   } catch (err) {
     console.error("Resend error:", err);
 
@@ -702,9 +829,18 @@ window.signup = async function () {
   const emailIsValid = validateEmailField(emailInput);
   const phoneIsValid = validatePhoneField(phoneInput);
   const passwordIsValid = validatePasswordField(passwordInput);
-  const confirmIsValid = validateRequiredField(confirmInput, "Confirm your password");
+  const confirmIsValid = validateRequiredField(
+    confirmInput,
+    "Confirm your password",
+  );
 
-  if (!nameIsValid || !emailIsValid || !phoneIsValid || !passwordIsValid || !confirmIsValid) {
+  if (
+    !nameIsValid ||
+    !emailIsValid ||
+    !phoneIsValid ||
+    !passwordIsValid ||
+    !confirmIsValid
+  ) {
     return;
   }
 
@@ -721,30 +857,33 @@ window.signup = async function () {
     );
 
     const user = userCredential.user;
-await setDoc(doc(db, "users", user.uid), {
-  uid: user.uid,
-  name: nameInput.value.trim(),
-  email: user.email,
-  phone: phoneInput.value.trim(),
-  role: "user",
-  avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(nameInput.value.trim())}&background=487DE7&color=fff`,
-  createdAt: serverTimestamp(),
-});
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      name: nameInput.value.trim(),
+      email: user.email,
+      phone: phoneInput.value.trim(),
+      role: "user",
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(nameInput.value.trim())}&background=487DE7&color=fff`,
+      createdAt: serverTimestamp(),
+    });
 
-await sendCustomVerificationEmail(user);
+    await sendCustomVerificationEmail(user);
 
-showToast("Verification email sent", "success");
-showVerifyScreen(user);
+    showToast("Verification email sent", "success");
+    showVerifyScreen(user);
 
-const idToken = await user.getIdToken();
+    const idToken = await user.getIdToken();
 
-await fetch("https://bennyfix-backend-v.vercel.app/api/send-verification-email", {
-  method: "POST",
-  headers: {
-    Authorization: `Bearer ${idToken}`,
-    "Content-Type": "application/json",
-  },
-});
+    await fetch(
+      "https://bennyfix-backend-v.vercel.app/api/send-verification-email",
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
     showToast("Verification email sent", "success");
     showVerifyScreen(user);
   } catch (err) {
@@ -1245,30 +1384,30 @@ window.startRepair = async function startRepair() {
       return;
     }
     for (let step = 1; step <= 6; step++) {
-  if (!validateStep(step)) {
-    currentStep = step;
-    showStep(step);
-    return;
-  }
-}
+      if (!validateStep(step)) {
+        currentStep = step;
+        showStep(step);
+        return;
+      }
+    }
 
-if (!validateRepairImage()) {
-  currentStep = 1;
-  showStep(1);
-  return;
-}
+    if (!validateRepairImage()) {
+      currentStep = 1;
+      showStep(1);
+      return;
+    }
 
-const confirmed = confirm(
-  "Submit this repair request now? Please confirm all details are correct."
-);
+    const confirmed = confirm(
+      "Submit this repair request now? Please confirm all details are correct.",
+    );
 
-if (!confirmed) {
-  return;
-}
+    if (!confirmed) {
+      return;
+    }
 
-isSubmittingRepair = true;
+    isSubmittingRepair = true;
 
-submitButtons.forEach((btn) => {
+    submitButtons.forEach((btn) => {
       btn.disabled = true;
       btn.dataset.originalText = btn.innerText;
       btn.innerText = "Submitting...";
@@ -1311,9 +1450,9 @@ submitButtons.forEach((btn) => {
     console.error(err);
     showToast(err.message || friendlyError(err), "error");
   } finally {
-  isSubmittingRepair = false;
+    isSubmittingRepair = false;
 
-  submitButtons.forEach((btn) => {
+    submitButtons.forEach((btn) => {
       btn.disabled = false;
       btn.innerText = btn.dataset.originalText || "Submit";
     });
@@ -1351,10 +1490,7 @@ function validateStep(step) {
     if (input.disabled) continue;
 
     const value = input.value.trim();
-    const label =
-      input.placeholder ||
-      input.options?.[0]?.text ||
-      "This field";
+    const label = input.placeholder || input.options?.[0]?.text || "This field";
 
     clearFieldError(input);
 
@@ -1378,7 +1514,10 @@ function validateStep(step) {
     }
 
     if (input.id === "issue" && value.length < 10) {
-      setFieldError(input, "Please describe the issue in at least 10 characters");
+      setFieldError(
+        input,
+        "Please describe the issue in at least 10 characters",
+      );
       return false;
     }
   }
@@ -1505,7 +1644,8 @@ if (deviceImage) {
     reader.readAsDataURL(file);
   });
 }
-const AVATAR_API_URL = "https://bennyfix-backend-v.vercel.app/api/upload-avatar";
+const AVATAR_API_URL =
+  "https://bennyfix-backend-v.vercel.app/api/upload-avatar";
 
 window.handleAvatarUpload = async function (event) {
   const file = event.target.files[0];
@@ -1566,7 +1706,10 @@ window.handleAvatarUpload = async function (event) {
     showToast("Profile photo updated!", "success");
   } catch (err) {
     console.error(err);
-    showToast(err.message || "Could not upload photo. Please try again.", "error");
+    showToast(
+      err.message || "Could not upload photo. Please try again.",
+      "error",
+    );
     loadHeaderUser();
   } finally {
     event.target.value = "";
@@ -1704,7 +1847,9 @@ async function loadProfileStats() {
 
   const repairCountEl = document.getElementById("repairCount");
   const completedCountEl = document.getElementById("completedCount");
-  const profileCompletedCountEl = document.getElementById("profileCompletedCount");
+  const profileCompletedCountEl = document.getElementById(
+    "profileCompletedCount",
+  );
 
   if (repairCountEl) repairCountEl.innerText = total;
   if (completedCountEl) completedCountEl.innerText = completed;
@@ -1833,6 +1978,3 @@ document.querySelectorAll(".footer-section h4").forEach((h4) => {
     h4.parentElement.classList.toggle("active");
   });
 });
-
-document.querySelector(".credit").innerHTML =
-  `© ${new Date().getFullYear()} <span>Bennyfix Hub</span>`;
