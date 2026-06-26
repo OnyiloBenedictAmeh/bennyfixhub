@@ -33,6 +33,23 @@ const editBio =
   document.getElementById("editBio");
 const editProfileModal =
   document.getElementById("editProfileModal");
+const avatarModal =
+  document.getElementById("avatarModal");
+
+const avatarPreview =
+  document.getElementById("avatarPreview");
+
+const avatarFile =
+  document.getElementById("avatarFile");
+
+
+
+
+
+
+
+
+
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.location.href = "login.html";
@@ -320,3 +337,107 @@ async function loadClaimStats(uid) {
   claimCount.textContent =
     claimsSnap.size;
 }
+window.openAvatarModal = function () {
+
+  avatarPreview.src =
+    profileAvatar.src;
+
+  avatarModal.style.display =
+    "flex";
+
+};
+
+window.closeAvatarModal = function () {
+
+  avatarModal.style.display =
+    "none";
+
+};
+avatarFile.addEventListener(
+  "change",
+  (e) => {
+
+    const file =
+      e.target.files[0];
+
+    if (!file) return;
+
+    avatarPreview.src =
+      URL.createObjectURL(file);
+
+  }
+);
+window.uploadAvatar = async function () {
+
+  try {
+
+    const file =
+      avatarFile.files[0];
+
+    if (!file) {
+      showToast(
+        "Please select an image",
+        "error"
+      );
+      return;
+    }
+
+    showToast(
+      "Uploading photo...",
+      "info"
+    );
+
+    const token =
+      await auth.currentUser.getIdToken();
+
+    const formData =
+      new FormData();
+
+    formData.append(
+      "avatar",
+      file
+    );
+
+    const response =
+      await fetch(
+        "/api/upload-avatar",
+        {
+          method: "POST",
+          headers: {
+            Authorization:
+              `Bearer ${token}`
+          },
+          body: formData
+        }
+      );
+
+    const result =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.error
+      );
+    }
+
+    profileAvatar.src =
+      result.avatarUrl;
+
+    closeAvatarModal();
+
+    showToast(
+      "Profile photo updated",
+      "success"
+    );
+
+  } catch (error) {
+
+    showToast(
+      error.message ||
+      "Upload failed",
+      "error"
+    );
+
+  }
+
+};
