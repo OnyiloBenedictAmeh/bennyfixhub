@@ -9,6 +9,7 @@ let resizeTimeout;
 
 const megaData = {
   support: {
+    icon: "bx-support",
     title: "Get expert help anytime, anywhere",
     text: "Our experts help you get the most out of your plan with premium expert tech support.",
     cards: [
@@ -19,6 +20,7 @@ const megaData = {
     ],
   },
   repairs: {
+    icon: "bx-wrench",
     title: "Fast & Reliable Repairs",
     text: "Certified technicians ready to fix your devices with warranty protection.",
     cards: [
@@ -29,6 +31,7 @@ const megaData = {
     ],
   },
   sales: {
+    icon: "bx-dollar-circle",
     title: "Maximize Your Device's Value",
     text: "Sell your old devices and get cash for them. We buy used devices at fair prices.",
     cards: [
@@ -47,15 +50,18 @@ function loadMega(menu) {
   document.getElementById("megaTitle").textContent = data.title;
   document.getElementById("megaText").textContent = data.text;
 
+  const iconEl = document.getElementById("megaIcon");
+  if (iconEl) iconEl.innerHTML = `<i class="bx ${data.icon}"></i>`;
+
   const grid = document.getElementById("megaGrid");
   grid.innerHTML = "";
 
   data.cards.forEach((card) => {
     const el = document.createElement("div");
-    el.className = "mega-card";
+    el.className = "mega-item";
     el.innerHTML = `
       <img src="${card.img}" alt="${card.title}">
-      <div class="mega-card-content">
+      <div class="mega-item-content">
         <h4>${card.title}</h4>
         <p>${card.desc}</p>
       </div>

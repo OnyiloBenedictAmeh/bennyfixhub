@@ -205,6 +205,19 @@
 
   </section>
 
+  <section class="card" id="messagesCard">
+    <div class="messages-header">
+      <h2>Messages</h2>
+      <button class="primary-btn" onclick="openUserMessageModal()">
+        Message Admin
+      </button>
+    </div>
+
+    <div id="userMessages" class="message-list">
+      No messages yet
+    </div>
+  </section>
+
 </div>
 <div id="editProfileModal" class="modal hidden">
 
@@ -247,6 +260,25 @@
 
   </div>
 
+</div>
+
+<div id="userMessageModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Message Admin</h2>
+      <button onclick="closeUserMessageModal()">×</button>
+    </div>
+
+    <textarea
+      id="userMessageText"
+      class="message-textarea"
+      placeholder="Type your message"
+    ></textarea>
+
+    <button class="primary-btn" onclick="sendUserMessage()">
+      Send Message
+    </button>
+  </div>
 </div>
 
 <script type="module" src="user-profile.js"></script>

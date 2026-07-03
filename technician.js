@@ -4,6 +4,8 @@ import {
   doc,
   getDoc,
   updateDoc,
+  addDoc,
+  getDocs,
   collection,
   query,
   where,
@@ -15,6 +17,7 @@ import {
 
 let currentTechnician = null;
 let assignedRepairs = [];
+let techMessages = [];
 let activeNoteRepairId = null;
 
 const loading = document.getElementById("techLoading");
@@ -49,6 +52,7 @@ onAuthStateChanged(auth, async (user) => {
 
   renderTechnicianProfile();
   listenToAssignedRepairs(user.uid);
+  listenToTechMessages(user.uid);
 
   loading.classList.add("hidden");
   dashboard.classList.remove("hidden");
@@ -103,6 +107,50 @@ function listenToAssignedRepairs(uid) {
     console.error(err);
     showToast("Could not load assigned repairs");
   });
+}
+
+function listenToTechMessages(uid) {
+  onSnapshot(collection(db, "notifications"), (snapshot) => {
+    techMessages = [];
+
+    snapshot.forEach((docSnap) => {
+      const message = {
+        id: docSnap.id,
+        ...docSnap.data(),
+      };
+
+      if (
+        message.type === "message" &&
+        (message.receiverUid === uid || message.senderUid === uid)
+      ) {
+        techMessages.push(message);
+      }
+    });
+
+    techMessages.sort((a, b) => getTime(b.createdAt) - getTime(a.createdAt));
+    renderTechMessages();
+  });
+}
+
+function renderTechMessages() {
+  const container = document.getElementById("techMessages");
+  if (!container) return;
+
+  if (!techMessages.length) {
+    container.innerHTML = `<div class="empty-state">No messages yet.</div>`;
+    return;
+  }
+
+  container.innerHTML = techMessages.map((message) => {
+    const outgoing = message.senderUid === currentTechnician.uid;
+    return `
+      <article class="message-card ${outgoing ? "outgoing" : "incoming"}">
+        <strong>${outgoing ? "You" : message.senderName || "Admin"}</strong>
+        <p>${message.message || ""}</p>
+        <small>${formatDate(message.createdAt)}</small>
+      </article>
+    `;
+  }).join("");
 }
 
 function renderStats() {
@@ -257,6 +305,56 @@ window.updateAvailability = async function (availability) {
   }
 };
 
+window.openTechMessageModal = function () {
+  document.getElementById("techMessageText").value = "";
+  document.getElementById("techMessageModal").classList.remove("hidden");
+};
+
+window.closeTechMessageModal = function () {
+  document.getElementById("techMessageModal").classList.add("hidden");
+};
+
+window.sendTechMessage = async function () {
+  const text = normalizeMessageText(
+    document.getElementById("techMessageText").value
+  );
+
+  if (!text) return showToast("Write a message first");
+
+  const duplicate = await hasRecentDuplicateMessage({
+    senderUid: currentTechnician.uid,
+    receiverUid: "admin",
+    message: text,
+  });
+
+  if (duplicate) {
+    return showToast("This message was already sent recently");
+  }
+
+  try {
+    await addDoc(collection(db, "notifications"), {
+      type: "message",
+      audience: "admin",
+      senderUid: currentTechnician.uid,
+      senderRole: "technician",
+      senderName: currentTechnician.name || currentTechnician.email || "Technician",
+      receiverUid: "admin",
+      receiverRole: "admin",
+      receiverName: "Admin",
+      message: text,
+      dedupeKey: `${currentTechnician.uid}_admin_${text.toLowerCase()}`,
+      read: false,
+      createdAt: serverTimestamp(),
+    });
+
+    closeTechMessageModal();
+    showToast("Message sent");
+  } catch (err) {
+    console.error(err);
+    showToast("Could not send message");
+  }
+};
+
 window.showTechSection = function (section) {
   document.querySelectorAll(".tech-section")
     .forEach((el) => el.classList.add("hidden"));
@@ -297,6 +395,34 @@ function getTime(value) {
   if (value.toDate) return value.toDate().getTime();
   if (value.seconds) return value.seconds * 1000;
   return new Date(value).getTime() || 0;
+}
+
+function formatDate(value) {
+  if (!value) return "Just now";
+  if (value.toDate) return value.toDate().toLocaleString();
+  if (value.seconds) return new Date(value.seconds * 1000).toLocaleString();
+  return String(value);
+}
+
+function normalizeMessageText(text) {
+  return text.trim().replace(/\s+/g, " ");
+}
+
+async function hasRecentDuplicateMessage({ senderUid, receiverUid, message }) {
+  const normalized = normalizeMessageText(message).toLowerCase();
+  const duplicateQuery = query(
+    collection(db, "notifications"),
+    where("type", "==", "message"),
+    where("dedupeKey", "==", `${senderUid}_${receiverUid}_${normalized}`)
+  );
+
+  const snapshot = await getDocs(duplicateQuery);
+  const now = Date.now();
+
+  return snapshot.docs.some((docSnap) => {
+    const sentAt = getTime(docSnap.data().createdAt);
+    return sentAt && now - sentAt < 60000;
+  });
 }
 
 function showToast(message) {

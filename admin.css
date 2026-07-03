@@ -1685,3 +1685,186 @@ body {
     height: 200px;
   }
 }
+/* ==========================
+   MARKETING
+========================== */
+
+.marketing-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+
+}
+
+.marketing-grid{
+
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:25px;
+
+}
+
+.compose-card,
+.publish-card{
+
+    background:var(--card-bg,#fff);
+
+    padding:20px;
+
+    border-radius:16px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.08);
+
+}
+
+.compose-card{
+
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+
+}
+
+.compose-card textarea{
+
+    min-height:220px;
+
+    resize:vertical;
+
+    padding:15px;
+
+}
+
+#marketingPreview{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fill,120px);
+
+    gap:15px;
+
+}
+
+#marketingPreview img{
+
+    width:120px;
+
+    height:120px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+}
+@media(max-width:900px){
+
+    .marketing-grid{
+
+        grid-template-columns:1fr;
+
+    }
+
+}
+/* ==========================
+   BENNYFIX UPLOADER
+========================== */
+
+.bf-dropzone{
+
+    border:2px dashed #cbd5e1;
+
+    border-radius:16px;
+
+    padding:50px 20px;
+
+    text-align:center;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    background:#fafafa;
+
+}
+
+.bf-dropzone:hover{
+
+    border-color:#2563eb;
+
+    background:#eff6ff;
+
+}
+
+.bf-dropzone.dragging{
+
+    border-color:#2563eb;
+
+    background:#dbeafe;
+
+    transform:scale(1.01);
+
+}
+
+.bf-icon{
+
+    font-size:48px;
+
+    margin-bottom:10px;
+
+}
+
+.bf-preview{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fill,140px);
+
+    gap:16px;
+
+    margin-top:20px;
+
+}
+
+.bf-file{
+
+    position:relative;
+
+}
+
+.bf-file img{
+
+    width:140px;
+
+    height:140px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+
+}
+
+.bf-file button{
+
+    position:absolute;
+
+    top:8px;
+
+    right:8px;
+
+    width:28px;
+
+    height:28px;
+
+    border:none;
+
+    border-radius:50%;
+
+    cursor:pointer;
+
+    background:#ef4444;
+
+    color:#fff;
+
+}

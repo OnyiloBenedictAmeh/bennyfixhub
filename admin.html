@@ -93,6 +93,10 @@
     <i class='bx bx-hard-hat'></i>
     <span>Technicians</span>
   </button>
+  <button onclick="showSection('marketing')">
+  <i class='bx bx-bullseye'></i>
+  <span>Marketing</span>
+</button>
 
   <button onclick="toggleNotifications()" id="sidebar-notifications">
     <i class="bx bx-bell"></i>
@@ -229,9 +233,80 @@
 </div>
 
 <!-- USERS SECTION -->
+ <!-- MARKETING SECTION -->
+<div id="marketing" class="section" style="display:none;">
+
+  <div class="marketing-header">
+    <div>
+      <h2>Marketing Center</h2>
+      <p>Create and publish social media content.</p>
+    </div>
+
+    <button id="saveDraftBtn" class="primary-btn">
+      Save Draft
+    </button>
+  </div>
+
+  <div class="marketing-grid">
+
+    <div class="compose-card">
+
+      <label>Caption</label>
+
+      <textarea
+        id="postCaption"
+        placeholder="What's happening today at BennyFix?"
+      ></textarea>
+
+      <label>Upload Images</label>
+
+      <input
+        type="file"
+        id="marketingImages"
+        multiple
+        accept="image/*"
+      >
+
+      <div id="marketingPreview"></div>
+
+    </div>
+
+    <div class="publish-card">
+
+      <h3>Platforms</h3>
+
+      <label>
+        <input type="checkbox" checked id="facebookPlatform">
+        Facebook
+      </label>
+
+      <label>
+        <input type="checkbox" checked id="instagramPlatform">
+        Instagram
+      </label>
+
+      <label>
+        <input type="checkbox" id="linkedinPlatform">
+        LinkedIn
+      </label>
+
+      <button id="uploadImagesBtn" class="assign-btn">
+        Upload Images
+      </button>
+
+      <button id="publishBtn" class="assign-btn">
+        Publish
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script type="module" src="admin.js"></script>
+  <script type="module" src="/marketing/marketing.js"></script>
 
 </body>
 </html>

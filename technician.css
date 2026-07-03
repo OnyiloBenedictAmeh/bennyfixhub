@@ -267,6 +267,41 @@ body {
   gap: 12px;
 }
 
+.message-list {
+  display: grid;
+  gap: 12px;
+}
+
+.message-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  background: #f8fafc;
+}
+
+.message-card.outgoing {
+  border-left: 4px solid #16a34a;
+}
+
+.message-card.incoming {
+  border-left: 4px solid #2563eb;
+}
+
+.message-card strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.message-card p {
+  margin: 0 0 6px;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.message-card small {
+  color: #64748b;
+}
+
 .repair-card {
   border: 1px solid #e5e7eb;
   border-radius: 12px;
@@ -419,6 +454,7 @@ body.dark .stat-card,
 body.dark .panel,
 body.dark .profile-panel,
 body.dark .repair-card,
+body.dark .message-card,
 body.dark .profile-grid div,
 body.dark .modal-box {
   background: #111827;
@@ -430,6 +466,8 @@ body.dark .tech-profile p,
 body.dark .stat-card p,
 body.dark .repair-card p,
 body.dark .repair-card small,
+body.dark .message-card p,
+body.dark .message-card small,
 body.dark .profile-grid span {
   color: #cbd5e1;
 }
@@ -444,30 +482,93 @@ body.dark textarea {
 @media (max-width: 900px) {
   .tech-dashboard {
     grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
   }
 
   .tech-sidebar {
     height: auto;
     position: sticky;
+    top: 0;
     z-index: 10;
     flex-direction: row;
+    flex-wrap: wrap;
     overflow-x: auto;
     align-items: center;
   }
 
   .brand {
-    min-width: 190px;
-    margin-bottom: 0;
+    flex: 1 0 100%;
+    justify-content: flex-start;
+    margin-bottom: 10px;
+  }
+
+  .brand img {
+    width: 40px;
+    height: 40px;
   }
 
   .tech-sidebar button {
-    min-width: max-content;
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .tech-sidebar button span {
+    display: none;
+  }
+
+  .tech-sidebar button i {
+    font-size: 20px;
   }
 
   .sidebar-actions {
     display: flex;
     margin-top: 0;
     margin-left: auto;
+  }
+}
+
+/* Phones: icon-only logo, no text, to save vertical space */
+@media (max-width: 600px) {
+  .brand img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .brand div {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .tech-sidebar {
+    justify-content: flex-start;
+    gap: 6px;
+  }
+
+  .tech-sidebar button {
+    min-width: 42px;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .tech-sidebar button span {
+    display: none;
+  }
+
+  .tech-sidebar button i {
+    font-size: 20px;
+  }
+
+  .sidebar-actions {
+    margin-left: 0;
+    flex: 0 0 auto;
   }
 }
 
@@ -497,6 +598,29 @@ body.dark textarea {
 
   .repair-actions select,
   .repair-actions button {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .tech-sidebar {
+    padding: 10px;
+  }
+
+  .tech-profile {
+    align-items: flex-start;
+  }
+
+  .tech-profile h1 {
+    font-size: 18px;
+  }
+
+  .panel-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .panel-header button {
     width: 100%;
   }
 }

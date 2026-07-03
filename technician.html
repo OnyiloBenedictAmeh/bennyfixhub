@@ -41,10 +41,6 @@
           <i class="bx bx-user"></i>
           <span>Profile</span>
         </button>
-        <button onclick="showTechSection('messages')" id="nav-messages">
-          <i class="bx bx-message-rounded-dots"></i>
-          <span>Messages</span>
-        </button>
 
         <div class="sidebar-actions">
           <button onclick="toggleTechTheme()">
@@ -148,16 +144,6 @@
             </div>
           </div>
         </section>
-
-        <section id="messages" class="tech-section hidden">
-          <div class="panel">
-            <div class="panel-header">
-              <h2>Messages</h2>
-              <button onclick="openTechMessageModal()">Message Admin</button>
-            </div>
-            <div id="techMessages" class="message-list"></div>
-          </div>
-        </section>
       </section>
     </section>
   </main>
@@ -169,16 +155,6 @@
       <p id="noteRepairTitle">Repair update</p>
       <textarea id="repairNote" placeholder="Write a short update for this repair"></textarea>
       <button onclick="saveRepairNote()" class="primary-btn">Save Note</button>
-    </div>
-  </div>
-
-  <div id="techMessageModal" class="modal hidden">
-    <div class="modal-box">
-      <button class="close-btn" onclick="closeTechMessageModal()">×</button>
-      <h3>Message Admin</h3>
-      <p>Send a message to the admin team.</p>
-      <textarea id="techMessageText" placeholder="Type your message"></textarea>
-      <button onclick="sendTechMessage()" class="primary-btn">Send Message</button>
     </div>
   </div>
 

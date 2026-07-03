@@ -6,15 +6,18 @@ import {
   query,
   where,
   collection,
+  addDoc,
   getDocs,
   onSnapshot,
   updateDoc,
+  serverTimestamp,
   onAuthStateChanged,
 } from "./js/firebase.js";
 let currentUid = null;
 let viewedUid = null;
 let isViewingOwnProfile = true;
 let currentUserRole = "user";
+let userMessages = [];
 const AVATAR_UPLOAD_API_URL =
   "https://bennyfix-backend-v.vercel.app/api/upload-avatar";
 const previousPageUrl = document.referrer;
@@ -101,6 +104,7 @@ onAuthStateChanged(auth, async (user) => {
     await loadRepairStats(viewedUid);
     await loadRepairs(viewedUid);
     await loadActivity(viewedUid);
+    listenToUserMessages(viewedUid);
   } finally {
     finishProfileLoading();
   }
@@ -177,6 +181,52 @@ window.goBackFromProfile = function () {
 
   window.location.href = fallbackPage;
 };
+
+function listenToUserMessages(uid) {
+  if (!isViewingOwnProfile) return;
+
+  onSnapshot(collection(db, "notifications"), (snapshot) => {
+    userMessages = [];
+
+    snapshot.forEach((docSnap) => {
+      const message = {
+        id: docSnap.id,
+        ...docSnap.data(),
+      };
+
+      if (
+        message.type === "message" &&
+        (message.receiverUid === uid || message.senderUid === uid)
+      ) {
+        userMessages.push(message);
+      }
+    });
+
+    userMessages.sort((a, b) => getMessageTime(b.createdAt) - getMessageTime(a.createdAt));
+    renderUserMessages();
+  });
+}
+
+function renderUserMessages() {
+  const container = document.getElementById("userMessages");
+  if (!container) return;
+
+  if (!userMessages.length) {
+    container.innerHTML = "<p>No messages yet.</p>";
+    return;
+  }
+
+  container.innerHTML = userMessages.map((message) => {
+    const outgoing = message.senderUid === currentUid;
+    return `
+      <div class="message-item ${outgoing ? "outgoing" : "incoming"}">
+        <strong>${outgoing ? "You" : message.senderName || "Admin"}</strong>
+        <p>${message.message || ""}</p>
+        <small>${formatMessageDate(message.createdAt)}</small>
+      </div>
+    `;
+  }).join("");
+}
 
 async function loadUserProfile(uid) {
   const snap = await getDoc(doc(db, "users", uid));
@@ -447,6 +497,97 @@ window.saveProfile = async function () {
     alert("Failed to update profile");
   }
 };
+
+window.openUserMessageModal = function () {
+  document.getElementById("userMessageText").value = "";
+  document.getElementById("userMessageModal").classList.remove("hidden");
+  document.getElementById("userMessageModal").style.display = "flex";
+};
+
+window.closeUserMessageModal = function () {
+  document.getElementById("userMessageModal").classList.add("hidden");
+  document.getElementById("userMessageModal").style.display = "none";
+};
+
+window.sendUserMessage = async function () {
+  const text = normalizeMessageText(
+    document.getElementById("userMessageText").value
+  );
+
+  if (!text) return showToast("Write a message first", "info");
+
+  const duplicate = await hasRecentDuplicateMessage({
+    senderUid: currentUid,
+    receiverUid: "admin",
+    message: text,
+  });
+
+  if (duplicate) {
+    return showToast("This message was already sent recently", "info");
+  }
+
+  const snap = await getDoc(doc(db, "users", currentUid));
+  const data = snap.exists() ? snap.data() : {};
+
+  try {
+    await addDoc(collection(db, "notifications"), {
+      type: "message",
+      audience: "admin",
+      senderUid: currentUid,
+      senderRole: data.role || "user",
+      senderName: data.name || data.email || "User",
+      receiverUid: "admin",
+      receiverRole: "admin",
+      receiverName: "Admin",
+      message: text,
+      dedupeKey: `${currentUid}_admin_${text.toLowerCase()}`,
+      read: false,
+      createdAt: serverTimestamp(),
+    });
+
+    closeUserMessageModal();
+    showToast("Message sent", "success");
+  } catch (err) {
+    console.error(err);
+    showToast("Could not send message", "error");
+  }
+};
+
+function normalizeMessageText(text) {
+  return text.trim().replace(/\s+/g, " ");
+}
+
+function getMessageTime(value) {
+  if (!value) return 0;
+  if (value.toDate) return value.toDate().getTime();
+  if (value.seconds) return value.seconds * 1000;
+  return new Date(value).getTime() || 0;
+}
+
+function formatMessageDate(value) {
+  if (!value) return "Just now";
+  if (value.toDate) return value.toDate().toLocaleString();
+  if (value.seconds) return new Date(value.seconds * 1000).toLocaleString();
+  return String(value);
+}
+
+async function hasRecentDuplicateMessage({ senderUid, receiverUid, message }) {
+  const normalized = normalizeMessageText(message).toLowerCase();
+  const duplicateQuery = query(
+    collection(db, "notifications"),
+    where("type", "==", "message"),
+    where("dedupeKey", "==", `${senderUid}_${receiverUid}_${normalized}`)
+  );
+
+  const snapshot = await getDocs(duplicateQuery);
+  const now = Date.now();
+
+  return snapshot.docs.some((docSnap) => {
+    const sentAt = getMessageTime(docSnap.data().createdAt);
+    return sentAt && now - sentAt < 60000;
+  });
+}
+
 async function loadClaimStats(uid) {
 
   const claimsQuery = query(
