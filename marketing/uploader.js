@@ -8,6 +8,8 @@ export class Uploader {
 
         this.multiple = options.multiple ?? true;
 
+        this.onAdd = options.onAdd || null;
+
         this.files = [];
 
         this.render();
@@ -66,6 +68,8 @@ export class Uploader {
 
             this.addFiles(e.target.files);
 
+            this.input.value = "";
+
         });
 
         this.dropzone.addEventListener("dragover", e => {
@@ -94,15 +98,25 @@ export class Uploader {
 
     }
 
-    addFiles(files) {
+    addFiles(fileList) {
 
-        [...files].forEach(file => {
+        const added = [];
+
+        [...fileList].forEach(file => {
 
             this.files.push(file);
 
             this.createPreview(file);
 
+            added.push(file);
+
         });
+
+        if (added.length && this.onAdd) {
+
+            this.onAdd(added);
+
+        }
 
     }
 
@@ -137,6 +151,14 @@ export class Uploader {
     getFiles() {
 
         return this.files;
+
+    }
+
+    clear() {
+
+        this.files = [];
+
+        this.preview.innerHTML = "";
 
     }
 

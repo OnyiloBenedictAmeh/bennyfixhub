@@ -247,57 +247,80 @@
     </button>
   </div>
 
-  <div class="marketing-grid">
+  <div class="marketing-tabs">
+    <button class="marketing-tab active" data-tab="compose">
+      Compose
+    </button>
+    <button class="marketing-tab" data-tab="library">
+      Media Library
+    </button>
+  </div>
 
-    <div class="compose-card">
+  <!-- COMPOSE TAB -->
+  <div id="marketingTab-compose" class="marketing-panel">
+    <div class="marketing-grid">
 
-      <label>Caption</label>
+      <div class="compose-card">
 
-      <textarea
-        id="postCaption"
-        placeholder="What's happening today at BennyFix?"
-      ></textarea>
+        <label>Caption</label>
 
-      <label>Upload Images</label>
+        <textarea
+          id="postCaption"
+          placeholder="What's happening today at BennyFix?"
+        ></textarea>
 
-      <input
-        type="file"
-        id="marketingImages"
-        multiple
-        accept="image/*"
-      >
+        <label>Images</label>
 
-      <div id="marketingPreview"></div>
+        <div id="marketingUploader"></div>
+
+        <div id="marketingSelectedImages" class="marketing-selected-grid"></div>
+
+      </div>
+
+      <div class="publish-card">
+
+        <h3>Platforms</h3>
+
+        <label>
+          <input type="checkbox" checked id="facebookPlatform">
+          Facebook
+        </label>
+
+        <label>
+          <input type="checkbox" checked id="instagramPlatform">
+          Instagram
+        </label>
+
+        <label>
+          <input type="checkbox" id="linkedinPlatform">
+          LinkedIn
+        </label>
+
+        <button id="publishBtn" class="assign-btn">
+          Publish
+        </button>
+
+      </div>
 
     </div>
+  </div>
 
-    <div class="publish-card">
+  <!-- MEDIA LIBRARY TAB -->
+  <div id="marketingTab-library" class="marketing-panel" style="display:none;">
 
-      <h3>Platforms</h3>
+    <div class="library-header">
+      <div>
+        <h3>Media Library</h3>
+        <p>Reuse images across posts. Click an image to attach it to the post you're composing.</p>
+      </div>
 
-      <label>
-        <input type="checkbox" checked id="facebookPlatform">
-        Facebook
-      </label>
-
-      <label>
-        <input type="checkbox" checked id="instagramPlatform">
-        Instagram
-      </label>
-
-      <label>
-        <input type="checkbox" id="linkedinPlatform">
-        LinkedIn
-      </label>
-
-      <button id="uploadImagesBtn" class="assign-btn">
-        Upload Images
+      <button id="libraryUploadBtn" class="assign-btn">
+        + Upload
       </button>
+    </div>
 
-      <button id="publishBtn" class="assign-btn">
-        Publish
-      </button>
-
+    <div id="mediaLibraryGrid" class="media-library-grid">
+      <p class="empty-state">Loading media...</p>
     </div>
 
   </div>
