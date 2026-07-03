@@ -7,6 +7,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  updateDoc,
   collection,
   serverTimestamp,
   onAuthStateChanged,
@@ -15,6 +16,10 @@ import {
   signOut,
   sendEmailVerification,
   sendPasswordResetEmail,
+  storage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
 } from "./firebase.js";
 
 import {
@@ -39,6 +44,79 @@ export async function getUserProfile(uid) {
   const snap = await getDoc(doc(db, "users", uid));
   return snap.exists() ? snap.data() : null;
 }
+
+function avatarFallback(name = "User") {
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+    name
+  )}&background=487DE7&color=fff`;
+}
+
+function setAccountAvatar(src, name = "User") {
+  const avatarCircle = document.getElementById("avatarCircle");
+  if (!avatarCircle) return;
+
+  avatarCircle.innerHTML = `
+    <img
+      src="${src}"
+      alt="${name} profile picture"
+      onerror="this.src='${avatarFallback(name)}'"
+    />
+  `;
+}
+
+// =========================
+// ACCOUNT PROFILE DISPLAY
+// =========================
+window.loadHeaderUser = async function () {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const nameEl = document.getElementById("userName");
+  const roleEl = document.getElementById("userRole");
+  const technicianLink = document.getElementById("technicianDashboardLink");
+
+  const data = await getUserProfile(user.uid);
+  const name = data?.name || user.displayName || user.email?.split("@")[0] || "User";
+  const role = data?.role || "BennyFix Hub Member";
+  const avatar = data?.avatar || avatarFallback(name);
+
+  if (nameEl) nameEl.textContent = name;
+  if (roleEl) roleEl.textContent = role;
+  if (technicianLink) {
+    technicianLink.style.display = role === "technician" ? "flex" : "none";
+  }
+  setAccountAvatar(avatar, name);
+};
+
+window.handleAvatarUpload = async function (event) {
+  const file = event.target.files?.[0];
+  const user = auth.currentUser;
+
+  if (!file || !user) return;
+
+  const previewUrl = URL.createObjectURL(file);
+  setAccountAvatar(previewUrl, user.email?.split("@")[0] || "User");
+
+  try {
+    const avatarRef = ref(storage, `avatars/${user.uid}`);
+    await uploadBytes(avatarRef, file);
+    const avatarUrl = await getDownloadURL(avatarRef);
+
+    await updateDoc(doc(db, "users", user.uid), {
+      avatar: avatarUrl,
+    });
+
+    await window.loadHeaderUser();
+    showToast("Profile picture updated", "success");
+  } catch (err) {
+    console.error(err);
+    await window.loadHeaderUser();
+    showToast("Could not update profile picture", "error");
+  } finally {
+    URL.revokeObjectURL(previewUrl);
+    event.target.value = "";
+  }
+};
 
 // =========================
 // LOGIN
@@ -279,6 +357,11 @@ function startResendTimer() {
 // =========================
 // ACCOUNT PANEL
 // =========================
+window.openAuth = function () {
+  const authModal = document.getElementById("authModal");
+  if (authModal) authModal.style.display = "flex";
+};
+
 window.openAccountPanel = function () {
   document.getElementById("accountPanel").classList.add("open");
 };

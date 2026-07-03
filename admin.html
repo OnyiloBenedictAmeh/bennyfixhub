@@ -6,6 +6,7 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#111827">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="icon" type="image/png" sizes="512x512" href="/bennyfix hub white-logo.png" />
   <meta name="apple-mobile-web-app-title" content="BennyFix Admin">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="admin.css">
@@ -15,25 +16,51 @@
 
   <!-- LOADING / SECURITY GATE -->
   <div id="loading" class="loading">
-  <p id="loadingText"></p>
-</div>
+    <div class="security-loader">
+      <div class="security-mark">
+        <i class='bx bx-shield-quarter'></i>
+      </div>
+      <div class="loader-lines">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </div>
 
   <!-- ADMIN LOGIN (GATE ENTRY) -->
   <div id="adminLogin" class="admin-login" style="display:none;">
-  
-  <div class="login-box">
-    <h2>Admin Access</h2>
-    <p class="subtitle">Secure login required</p>
+    <div class="login-shell">
+      <div class="login-brand">
+        <div class="brand-icon">
+          <i class='bx bx-lock-alt'></i>
+        </div>
+        <span>BennyFix Hub</span>
+      </div>
 
-    <input id="adminEmail" type="email" placeholder="Email" />
-    <input id="adminPassword" type="password" placeholder="Password" />
+      <div class="login-box">
+        <span class="login-pill">Admin Gate</span>
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Sign in to manage repairs, users, and technician workflows.</p>
 
-    <button onclick="adminLogin()" class="login-btn">
-      Login
-    </button>
+        <label class="input-group">
+          <i class='bx bx-envelope'></i>
+          <input id="adminEmail" type="email" placeholder="Admin email" />
+        </label>
 
-    <p id="adminError" class="error-text"></p>
-  </div>
+        <label class="input-group">
+          <i class='bx bx-key'></i>
+          <input id="adminPassword" type="password" placeholder="Password" />
+        </label>
+
+        <button onclick="adminLogin()" class="login-btn" id="adminLoginBtn">
+          <i class='bx bx-log-in-circle'></i>
+          <span>Enter Dashboard</span>
+        </button>
+
+        <p id="adminError" class="error-text"></p>
+      </div>
+    </div>
 
 </div>
 
@@ -62,9 +89,14 @@
     <span>Users</span>
   </button>
 
+  <button onclick="showSection('technicians')">
+    <i class='bx bx-hard-hat'></i>
+    <span>Technicians</span>
+  </button>
+
   <button onclick="toggleNotifications()" id="sidebar-notifications">
     <i class="bx bx-bell"></i>
-    <span>Notifications</span>
+    <span>Messages</span>
     <span id="notifBadge" class="badge">0</span>
   </button>
   <hr />
@@ -113,13 +145,6 @@
   </div>
 
 </div>
-<!-- NAVIGATION -->
-<!-- <div class="admin-nav">
-  <button onclick="showSection('overview')">📊 Overview</button>
-  <button onclick="showSection('repairs')">🛠 Repairs</button>
-  <button onclick="showSection('users')">👤 Users</button>
-  <button onclick="logoutAdmin()">🚪 Logout</button>
-</div> -->
 <!-- REPAIRS SECTION -->
 <div id="repairs" class="section" style="display:none;">
   <div id="repairsContainer" class="repairs-container">
@@ -132,6 +157,38 @@
 <div id="users" class="section" style="display:none;">
   <div id="usersContainer">
     <p class="empty-state">Loading users...</p>
+  </div>
+</div>
+
+<div id="technicians" class="section" style="display:none;">
+  <div id="techniciansContainer">
+    <p class="empty-state">Loading technicians...</p>
+  </div>
+</div>
+
+<!-- MESSAGES SECTION -->
+<div id="messages" class="section" style="display:none;">
+  <div class="messages-header">
+    <div>
+      <h2>Admin Messages</h2>
+      <p>Messages sent to and from the admin team.</p>
+    </div>
+
+    <div class="message-filters">
+      <button class="active" onclick="setMessageFilter('all')" id="messageFilter-all">
+        All
+      </button>
+      <button onclick="setMessageFilter('inbox')" id="messageFilter-inbox">
+        Inbox
+      </button>
+      <button onclick="setMessageFilter('sent')" id="messageFilter-sent">
+        Sent
+      </button>
+    </div>
+  </div>
+
+  <div id="messagesContainer" class="messages-container">
+    <p class="empty-state">Loading messages...</p>
   </div>
 </div>
 
@@ -152,6 +209,22 @@
 <button class="btn btn-secondary" onclick="closeTechForm()">
   Cancel
 </button>
+  </div>
+</div>
+
+<div id="messageModal" class="modal hidden">
+  <div class="modal-box">
+    <button class="close-btn" onclick="closeMessageModal()">×</button>
+    <h3>Send Message</h3>
+    <p id="messageRecipient">Choose a recipient</p>
+    <textarea
+      id="adminMessageText"
+      class="message-textarea"
+      placeholder="Type your message"
+    ></textarea>
+    <button class="assign-btn" onclick="sendAdminMessage()">
+      Send Message
+    </button>
   </div>
 </div>
 

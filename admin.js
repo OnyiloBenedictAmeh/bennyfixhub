@@ -9,6 +9,9 @@ let completed = 0;
 let statusChart = null;
 let newCount = 0;
 let technicians = [];
+let adminMessages = [];
+let activeMessageFilter = "all";
+let activeMessageRecipient = null;
 const sounds = {
   info: new Audio("sounds/notify-info.mp3"),
   success: new Audio("sounds/notify-success.mp3"),
@@ -47,26 +50,107 @@ function formatDate(value) {
   if (value.seconds) return new Date(value.seconds * 1000).toLocaleString();
   return String(value);
 }
+
+function getMessageTime(message) {
+  const value = message.createdAt || message.sentAt || message.time;
+
+  if (!value) return 0;
+  if (value.toDate) return value.toDate().getTime();
+  if (value.seconds) return value.seconds * 1000;
+
+  const parsed = new Date(value).getTime();
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function isAdminIncoming(message) {
+  const audience = (message.audience || message.to || "").toLowerCase();
+  const toRole = (message.toRole || "").toLowerCase();
+  const receiverRole = (message.receiverRole || "").toLowerCase();
+
+  return (
+    audience === "admin" ||
+    toRole === "admin" ||
+    receiverRole === "admin"
+  );
+}
+
+function isAdminOutgoing(message) {
+  const from = (message.from || "").toLowerCase();
+  const fromRole = (message.fromRole || message.senderRole || "").toLowerCase();
+  const audience = (message.audience || "").toLowerCase();
+
+  return (
+    from === "admin" ||
+    fromRole === "admin" ||
+    audience === "user"
+  );
+}
+
+function messageName(message, fallback) {
+  return (
+    message.senderName ||
+    message.fromName ||
+    message.name ||
+    message.email ||
+    message.senderEmail ||
+    fallback
+  );
+}
+
+function normalizeMessageText(text) {
+  return text.trim().replace(/\s+/g, " ");
+}
+
+async function hasRecentDuplicateMessage({ senderUid, receiverUid, message }) {
+  const normalized = normalizeMessageText(message).toLowerCase();
+  const dedupeKey = `${senderUid}_${receiverUid}_${normalized}`;
+  const duplicateQuery = query(
+    collection(db, "notifications"),
+    where("type", "==", "message"),
+    where("dedupeKey", "==", dedupeKey)
+  );
+
+  const snapshot = await getDocs(duplicateQuery);
+  const now = Date.now();
+
+  return snapshot.docs.some((docSnap) => {
+    const sentAt = getMessageTime(docSnap.data());
+    return sentAt && now - sentAt < 60000;
+  });
+}
 /* =========================
    UI STATES
 ========================= */
 function hideAll() {
-  document.getElementById("loading").style.display = "none";
-  document.getElementById("adminLogin").style.display = "none";
-  document.getElementById("adminDashboard").style.display = "none";
+  ["loading", "adminLogin", "adminDashboard"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    el.classList.remove("screen-enter", "screen-exit");
+    el.style.display = "none";
+  });
+}
+
+function showScreen(id, display = "flex") {
+  hideAll();
+
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  el.style.display = display;
+  el.classList.add("screen-enter");
 }
 
 function showLoginUI() {
-  hideAll();
   stopLoadingAnimation();
-  document.getElementById("adminLogin").style.display = "flex";
+  showScreen("adminLogin", "flex");
+  setLoginButtonLoading(false);
   document.getElementById("adminEmail").focus();
 }
 
 function showDashboard() {
-  hideAll();
   stopLoadingAnimation();
-  document.getElementById("adminDashboard").style.display = "flex";
+  showScreen("adminDashboard", "flex");
 }
 
 function showLoading() {
@@ -75,8 +159,7 @@ function showLoading() {
   // 🔥 If already visible, DO NOTHING
   if (el.style.display === "flex") return;
 
-  hideAll();
-  el.style.display = "flex";
+  showScreen("loading", "flex");
   startLoadingAnimation();
 }
 
@@ -124,6 +207,10 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+if (localStorage.getItem("bennyfix-admin-theme") === "dark") {
+  document.body.classList.add("dark");
+}
+
 /* =========================
    INITIAL STATE
 ========================= */
@@ -159,6 +246,18 @@ function stopLoadingAnimation() {
 function wait(ms) {
   return new Promise((res) => setTimeout(res, ms));
 }
+
+function setLoginButtonLoading(isLoading) {
+  const btn = document.getElementById("adminLoginBtn");
+  if (!btn) return;
+
+  btn.disabled = isLoading;
+  btn.classList.toggle("is-loading", isLoading);
+  btn.innerHTML = isLoading
+    ? "<i class='bx bx-loader-alt bx-spin'></i><span>Checking access...</span>"
+    : "<i class='bx bx-log-in-circle'></i><span>Enter Dashboard</span>";
+}
+
 onAuthStateChanged(auth, async (user) => {
   console.log("Current UID:", user?.uid);
 
@@ -206,13 +305,15 @@ window.adminLogin = async function () {
   }
 
   try {
-    errorBox.innerText = "Logging in...";
+    errorBox.innerText = "";
+    setLoginButtonLoading(true);
 
     await signInWithEmailAndPassword(auth, email, password);
 
     // IMPORTANT: do NOT change UI here
   } catch (err) {
     errorBox.innerText = err.message;
+    setLoginButtonLoading(false);
   }
 };
 
@@ -323,18 +424,27 @@ onSnapshot(collection(db, "repairs"), (snapshot) => {
 function listenToNotifications() {
   const badge = document.getElementById("notifBadge");
 
-  const q = query(
-    collection(db, "notifications"),
-    where("audience", "==", "admin")
-  );
-
-  onSnapshot(q, (snapshot) => {
+  onSnapshot(collection(db, "notifications"), (snapshot) => {
     let unread = 0;
+    adminMessages = [];
 
     snapshot.forEach((docSnap) => {
       const n = docSnap.data();
-      if (!n.read) unread++;
+      const message = {
+        id: docSnap.id,
+        ...n
+      };
+
+      if (isAdminIncoming(message) || isAdminOutgoing(message)) {
+        adminMessages.push(message);
+      }
+
+      if (isAdminIncoming(message) && !message.read) unread++;
     });
+
+    adminMessages.sort(
+      (a, b) => getMessageTime(b) - getMessageTime(a)
+    );
 
     newCount = unread;
 
@@ -342,11 +452,161 @@ function listenToNotifications() {
       badge.innerText = unread;
       badge.style.display = unread > 0 ? "flex" : "none";
     }
+
+    renderAdminMessages();
   }, (err) => {
     console.error("Notifications listener failed:", err);
-    showToast("Could not load notifications");
+    showToast("Could not load messages");
   });
 }
+
+function renderAdminMessages() {
+  const container = document.getElementById("messagesContainer");
+  if (!container) return;
+
+  const messages = adminMessages.filter((message) => {
+    if (activeMessageFilter === "inbox") return isAdminIncoming(message);
+    if (activeMessageFilter === "sent") return isAdminOutgoing(message);
+    return true;
+  });
+
+  if (!messages.length) {
+    container.innerHTML = `
+      <div class="empty-messages">
+        <i class='bx bx-message-rounded-dots'></i>
+        <p>No messages found.</p>
+      </div>
+    `;
+    return;
+  }
+
+  container.innerHTML = messages
+    .map((message) => {
+      const incoming = isAdminIncoming(message);
+      const outgoing = isAdminOutgoing(message) && !incoming;
+      const direction = incoming ? "incoming" : outgoing ? "outgoing" : "system";
+      const title = incoming
+        ? messageName(message, "User")
+        : outgoing
+        ? "Admin"
+        : "System";
+      const target =
+        message.toName ||
+        message.receiverName ||
+        message.audience ||
+        message.uid ||
+        "Admin";
+      const text =
+        message.message ||
+        message.body ||
+        message.text ||
+        "No message content";
+      const time = formatDate(message.createdAt || message.sentAt || message.time);
+      const unreadClass = incoming && !message.read ? " unread" : "";
+
+      return `
+        <article class="message-card ${direction}${unreadClass}">
+          <div class="message-icon">
+            <i class='bx ${
+              incoming
+                ? "bx-inbox"
+                : outgoing
+                ? "bx-send"
+                : "bx-info-circle"
+            }'></i>
+          </div>
+
+          <div class="message-body">
+            <div class="message-top">
+              <strong>${title}</strong>
+              <span>${time}</span>
+            </div>
+
+            <p>${text}</p>
+
+            <small>
+              ${incoming ? "Received by Admin" : `Sent to ${target}`}
+            </small>
+          </div>
+
+          <span class="message-direction">
+            ${incoming ? "Inbox" : outgoing ? "Sent" : "System"}
+          </span>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+window.setMessageFilter = function (filter) {
+  activeMessageFilter = filter;
+
+  document.querySelectorAll(".message-filters button")
+    .forEach((btn) => btn.classList.remove("active"));
+
+  document.getElementById(`messageFilter-${filter}`)
+    ?.classList.add("active");
+
+  renderAdminMessages();
+};
+
+window.openMessageModal = function (uid, name, role = "user") {
+  activeMessageRecipient = { uid, name, role };
+
+  document.getElementById("messageRecipient").innerText =
+    `To ${name} (${role})`;
+  document.getElementById("adminMessageText").value = "";
+  document.getElementById("messageModal").classList.remove("hidden");
+};
+
+window.closeMessageModal = function () {
+  activeMessageRecipient = null;
+  document.getElementById("messageModal").classList.add("hidden");
+};
+
+window.sendAdminMessage = async function () {
+  const text = normalizeMessageText(
+    document.getElementById("adminMessageText").value
+  );
+
+  if (!activeMessageRecipient || !text) {
+    return showToast("Write a message first");
+  }
+
+  const senderUid = auth.currentUser?.uid || "admin";
+  const duplicate = await hasRecentDuplicateMessage({
+    senderUid,
+    receiverUid: activeMessageRecipient.uid,
+    message: text,
+  });
+
+  if (duplicate) {
+    return showToast("This message was already sent recently");
+  }
+
+  try {
+    await addDoc(collection(db, "notifications"), {
+      type: "message",
+      audience: activeMessageRecipient.role,
+      senderUid,
+      senderRole: "admin",
+      senderName: "Admin",
+      receiverUid: activeMessageRecipient.uid,
+      receiverRole: activeMessageRecipient.role,
+      receiverName: activeMessageRecipient.name,
+      message: text,
+      dedupeKey: `${senderUid}_${activeMessageRecipient.uid}_${text.toLowerCase()}`,
+      read: false,
+      createdAt: serverTimestamp(),
+    });
+
+    closeMessageModal();
+    showToast("Message sent");
+  } catch (err) {
+    console.error(err);
+    showToast("Could not send message");
+  }
+};
 window.toggleJourney = async function (id) {
   const box = document.getElementById(`journey-${id}`);
 
@@ -374,18 +634,20 @@ window.toggleJourney = async function (id) {
   }
 };
 window.toggleNotifications = async function () {
+  showSection("messages");
 
-  const q = collection(db, "notifications");
-
-  const snapshot = await getDocs(q);
+  const unreadIncoming =
+    adminMessages.filter((message) =>
+      isAdminIncoming(message) && !message.read
+    );
 
   await Promise.all(
-  snapshot.docs.map((docSnap) =>
-    updateDoc(doc(db, "notifications", docSnap.id), {
-      read: true,
-    })
-  )
-);
+    unreadIncoming.map((message) =>
+      updateDoc(doc(db, "notifications", message.id), {
+        read: true,
+      })
+    )
+  );
 
   const badge = document.getElementById("notifBadge");
 
@@ -396,17 +658,7 @@ window.toggleNotifications = async function () {
     badge.innerText = "";
   }
 
-  showSection("repairs");
-
-  const btn = document.getElementById("tab-repairs");
-  if (btn) {
-    document.querySelectorAll(".bottom-nav button")
-      .forEach(b => b.classList.remove("active"));
-
-    btn.classList.add("active");
-  }
-
-  showToast("Notifications cleared");
+  renderAdminMessages();
 };
 /* =========================
    CHART SYSTEM
@@ -550,6 +802,10 @@ div.innerHTML = `
     View Profile
   </button>
 
+  <button onclick="openMessageModal('${docSnap.id}', '${name.replace(/'/g, "\\'")}', '${role}')">
+    Message
+  </button>
+
   ${
   role === "user"
     ? `<button onclick="makeTechnician('${docSnap.id}')">
@@ -623,10 +879,60 @@ function loadTechnicians() {
           id: docSnap.id,
           name: u.name || u.email || "Technician",
           email: u.email || "",
+          avatar: u.avatar || "",
+          availability: u.availability || "available",
         });
       }
     });
+
+    renderTechnicians();
   });
+}
+
+function renderTechnicians() {
+  const container = document.getElementById("techniciansContainer");
+  if (!container) return;
+
+  if (!technicians.length) {
+    container.innerHTML = `
+      <p class="empty-state">No technicians yet. Promote a user from the Users section.</p>
+    `;
+    return;
+  }
+
+  container.innerHTML = technicians
+    .map((tech) => {
+      const avatar =
+        tech.avatar ||
+        `https://ui-avatars.com/api/?name=${encodeURIComponent(tech.name || "Technician")}&background=2563eb&color=fff`;
+
+      return `
+        <div class="user-card technician-card">
+          <div class="user-info">
+            <img src="${avatar}" class="avatar" />
+            <div>
+              <p>${tech.name}</p>
+              <small>${tech.email || "No email"}</small>
+            </div>
+          </div>
+
+          <span class="role">${tech.availability || "available"}</span>
+
+          <button onclick="location.href='user-profile.html?uid=${tech.id}'">
+            View Profile
+          </button>
+
+          <button onclick="openMessageModal('${tech.id}', '${tech.name.replace(/'/g, "\\'")}', 'technician')">
+            Message
+          </button>
+
+          <button class="danger-btn" onclick="unemployTechnician('${tech.id}')">
+            Unemploy
+          </button>
+        </div>
+      `;
+    })
+    .join("");
 }
 window.assignTech = async function (repairId) {
   const select = document.getElementById("techSelect");
@@ -753,13 +1059,25 @@ function loadAdminDashboard() {
   showSection("overview");
 }
 window.logoutAdmin = async function () {
+  const dashboard = document.getElementById("adminDashboard");
+
+  if (dashboard) {
+    dashboard.classList.remove("screen-enter");
+    dashboard.classList.add("screen-exit");
+    await wait(280);
+  }
+
   await signOut(auth);
-  location.reload();
+  showLoginUI();
 };
 
 // ======Dark Mode Toggle
 window.toggleDarkMode = function () {
   document.body.classList.toggle("dark");
+  localStorage.setItem(
+    "bennyfix-admin-theme",
+    document.body.classList.contains("dark") ? "dark" : "light"
+  );
 };
 // ======= USERS======//
 window.openTechForm = function () {

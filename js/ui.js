@@ -22,6 +22,36 @@ export function showToast(message, type = "info") {
 window.showToast = showToast;
 
 // =========================
+// SITE THEME
+// =========================
+const savedTheme = localStorage.getItem("bennyfix-theme");
+
+if (savedTheme === "dark") {
+  document.body.classList.add("dark");
+}
+
+function syncThemeToggleIcon() {
+  const icon = document.querySelector(".theme-toggle i");
+  if (!icon) return;
+
+  const isDark = document.body.classList.contains("dark");
+  icon.className = isDark ? "bx bx-sun" : "bx bx-moon";
+}
+
+window.toggleSiteTheme = function () {
+  document.body.classList.toggle("dark");
+
+  localStorage.setItem(
+    "bennyfix-theme",
+    document.body.classList.contains("dark") ? "dark" : "light"
+  );
+
+  syncThemeToggleIcon();
+};
+
+syncThemeToggleIcon();
+
+// =========================
 // FIELD VALIDATION HELPERS
 // =========================
 export function setFieldError(input, message) {
@@ -141,6 +171,52 @@ document.addEventListener("click", (e) => {
     if (searchModal) searchModal.style.display = "none";
   }
 });
+
+// =========================
+// HERO BACKGROUND ROTATION
+// =========================
+const hero = document.querySelector(".hero-premium");
+
+if (hero) {
+  const heroImages = [
+    "images/1.jpg",
+    "images/2.jpg",
+    "images/3.jpg",
+    "images/4.jpg",
+    "images/5.jpg",
+    "images/6.jpg",
+    "images/7.jpg",
+    "images/8.jpg",
+    "images/9.png",
+    "images/10.jpg",
+    "images/11.jpg",
+    "images/12.jpg",
+    "images/13.jpg",
+  ];
+
+  let heroImageIndex = 0;
+
+  heroImages.forEach((src) => {
+    const img = new Image();
+    img.src = src;
+  });
+
+  hero.style.backgroundImage = `url("${heroImages[0]}")`;
+
+  setInterval(() => {
+    hero.classList.add("fade");
+
+    setTimeout(() => {
+      heroImageIndex =
+        (heroImageIndex + 1) % heroImages.length;
+
+      hero.style.backgroundImage =
+        `url("${heroImages[heroImageIndex]}")`;
+
+      hero.classList.remove("fade");
+    }, 400);
+  }, 5000);
+}
 
 // =========================
 // MOBILE MENU

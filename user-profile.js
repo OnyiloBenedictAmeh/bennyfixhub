@@ -12,6 +12,12 @@ import {
   onAuthStateChanged,
 } from "./js/firebase.js";
 let currentUid = null;
+let viewedUid = null;
+let isViewingOwnProfile = true;
+let currentUserRole = "user";
+const AVATAR_UPLOAD_API_URL =
+  "https://bennyfix-backend-v.vercel.app/api/upload-avatar";
+const previousPageUrl = document.referrer;
 const profileName = document.getElementById("profileName");
 const profileBio = document.getElementById("profileBio");
 const profileEmail = document.getElementById("profileEmail");
@@ -33,15 +39,21 @@ const editBio =
   document.getElementById("editBio");
 const editProfileModal =
   document.getElementById("editProfileModal");
-const avatarModal =
-  document.getElementById("avatarModal");
+const editProfileBtn =
+  document.getElementById("editProfileBtn");
+const avatarWrap =
+  document.querySelector(".avatar-wrap");
+const profileBackBtn =
+  document.getElementById("profileBackBtn");
+// const avatarModal =
+//   document.getElementById("avatarModal");
 
-const avatarPreview =
-  document.getElementById("avatarPreview");
+// const avatarPreview =
+//   document.getElementById("avatarPreview");
 
 const avatarFile =
   document.getElementById("avatarFile");
-
+let cropper = null;
 
 
 
@@ -57,13 +69,115 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   currentUid = user.uid;
+  viewedUid = user.uid;
 
-  await loadUserProfile(user.uid);
-  await loadRepairStats(user.uid);
-  await loadRepairs(user.uid);
-  await loadActivity(user.uid);
+  const requestedUid =
+    new URLSearchParams(window.location.search).get("uid");
+
+  const currentUserSnap =
+    await getDoc(doc(db, "users", user.uid));
+
+  currentUserRole =
+    currentUserSnap.exists()
+      ? currentUserSnap.data().role || "user"
+      : "user";
+
+  if (requestedUid && requestedUid !== user.uid) {
+    if (currentUserRole !== "admin") {
+      alert("You do not have permission to view this profile");
+      window.location.href = "user-profile.html";
+      return;
+    }
+
+    viewedUid = requestedUid;
+  }
+
+  isViewingOwnProfile = viewedUid === currentUid;
+  setProfileEditMode();
+  setBackButton();
+
+  try {
+    await loadUserProfile(viewedUid);
+    await loadRepairStats(viewedUid);
+    await loadRepairs(viewedUid);
+    await loadActivity(viewedUid);
+  } finally {
+    finishProfileLoading();
+  }
 //   await loadClaimStats(user.uid);
 });
+
+function finishProfileLoading() {
+  document.body.classList.remove("profile-loading");
+
+  document
+    .querySelectorAll(".skeleton-text")
+    .forEach((el) => {
+      el.classList.remove(
+        "skeleton-text",
+        "skeleton-title",
+        "skeleton-line",
+        "skeleton-chip",
+        "skeleton-number",
+        "skeleton-value"
+      );
+    });
+
+  document
+    .querySelectorAll(".skeleton-block, .skeleton-avatar")
+    .forEach((el) => {
+      el.classList.remove("skeleton-block", "skeleton-avatar");
+    });
+}
+
+function setProfileEditMode() {
+  const canEditProfile = isViewingOwnProfile;
+
+  if (editProfileBtn) {
+    editProfileBtn.style.display =
+      canEditProfile ? "inline-block" : "none";
+  }
+
+  if (avatarWrap) {
+    avatarWrap.classList.toggle("readonly", !canEditProfile);
+  }
+}
+
+function setBackButton() {
+  if (!profileBackBtn) return;
+
+  profileBackBtn.style.display = "inline-flex";
+
+  const cameFrom =
+    previousPageUrl.includes("admin.html")
+      ? "Admin"
+      : previousPageUrl.includes("index.html")
+      ? "Home"
+      : viewedUid !== currentUid
+      ? "Admin"
+      : "Home";
+
+  profileBackBtn.textContent = `← Back to ${cameFrom}`;
+}
+
+window.goBackFromProfile = function () {
+  const fallbackPage =
+    viewedUid && viewedUid !== currentUid
+      ? "admin.html"
+      : "index.html";
+
+  if (previousPageUrl) {
+    const previousUrl = new URL(previousPageUrl);
+
+    if (previousUrl.origin === window.location.origin) {
+      window.history.back();
+      return;
+    }
+  }
+
+  window.location.href = fallbackPage;
+};
+
 async function loadUserProfile(uid) {
   const snap = await getDoc(doc(db, "users", uid));
 
@@ -282,6 +396,13 @@ function showRepairJourney(repair) {
     .join("");
 }
 window.openEditProfile = async function () {
+  if (!isViewingOwnProfile) {
+    return showToast(
+      "Admins can view user profiles, but cannot edit them here",
+      "info"
+    );
+  }
+
   const snap = await getDoc(doc(db, "users", currentUid));
 
   if (!snap.exists()) return;
@@ -296,9 +417,11 @@ window.openEditProfile = async function () {
 
   editBio.value = data.bio || "";
 
+  editProfileModal.classList.remove("hidden");
   editProfileModal.style.display = "flex";
 };
 window.closeEditProfile = function () {
+  editProfileModal.classList.add("hidden");
   editProfileModal.style.display = "none";
 };
 window.saveProfile = async function () {
@@ -337,107 +460,227 @@ async function loadClaimStats(uid) {
   claimCount.textContent =
     claimsSnap.size;
 }
-window.openAvatarModal = function () {
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
 
-  avatarPreview.src =
-    profileAvatar.src;
-
-  avatarModal.style.display =
-    "flex";
-
-};
-
-window.closeAvatarModal = function () {
-
-  avatarModal.style.display =
-    "none";
-
-};
-avatarFile.addEventListener(
-  "change",
-  (e) => {
+    const avatar =
+      document.getElementById(
+        "profileAvatar"
+      );
 
     const file =
-      e.target.files[0];
+      document.getElementById(
+        "avatarFile"
+      );
 
-    if (!file) return;
+    avatar.addEventListener(
+      "click",
+      () => {
+        if (!isViewingOwnProfile) return;
+        file.click();
+      }
+    );
 
-    avatarPreview.src =
-      URL.createObjectURL(file);
-
+    file.addEventListener(
+      "change",
+      handleAvatarSelection
+    );
   }
 );
-window.uploadAvatar = async function () {
-
-  try {
-
-    const file =
-      avatarFile.files[0];
-
-    if (!file) {
-      showToast(
-        "Please select an image",
-        "error"
-      );
-      return;
-    }
-
-    showToast(
-      "Uploading photo...",
-      "info"
-    );
-
-    const token =
-      await auth.currentUser.getIdToken();
-
-    const formData =
-      new FormData();
-
-    formData.append(
-      "avatar",
-      file
-    );
-
-    const response =
-      await fetch(
-        "/api/upload-avatar",
-        {
-          method: "POST",
-          headers: {
-            Authorization:
-              `Bearer ${token}`
-          },
-          body: formData
-        }
-      );
-
-    const result =
-      await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        result.error
-      );
-    }
-
-    profileAvatar.src =
-      result.avatarUrl;
-
-    closeAvatarModal();
-
-    showToast(
-      "Profile photo updated",
-      "success"
-    );
-
-  } catch (error) {
-
-    showToast(
-      error.message ||
-      "Upload failed",
-      "error"
-    );
-
+function handleAvatarSelection(e) {
+  if (!isViewingOwnProfile) {
+    e.target.value = "";
+    return;
   }
 
+  const file =
+    e.target.files[0];
+
+  if (!file) return;
+
+  const reader =
+    new FileReader();
+
+  reader.onload = (event) => {
+
+    const cropImage =
+      document.getElementById(
+        "cropImage"
+      );
+
+    cropImage.src =
+      event.target.result;
+
+    const modal =
+  document.getElementById("cropModal");
+
+modal.classList.remove("hidden");
+modal.style.display = "flex";
+
+    if (cropper) {
+      cropper.destroy();
+    }
+
+    cropper =
+      new Cropper(
+        cropImage,
+        {
+          aspectRatio: 1,
+          viewMode: 1,
+          dragMode: "move",
+          autoCropArea: 1,
+          background: false,
+          movable: true,
+          zoomable: true,
+          cropBoxResizable: false
+        }
+      );
+  };
+
+  reader.readAsDataURL(file);
+}
+document
+  .getElementById(
+    "zoomSlider"
+  )
+  ?.addEventListener(
+    "input",
+    (e) => {
+
+      if (cropper) {
+        cropper.zoomTo(
+          e.target.value
+        );
+      }
+
+    }
+  );
+window.closeCropper =
+  function () {
+
+   const modal =
+  document.getElementById("cropModal");
+
+modal.classList.add("hidden");
+modal.style.display = "none";
+
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
+
+  };
+
+async function uploadAvatarToApi(
+  blob
+) {
+
+  const token =
+    await auth.currentUser
+      .getIdToken();
+
+  const formData =
+    new FormData();
+
+  formData.append(
+    "avatar",
+    blob,
+    "avatar.jpg"
+  );
+
+  const response =
+    await fetch(
+      AVATAR_UPLOAD_API_URL,
+      {
+        method: "POST",
+        headers: {
+          Authorization:
+            `Bearer ${token}`
+        },
+        body: formData
+      }
+    );
+
+  const result =
+    await response.json();
+
+  if (!response.ok) {
+    throw new Error(
+      result.error
+    );
+  }
+
+  return result.avatarUrl;
+}
+  window.cropAvatar =
+async function () {
+
+  console.log("SAVE CLICKED");
+
+  if (!cropper) {
+    console.log("NO CROPPER");
+    return;
+  }
+
+  console.log("CROPPER EXISTS");
+    const canvas =
+      cropper.getCroppedCanvas({
+        width: 500,
+        height: 500
+      });
+
+    canvas.toBlob(
+      async (blob) => {
+
+        try {
+
+          const avatarUrl =
+            await uploadAvatarToApi(
+              blob
+            );
+
+          profileAvatar.src =
+            avatarUrl;
+
+          closeCropper();
+
+          await loadUserProfile(
+            viewedUid
+          );
+
+          showToast(
+            "Profile photo updated",
+            "success"
+          );
+
+        } catch (err) {
+
+          showToast(
+            err.message,
+            "error"
+          );
+
+        }
+
+      },
+      "image/jpeg",
+      0.9
+    );
+
+  };
+  window.showToast = function showToast(message, type = "info") {
+  const container = document.getElementById("toastContainer");
+
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = `toast ${type}`;
+  toast.innerText = message;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 3000);
 };

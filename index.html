@@ -6,7 +6,7 @@
     <title>BennyFix Hub</title>
     <link rel="stylesheet" href="styles.css" />
     <link rel="stylesheet" href="dashboard.css" />
-    <link rel="icon" type="image/png" sizes="512x512" href="/bennyfix hub white-logo 512x512.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/bennyfix hub white-logo.png" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css"
@@ -87,6 +87,14 @@
             </div>
           </div>
           <a href="#"><i class="bx bx-file"></i> Claims</a>
+          <button
+            type="button"
+            class="theme-toggle"
+            onclick="toggleSiteTheme()"
+            aria-label="Toggle dark mode"
+          >
+            <i class="bx bx-moon"></i>
+          </button>
         </div>
       </div>
     </div>
@@ -509,6 +517,9 @@ document.querySelector(".copyright").textContent =
 
       <div class="account-links">
         <a href="user-profile.html"><i class="bx bx-grid-alt"></i> Dashboard</a>
+        <a href="technician.html" id="technicianDashboardLink" style="display:none;">
+          <i class="bx bx-wrench"></i> Technician Dashboard
+        </a>
         <a href="#"><i class="bx bx-wrench"></i> My Repairs</a>
         <a href="#"><i class="bx bx-receipt"></i> Claims</a>
         <a href="#"><i class="bx bx-cog"></i> Settings</a>
