@@ -328,3 +328,37 @@ For BennyFix Hub, I'd start by separating these three first:
 3. `auth.js` (Firebase auth)
 
 Those three alone will remove hundreds of lines from your main file and make debugging much easier.
+Perfect, clear scope. Since this stays in your existing Firebase/vanilla-JS admin, here's what needs to happen — and one thing to sort before I write code.
+
+The flow we're building
+Repair marked "Completed"
+   ↓
+Cloud Function / your Vercel backend fires
+   ↓
+GPT generates a caption from repair data
+   ↓
+Draft written to Firestore `marketingPosts` collection (status: "draft")
+   ↓
+Marketing → Drafts tab shows it → admin reviews/edits
+   ↓
+Admin clicks Publish → backend posts to Facebook Page + Instagram
+The pieces you need
+1. Backend endpoints (add to your existing bennyfix-backend-v.vercel.app)
+
+POST /api/generate-caption — takes repair data, calls OpenAI, returns caption
+POST /api/publish-post — takes {caption, imageUrls, platforms}, publishes to FB/IG
+(Optional) Firestore trigger on repairs status change → auto-creates draft
+2. Secrets on your Vercel backend (you add these in Vercel dashboard)
+
+OPENAI_API_KEY — from platform.openai.com
+META_PAGE_ACCESS_TOKEN — long-lived Facebook Page token
+FB_PAGE_ID — your Facebook Page ID
+IG_BUSINESS_ACCOUNT_ID — your Instagram Business Account ID (linked to the FB Page)
+3. Firestore additions
+
+marketingPosts collection ({caption, images, platforms, status, repairId, createdAt, publishedAt})
+Update your existing updateRepair to trigger draft creation when status → "Completed"
+4. Frontend wiring (in your existing admin.js / marketing.js)
+
+Load drafts/scheduled/published from marketingPosts
+Publish button → calls /api/publish-post

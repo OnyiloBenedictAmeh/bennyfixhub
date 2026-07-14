@@ -26,7 +26,15 @@ export class Uploader {
 
                 <input
                     type="file"
-                    class="bf-input"
+                    class="bf-input-camera"
+                    accept="image/*"
+                    capture="environment"
+                    hidden
+                >
+
+                <input
+                    type="file"
+                    class="bf-input-library"
                     accept="${this.accept}"
                     ${this.multiple ? "multiple" : ""}
                     hidden
@@ -36,9 +44,21 @@ export class Uploader {
 
                     <div class="bf-icon">☁️</div>
 
-                    <h3>Drop files here</h3>
+                    <h3>Add Images</h3>
 
-                    <p>or click to browse</p>
+                    <p>Drag &amp; drop, or pick an option below</p>
+
+                    <div class="bf-upload-actions">
+
+                        <button type="button" class="bf-action-btn bf-camera-btn">
+                            📷 Take Photo
+                        </button>
+
+                        <button type="button" class="bf-action-btn bf-library-btn">
+                            🖼️ Choose Files
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -48,9 +68,15 @@ export class Uploader {
 
         `;
 
-        this.input = this.container.querySelector(".bf-input");
+        this.cameraInput = this.container.querySelector(".bf-input-camera");
+
+        this.libraryInput = this.container.querySelector(".bf-input-library");
 
         this.dropzone = this.container.querySelector(".bf-dropzone");
+
+        this.cameraBtn = this.container.querySelector(".bf-camera-btn");
+
+        this.libraryBtn = this.container.querySelector(".bf-library-btn");
 
         this.preview = this.container.querySelector(".bf-preview");
 
@@ -58,17 +84,35 @@ export class Uploader {
 
     attachEvents() {
 
-        this.dropzone.addEventListener("click", () => {
+        this.cameraBtn.addEventListener("click", (e) => {
 
-            this.input.click();
+            e.stopPropagation();
+
+            this.cameraInput.click();
 
         });
 
-        this.input.addEventListener("change", e => {
+        this.libraryBtn.addEventListener("click", (e) => {
+
+            e.stopPropagation();
+
+            this.libraryInput.click();
+
+        });
+
+        this.cameraInput.addEventListener("change", e => {
 
             this.addFiles(e.target.files);
 
-            this.input.value = "";
+            this.cameraInput.value = "";
+
+        });
+
+        this.libraryInput.addEventListener("change", e => {
+
+            this.addFiles(e.target.files);
+
+            this.libraryInput.value = "";
 
         });
 

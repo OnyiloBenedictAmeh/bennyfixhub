@@ -251,6 +251,15 @@
     <button class="marketing-tab active" data-tab="compose">
       Compose
     </button>
+    <button class="marketing-tab" data-tab="drafts">
+      Drafts
+    </button>
+    <button class="marketing-tab" data-tab="scheduled">
+      Scheduled
+    </button>
+    <button class="marketing-tab" data-tab="published">
+      Published
+    </button>
     <button class="marketing-tab" data-tab="library">
       Media Library
     </button>
@@ -258,6 +267,12 @@
 
   <!-- COMPOSE TAB -->
   <div id="marketingTab-compose" class="marketing-panel">
+
+    <div id="editingBanner" class="editing-banner hidden">
+      <span id="editingBannerText">Editing draft</span>
+      <button id="cancelEditBtn" class="link-btn">Cancel</button>
+    </div>
+
     <div class="marketing-grid">
 
       <div class="compose-card">
@@ -296,12 +311,49 @@
           LinkedIn
         </label>
 
+        <label>Schedule for (optional)</label>
+
+        <input type="datetime-local" id="postScheduleAt">
+
         <button id="publishBtn" class="assign-btn">
           Publish
         </button>
 
       </div>
 
+    </div>
+  </div>
+
+  <!-- DRAFTS TAB -->
+  <div id="marketingTab-drafts" class="marketing-panel" style="display:none;">
+    <div class="panel-header">
+      <h3>Drafts</h3>
+      <span id="draftsSummary">0 drafts</span>
+    </div>
+    <div id="draftsList" class="marketing-post-list">
+      <p class="empty-state">Loading drafts...</p>
+    </div>
+  </div>
+
+  <!-- SCHEDULED TAB -->
+  <div id="marketingTab-scheduled" class="marketing-panel" style="display:none;">
+    <div class="panel-header">
+      <h3>Scheduled</h3>
+      <span id="scheduledSummary">0 scheduled</span>
+    </div>
+    <div id="scheduledList" class="marketing-post-list">
+      <p class="empty-state">Loading scheduled posts...</p>
+    </div>
+  </div>
+
+  <!-- PUBLISHED TAB -->
+  <div id="marketingTab-published" class="marketing-panel" style="display:none;">
+    <div class="panel-header">
+      <h3>Published</h3>
+      <span id="publishedSummary">0 published</span>
+    </div>
+    <div id="publishedList" class="marketing-post-list">
+      <p class="empty-state">Loading published posts...</p>
     </div>
   </div>
 

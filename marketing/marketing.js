@@ -10,6 +10,12 @@ import {
   getFirestore,
   collection,
   addDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  onSnapshot,
   serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
@@ -38,6 +44,8 @@ const UPLOAD_MEDIA_API_URL = `${API_BASE}/upload-media`;
 const GET_MEDIA_API_URL = `${API_BASE}/get-media`;
 const DELETE_MEDIA_API_URL = `${API_BASE}/delete-media`;
 
+const POST_STATUSES = ["draft", "scheduled", "published"];
+
 function showToast(msg) {
   const toast = document.getElementById("toast");
   if (!toast) return;
@@ -50,6 +58,14 @@ function showToast(msg) {
   }, 3000);
 }
 
+function escapeHtml(str = "") {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 class MarketingManager {
   constructor() {
     this.currentUser = null;
@@ -60,6 +76,14 @@ class MarketingManager {
 
     this.libraryMedia = [];
     this.libraryLoaded = false;
+
+    // Drafts / Scheduled / Published lists, loaded lazily per tab.
+    this.postsByStatus = { draft: [], scheduled: [], published: [] };
+    this.postsLoaded = { draft: false, scheduled: false, published: false };
+
+    // Set when editing an existing post from one of the list tabs.
+    this.editingPostId = null;
+    this.editingPostStatus = null;
 
     this.cacheDOM();
     this.bindEvents();
@@ -74,6 +98,7 @@ class MarketingManager {
   cacheDOM() {
     this.caption = document.getElementById("postCaption");
     this.selectedGrid = document.getElementById("marketingSelectedImages");
+    this.scheduleInput = document.getElementById("postScheduleAt");
 
     this.saveBtn = document.getElementById("saveDraftBtn");
     this.publishBtn = document.getElementById("publishBtn");
@@ -82,20 +107,46 @@ class MarketingManager {
     this.instagramCheckbox = document.getElementById("instagramPlatform");
     this.linkedinCheckbox = document.getElementById("linkedinPlatform");
 
+    this.editingBanner = document.getElementById("editingBanner");
+    this.editingBannerText = document.getElementById("editingBannerText");
+    this.cancelEditBtn = document.getElementById("cancelEditBtn");
+
     this.tabButtons = document.querySelectorAll(".marketing-tab");
     this.composePanel = document.getElementById("marketingTab-compose");
     this.libraryPanel = document.getElementById("marketingTab-library");
     this.libraryGrid = document.getElementById("mediaLibraryGrid");
     this.libraryUploadBtn = document.getElementById("libraryUploadBtn");
+
+    this.panels = {
+      draft: document.getElementById("marketingTab-drafts"),
+      scheduled: document.getElementById("marketingTab-scheduled"),
+      published: document.getElementById("marketingTab-published"),
+    };
+
+    this.lists = {
+      draft: document.getElementById("draftsList"),
+      scheduled: document.getElementById("scheduledList"),
+      published: document.getElementById("publishedList"),
+    };
+
+    this.summaries = {
+      draft: document.getElementById("draftsSummary"),
+      scheduled: document.getElementById("scheduledSummary"),
+      published: document.getElementById("publishedSummary"),
+    };
   }
 
   bindEvents() {
     if (this.saveBtn) {
-      this.saveBtn.addEventListener("click", () => this.saveDraft());
+      this.saveBtn.addEventListener("click", () => this.savePost());
     }
 
     if (this.publishBtn) {
       this.publishBtn.addEventListener("click", () => this.publish());
+    }
+
+    if (this.cancelEditBtn) {
+      this.cancelEditBtn.addEventListener("click", () => this.cancelEdit());
     }
 
     this.tabButtons.forEach((btn) => {
@@ -160,8 +211,18 @@ class MarketingManager {
       this.libraryPanel.style.display = tab === "library" ? "block" : "none";
     }
 
+    POST_STATUSES.forEach((status) => {
+      const panel = this.panels[status];
+      if (!panel) return;
+      panel.style.display = tab === status ? "block" : "none";
+    });
+
     if (tab === "library" && !this.libraryLoaded) {
       this.loadMediaLibrary();
+    }
+
+    if (POST_STATUSES.includes(tab) && !this.postsLoaded[tab]) {
+      this.listenToPosts(tab);
     }
   }
 
@@ -390,7 +451,275 @@ class MarketingManager {
     return platforms;
   }
 
-  async saveDraft() {
+  /* =========================
+     DRAFTS / SCHEDULED / PUBLISHED
+  ========================= */
+
+  listenToPosts(status) {
+    if (this.postsLoaded[status]) return;
+    this.postsLoaded[status] = true;
+
+    const postsQuery = query(collection(db, "posts"), where("status", "==", status));
+
+    onSnapshot(
+      postsQuery,
+      (snapshot) => {
+        const posts = [];
+        snapshot.forEach((docSnap) => posts.push({ id: docSnap.id, ...docSnap.data() }));
+
+        posts.sort((a, b) => this.postSortTime(b, status) - this.postSortTime(a, status));
+
+        this.postsByStatus[status] = posts;
+        this.renderPostList(status);
+      },
+      (err) => {
+        console.error(err);
+        showToast(`Could not load ${status} posts`);
+      }
+    );
+  }
+
+  postSortTime(post, status) {
+    const value =
+      status === "scheduled" ? post.scheduledAt :
+      status === "published" ? post.publishedAt :
+      post.createdAt;
+
+    return this.getTime(value || post.createdAt);
+  }
+
+  getTime(value) {
+    if (!value) return 0;
+    if (value.toDate) return value.toDate().getTime();
+    if (value.seconds) return value.seconds * 1000;
+    return new Date(value).getTime() || 0;
+  }
+
+  formatDate(value) {
+    if (!value) return "";
+    if (value.toDate) return value.toDate().toLocaleString();
+    if (value.seconds) return new Date(value.seconds * 1000).toLocaleString();
+    return new Date(value).toLocaleString();
+  }
+
+  renderPostList(status) {
+    const container = this.lists[status];
+    if (!container) return;
+
+    const posts = this.postsByStatus[status] || [];
+    const summary = this.summaries[status];
+
+    if (summary) {
+      const noun = status === "draft" ? "drafts" : posts.length === 1 ? "post" : "posts";
+      summary.textContent = `${posts.length} ${noun}`;
+    }
+
+    if (!posts.length) {
+      const emptyText =
+        status === "draft" ? "No drafts yet." :
+        status === "scheduled" ? "Nothing scheduled yet." :
+        "Nothing published yet.";
+
+      container.innerHTML = `<p class="empty-state">${emptyText}</p>`;
+      return;
+    }
+
+    container.innerHTML = "";
+    posts.forEach((post) => container.appendChild(this.buildPostCard(post, status)));
+  }
+
+  postDateLabel(post, status) {
+    if (status === "scheduled" && post.scheduledAt) {
+      return `Scheduled for ${this.formatDate(post.scheduledAt)}`;
+    }
+
+    if (status === "published" && post.publishedAt) {
+      return `Published ${this.formatDate(post.publishedAt)}`;
+    }
+
+    if (post.createdAt) {
+      return `Created ${this.formatDate(post.createdAt)}`;
+    }
+
+    return "";
+  }
+
+  buildPostCard(post, status) {
+    const card = document.createElement("article");
+    card.className = "marketing-post-card";
+
+    const main = document.createElement("div");
+    main.className = "marketing-post-main";
+
+    const meta = document.createElement("div");
+    meta.className = "marketing-post-meta";
+
+    const dateLabel = document.createElement("span");
+    dateLabel.textContent = this.postDateLabel(post, status);
+    meta.appendChild(dateLabel);
+
+    (post.platforms || []).forEach((platform) => {
+      const badge = document.createElement("span");
+      badge.className = "marketing-platform-badge";
+      badge.textContent = platform;
+      meta.appendChild(badge);
+    });
+
+    const caption = document.createElement("p");
+    caption.className = "marketing-post-caption";
+    caption.textContent = post.caption ? post.caption : "(no caption)";
+
+    main.append(meta, caption);
+
+    if (post.images?.length) {
+      const imagesRow = document.createElement("div");
+      imagesRow.className = "marketing-post-images";
+
+      post.images.forEach((img) => {
+        const thumb = document.createElement("img");
+        thumb.src = img.url;
+        thumb.alt = img.filename || "";
+        imagesRow.appendChild(thumb);
+      });
+
+      main.appendChild(imagesRow);
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "marketing-post-actions";
+
+    const editBtn = document.createElement("button");
+    editBtn.type = "button";
+    editBtn.className = "edit-btn";
+    editBtn.textContent = "Edit";
+    editBtn.addEventListener("click", () => this.editPost(post));
+    actions.appendChild(editBtn);
+
+    if (status !== "published") {
+      const publishBtn = document.createElement("button");
+      publishBtn.type = "button";
+      publishBtn.className = "publish-btn";
+      publishBtn.textContent = "Mark Published";
+      publishBtn.addEventListener("click", () => this.markPublished(post.id));
+      actions.appendChild(publishBtn);
+    }
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.className = "delete-btn";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.addEventListener("click", () => this.deletePost(post.id));
+    actions.appendChild(deleteBtn);
+
+    card.append(main, actions);
+
+    return card;
+  }
+
+  editPost(post) {
+    this.editingPostId = post.id;
+    this.editingPostStatus = post.status;
+
+    if (this.caption) this.caption.value = post.caption || "";
+
+    this.attachedImages = [...(post.images || [])];
+    this.uploader.clear();
+    this.renderSelectedImages();
+
+    const platforms = post.platforms || [];
+    if (this.facebookCheckbox) this.facebookCheckbox.checked = platforms.includes("facebook");
+    if (this.instagramCheckbox) this.instagramCheckbox.checked = platforms.includes("instagram");
+    if (this.linkedinCheckbox) this.linkedinCheckbox.checked = platforms.includes("linkedin");
+
+    if (this.scheduleInput) {
+      this.scheduleInput.value = post.scheduledAt ? this.toDatetimeLocal(post.scheduledAt) : "";
+    }
+
+    if (this.libraryLoaded) this.renderLibraryGrid();
+
+    this.showEditingBanner(post.status);
+    this.setTab("compose");
+  }
+
+  toDatetimeLocal(value) {
+    const date = value.toDate
+      ? value.toDate()
+      : new Date(value.seconds ? value.seconds * 1000 : value);
+
+    const pad = (n) => String(n).padStart(2, "0");
+
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(
+      date.getHours()
+    )}:${pad(date.getMinutes())}`;
+  }
+
+  showEditingBanner(status) {
+    if (!this.editingBanner) return;
+
+    this.editingBanner.classList.remove("hidden");
+
+    if (this.editingBannerText) {
+      this.editingBannerText.textContent = `Editing ${status} post`;
+    }
+  }
+
+  hideEditingBanner() {
+    if (this.editingBanner) this.editingBanner.classList.add("hidden");
+  }
+
+  cancelEdit() {
+    this.editingPostId = null;
+    this.editingPostStatus = null;
+    this.hideEditingBanner();
+    this.resetCompose();
+  }
+
+  async markPublished(id) {
+    const confirmed = window.confirm(
+      "Mark this post as published? This won't post to social media yet — use it once you've shared it manually, until Meta is connected."
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await updateDoc(doc(db, "posts", id), {
+        status: "published",
+        publishedAt: serverTimestamp(),
+      });
+
+      showToast("Marked as published");
+
+      if (this.editingPostId === id) {
+        this.cancelEdit();
+      }
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || "Could not update post");
+    }
+  }
+
+  async deletePost(id) {
+    const confirmed = window.confirm("Delete this post? This can't be undone.");
+    if (!confirmed) return;
+
+    try {
+      await deleteDoc(doc(db, "posts", id));
+      showToast("Post deleted");
+
+      if (this.editingPostId === id) {
+        this.cancelEdit();
+      }
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || "Could not delete post");
+    }
+  }
+
+  /* =========================
+     COMPOSE / SAVE
+  ========================= */
+
+  async savePost() {
     if (this.isSaving) return;
 
     if (!this.currentUser) {
@@ -404,27 +733,45 @@ class MarketingManager {
       return showToast("Add a caption or at least one image");
     }
 
+    const scheduleValue = this.scheduleInput?.value || "";
+    const status = scheduleValue ? "scheduled" : "draft";
+
     this.isSaving = true;
     this.setSaveButtonLoading(true);
 
     try {
       const images = await this.collectPostImages();
 
-      await addDoc(collection(db, "posts"), {
+      const payload = {
         caption,
         images,
         platforms: this.selectedPlatforms(),
-        status: "draft",
-        createdBy: this.currentUser.uid,
-        createdByEmail: this.currentUser.email || "",
-        createdAt: serverTimestamp(),
-      });
+        status,
+      };
 
-      showToast("Draft saved");
+      if (status === "scheduled") {
+        payload.scheduledAt = new Date(scheduleValue);
+      }
+
+      if (this.editingPostId) {
+        await updateDoc(doc(db, "posts", this.editingPostId), payload);
+        showToast(status === "scheduled" ? "Post scheduled" : "Draft updated");
+      } else {
+        payload.createdBy = this.currentUser.uid;
+        payload.createdByEmail = this.currentUser.email || "";
+        payload.createdAt = serverTimestamp();
+
+        await addDoc(collection(db, "posts"), payload);
+        showToast(status === "scheduled" ? "Post scheduled" : "Draft saved");
+      }
+
+      this.editingPostId = null;
+      this.editingPostStatus = null;
+      this.hideEditingBanner();
       this.resetCompose();
     } catch (err) {
       console.error(err);
-      showToast(err.message || "Could not save draft");
+      showToast(err.message || "Could not save post");
     } finally {
       this.isSaving = false;
       this.setSaveButtonLoading(false);
@@ -446,6 +793,11 @@ class MarketingManager {
 
   resetCompose() {
     if (this.caption) this.caption.value = "";
+    if (this.scheduleInput) this.scheduleInput.value = "";
+
+    if (this.facebookCheckbox) this.facebookCheckbox.checked = true;
+    if (this.instagramCheckbox) this.instagramCheckbox.checked = true;
+    if (this.linkedinCheckbox) this.linkedinCheckbox.checked = false;
 
     this.attachedImages = [];
     this.uploader.clear();

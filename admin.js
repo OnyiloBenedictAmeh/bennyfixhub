@@ -259,8 +259,6 @@ function setLoginButtonLoading(isLoading) {
 }
 
 onAuthStateChanged(auth, async (user) => {
-  console.log("Current UID:", user?.uid);
-
   showLoading();
 
   try {
@@ -418,7 +416,6 @@ onSnapshot(collection(db, "repairs"), (snapshot) => {
     document.getElementById("completedRepairs").innerText = completed;
 
     updateChart();
-    console.log("🔥 Repairs snapshot size:", snapshot.size);
   });
 }
 function listenToNotifications() {
