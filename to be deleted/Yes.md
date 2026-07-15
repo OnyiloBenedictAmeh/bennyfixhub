@@ -362,3 +362,141 @@ Update your existing updateRepair to trigger draft creation when status → "Com
 
 Load drafts/scheduled/published from marketingPosts
 Publish button → calls /api/publish-post
+I think that's an excellent idea, and it's actually how many modern SaaS platforms onboard new users. It also fits BennyFix Hub perfectly.
+
+Instead of simply dropping users onto the dashboard, the experience would be:
+
+Sign Up
+      │
+      ▼
+Verify Email
+      │
+      ▼
+Complete Profile (if needed)
+      │
+      ▼
+Accept Legal Agreements
+      │
+      ▼
+Welcome to BennyFix Hub 🎉
+      │
+      ▼
+Interactive Tour
+      │
+      ▼
+Dashboard
+Step 1: Legal Agreement Modal
+
+The first time a verified user signs in, show a modal instead of the dashboard.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+        Welcome to BennyFix Hub
+
+Before you continue, please review and
+accept our legal agreements.
+
+☐ I have read and agree to the
+   Terms of Service.
+
+☐ I have read and understand the
+   Privacy Policy.
+
+☐ I understand the Cookie Policy.
+
+[ View Terms ]
+
+[ View Privacy Policy ]
+
+[ View Cookie Policy ]
+
+            [ Continue ]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The Continue button stays disabled until all required checkboxes are selected.
+
+When the user clicks Continue, save something like:
+
+users/userId
+
+legalAcceptance: {
+    accepted: true,
+    acceptedAt: Timestamp,
+    version: "1.0"
+}
+
+This is much better than only using local storage because it's tied to the user's account and works across devices.
+
+Step 2: Welcome Tour
+
+After accepting the policies:
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👋 Welcome to BennyFix Hub
+
+Let's take a quick tour.
+
+It'll only take about 30 seconds.
+
+      [ Start Tour ]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Tour Step 1
+
+Highlight the sidebar.
+
+This is your navigation menu.
+
+Here you'll access Repairs,
+Messages, Profile,
+Settings and more.
+
+       Next →
+
+Darken the rest of the page.
+
+Tour Step 2
+
+Highlight the repair section.
+
+Track every repair in real time.
+
+You'll receive updates as your
+device moves through each stage.
+Tour Step 3
+
+Highlight notifications.
+
+You'll receive repair updates,
+payment confirmations and
+important announcements here.
+Tour Step 4
+
+Highlight the profile.
+
+Keep your information updated,
+change your password,
+and upload a profile photo.
+Final Step
+🎉 You're Ready!
+
+Enjoy using BennyFix Hub.
+
+      [ Go to Dashboard ]
+Save Tour Completion
+
+Once finished:
+
+users/userId
+
+onboarding: {
+
+    tourCompleted:true,
+
+    completedAt:Timestamp
+
+}
+
+So it never appears again unless you want to show it after a major redesign.
