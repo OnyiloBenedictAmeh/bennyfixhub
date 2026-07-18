@@ -46,3 +46,18 @@ document.addEventListener("DOMContentLoaded", () => {
     navObserver.observe(section);
   });
 });
+function toggleMenu(){
+
+    document
+    .getElementById("navWrapper")
+    .classList
+    .toggle("active");
+
+}const backdrop=document.getElementById("drawerBackdrop");
+
+backdrop.onclick=function(){
+
+document.getElementById("navWrapper")
+.classList.remove("active");
+
+}

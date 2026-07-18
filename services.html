@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<link rel="icon" type="image/png" sizes="512x512" href="bennyfix hub white-logo.png" />
+    <link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css">    <title>Explore Services | BennyFix Hub</title>
+    <link rel="icon" type="image/png" sizes="512x512" href="bennyfix hub white-logo.png" />
+    <link
+rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="services.css">
+    
+</head>
+<body>
+
+    <header>
+      <div class="wrap header-inner">
+        <div class="logo">
+          <img
+            src="bennyfix hub white-logo.png"
+            alt="BennyFix Hub Logo"
+            class="logo-img"
+          />
+          <a href="index.html"><span> BennyFix Hub</span></a>
+        </div>
+        <div class="hamburger" onclick="toggleMenu()">
+          <i class="bx bx-menu"></i>
+        </div>
+        <!-- WRAPPER ADDED (IMPORTANT FIX) -->
+        <div class="nav-wrapper" id="navWrapper">
+          <div class="nav">
+            <div class="nav-item" data-menu="support">
+              <span>Get Tech Support <i class="bx bx-chevron-down"></i></span>
+              <div class="mobile-mega"></div>
+            </div>
+
+            <div class="nav-item" data-menu="repairs">
+              <span>Repair a device <i class="bx bx-chevron-down"></i></span>
+              <div class="mobile-mega"></div>
+            </div>
+            <div class="nav-item" data-menu="sales">
+              <span>Sell a device <i class="bx bx-chevron-down"></i></span>
+              <div class="mobile-mega"></div>
+            </div>
+
+            <div class="nav-item" onclick="toggleSearch(event)">
+              <span><i class="bx bx-search"></i></span>
+            </div>
+            
+          </div>
+        </div>
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+        <!-- MEGA MENU I-->
+        <div class="mega-overlay" id="mega">
+          <div class="mega-inner">
+            <div class="mega-context">
+              <div class="mega-icon" id="megaIcon"><i class="bx bx-support"></i></div>
+              <span class="mega-tag">BENNYFIX HUB</span>
+              <h2 id="megaTitle">Support</h2>
+              <p id="megaText">Default text</p>
+
+              <button class="mega-btn">Get Started</button>
+              <img src="support-banner.jpg" class="context-banner" alt="context banner" >
+            </div>
+    
+            <div class="mega-grid" id="megaGrid"></div>
+          </div>
+        </div>
+        </div>
+    </header>
+    <main class="services-page">
+
+    <!-- HERO -->
+    <section class="services-hero">
+
+        <div class="hero-bg"></div>
+
+        <div class="wrap">
+
+            <div class="hero-badge">
+                <i class='bx bx-shield-quarter'></i>
+                <span>14 Services • 90-Day Warranty • Transparent Pricing</span>
+            </div>
+
+            <h1>
+                Explore Our
+                <span>Services</span>
+            </h1>
+
+            <p>
+
+                Repairs, upgrades and technical support for nearly every device
+                you own. Browse our services, compare turnaround times and
+                pricing, then start your repair in minutes.
+
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- FILTERS -->
+
+    <section class="service-filters">
+
+        <div class="wrap">
+
+            <div class="filter-top">
+
+                <div class="search-box">
+
+                    <i class='bx bx-search'></i>
+
+                    <input
+                        type="text"
+                        id="serviceSearch"
+                        placeholder="Search services..."
+                    >
+
+                </div>
+
+                <div class="results-count">
+
+                    Showing
+                    <span id="serviceCount">0</span>
+                    services
+
+                </div>
+
+            </div>
+
+
+
+            <div class="device-filters">
+
+                <button class="device-btn active" data-device="All">
+
+                    <i class='bx bx-grid-alt'></i>
+
+                    All
+
+                </button>
+
+                <button class="device-btn" data-device="Phone">
+
+                    <i class='bx bx-mobile'></i>
+
+                    Phone
+
+                </button>
+
+                <button class="device-btn" data-device="Laptop">
+
+                    <i class='bx bx-laptop'></i>
+
+                    Laptop
+
+                </button>
+
+                <button class="device-btn" data-device="Desktop">
+
+                    <i class='bx bx-desktop'></i>
+
+                    Desktop
+
+                </button>
+
+                <button class="device-btn" data-device="Tablet">
+
+                    <i class='bx bx-tab'></i>
+
+                    Tablet
+
+                </button>
+
+                <button class="device-btn" data-device="TV">
+
+                    <i class='bx bx-tv'></i>
+
+                    TV
+
+                </button>
+
+                <button class="device-btn" data-device="Console">
+
+                    <i class='bx bx-joystick'></i>
+
+                    Console
+
+                </button>
+
+                <button class="device-btn" data-device="Printer">
+
+                    <i class='bx bx-printer'></i>
+
+                    Printer
+
+                </button>
+
+                <button class="device-btn" data-device="Ear Buds">
+
+                    <i class='bx bx-headphone'></i>
+
+                    Ear Buds
+
+                </button>
+
+                <button class="device-btn" data-device="Appliance">
+
+                    <i class='bx bx-home'></i>
+
+                    Appliance
+
+                </button>
+
+                <button class="device-btn" data-device="Network">
+
+                    <i class='bx bx-wifi'></i>
+
+                    Network
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- SERVICES -->
+
+    <section class="services-grid-section">
+
+        <div class="wrap">
+
+            <div id="servicesGrid" class="services-grid">
+
+                <!-- JavaScript loads cards here -->
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- EMPTY STATE -->
+
+    <section id="emptyState" class="empty-state">
+
+        <i class='bx bx-search-alt'></i>
+
+        <h2>No services found</h2>
+
+        <p>
+
+            Try another keyword or choose a different device category.
+
+        </p>
+
+    </section>
+
+
+
+    <!-- CTA -->
+
+    <section class="service-cta">
+
+        <div class="wrap cta-content">
+
+            <div>
+
+                <h2>
+
+                    Don't See Your Problem?
+
+                </h2>
+
+                <p>
+
+                    We repair almost anything with a circuit board.
+
+                    Start a repair request and our technicians will
+
+                    contact you shortly.
+
+                </p>
+
+            </div>
+
+            <button
+                class="primary-btnn"
+                onclick="window.toggleRepairForm()">
+
+                <i class='bx bx-wrench'></i>
+
+                Start a Repair
+
+            </button>
+
+        </div>
+
+    </section>
+
+</main>
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+
+    <img src="/bennyfix hub white-logo.png" width="100" alt="BennyFix Hub Logo">
+
+    <h3>BennyFix Hub</h3>
+</div>
+        <!-- Company -->
+        <div class="footer-section">
+          <h4>Company</h4>
+
+          <a href="about.html">About Us</a>
+
+          <a href="careers.html">Careers</a>
+
+          <a href="blog.html">Tech Blog</a>
+        </div>
+<div class="footer-section">
+
+    <h4>Services</h4>
+
+    <a href="repair.html">Request a Repair</a>
+
+    <a href="track-repair.html">Track Repair</a>
+
+    <a href="shop.html">Shop Devices</a>
+
+    <a href="manuals.html">Manual Library</a>
+
+    <a href="training.html">Tech Training</a>
+
+</div>
+        <!-- Support -->
+        <div class="footer-section">
+          <h4>Support</h4>
+
+          <a href="help-center.html">Help Center</a>
+
+          <a href="contact.html">Contact Us</a>
+
+          <a href="faq.html">Frequently Asked Questions</a>
+        </div>
+
+        <!-- Social -->
+        <div class="footer-section">
+          <h4>Connect</h4>
+
+          <a
+            href="https://wa.me/234XXXXXXXXXX"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            WhatsApp
+          </a>
+
+          <a
+            href="https://instagram.com/yourusername"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Instagram
+          </a>
+
+          <a
+            href="https://x.com/yourusername"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            X (Twitter)
+          </a>
+
+          <a
+            href="https://facebook.com/yourpage"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Facebook
+          </a>
+        </div>
+
+</div>
+
+      <hr>
+
+
+<div class="footer-bottom">
+  <div class="footer-links">
+
+    <a href="terms-of-service.html" target="_blank" rel="noopener noreferrer">
+        Terms of Service
+    </a>
+
+    <a href="privacy-policy.html" target="_blank" rel="noopener noreferrer">
+        Privacy Policy
+    </a>
+
+    <a href="cookie-policy.html" target="_blank" rel="noopener noreferrer">
+        Cookie Policy
+    </a>
+
+    <a href="refund-policy.html" target="_blank" rel="noopener noreferrer">
+        Refund &amp; Cancellation Policy
+    </a>
+
+    <a href="repair-warranty-policy.html" target="_blank" rel="noopener noreferrer">
+        Repair Warranty
+    </a>
+
+    <a href="acceptable-use-policy.html" target="_blank" rel="noopener noreferrer">
+        Acceptable Use Policy
+    </a>
+
+    <div class="copyright">
+        &copy; 2026 BennyFix Hub. All rights reserved.
+    </div>
+
+</div>
+  <div class="footer-social">
+    <a href="#"><i class="bx bxl-instagram"></i></a>
+    <a href="#"><i class="bx bxl-twitter"></i></a>
+    <a href="#"><i class="bx bxl-facebook"></i></a>
+    <a href="#"><i class="bx bxl-youtube"></i></a>
+    <a href="#"><i class="bx bxl-linkedin"></i></a>
+  </div>
+</div>
+
+</div>      <button class="back-to-top" onclick="scrollToTop()">↑ Back to Top</button>
+
+    </footer>
+<script>
+document.querySelector(".copyright").textContent =
+  `© ${new Date().getFullYear()} BennyFix Hub`;
+</script>
+    <script src="services.js"></script>
+    <script src="privacy-policy.js"></script>
+</body>
+</html>

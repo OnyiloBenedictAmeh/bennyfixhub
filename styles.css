@@ -1332,7 +1332,22 @@ footer hr {
 .footer-social a:hover {
   transform: translateY(-2px);
 }
-
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.footer-brand img{
+  width: 32px;
+  height: 32px;
+}
+.footer-brand h3 {
+  color: #487de7;
+  font-weight: bold;
+  font-size: 20px;
+}
 /* =========================
    HAMBURGER MENU
    ========================= */

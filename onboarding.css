@@ -1,0 +1,338 @@
+/* ==========================================================
+   BENNYFIX HUB
+   USER ONBOARDING
+========================================================== */
+
+:root{
+
+    --onboarding-primary:#0F62FE;
+    --onboarding-primary-dark:#0353E9;
+
+    --onboarding-bg:rgba(10,15,25,.72);
+
+    --card:#FFFFFF;
+
+    --text:#161616;
+
+    --muted:#6F6F6F;
+
+    --border:#E0E0E0;
+
+    --success:#24A148;
+
+    --radius:22px;
+
+    --transition:.35s ease;
+
+}
+
+/* ==========================================================
+   OVERLAY
+========================================================== */
+
+.onboarding-overlay{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:999999;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    background:var(--onboarding-bg);
+
+    backdrop-filter:blur(18px);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    transition:var(--transition);
+
+}
+
+.onboarding-overlay.active{
+
+    opacity:1;
+
+    visibility:visible;
+
+}
+
+/* ==========================================================
+   MODAL
+========================================================== */
+
+.onboarding-modal{
+
+    width:min(920px,94%);
+
+    background:var(--card);
+
+    border-radius:28px;
+
+    overflow:hidden;
+
+    box-shadow:
+    0 30px 90px rgba(0,0,0,.22);
+
+    animation:modalUp .45s ease;
+
+}
+
+@keyframes modalUp{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(30px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:none;
+
+    }
+
+}
+
+/* ==========================================================
+   HEADER
+========================================================== */
+
+.onboarding-header{
+
+    padding:45px;
+
+    background:linear-gradient(135deg,#0F62FE,#4589FF);
+
+    color:white;
+
+}
+
+.onboarding-header h2{
+
+    font-size:2.2rem;
+
+    margin-bottom:15px;
+
+}
+
+.onboarding-header p{
+
+    line-height:1.8;
+
+    opacity:.94;
+
+}
+
+/* ==========================================================
+   BODY
+========================================================== */
+
+.onboarding-body{
+
+    padding:45px;
+
+}
+
+.onboarding-body h3{
+
+    margin-bottom:25px;
+
+}
+
+/* ==========================================================
+   POLICY GRID
+========================================================== */
+
+.policy-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(2,1fr);
+
+    gap:18px;
+
+    margin-bottom:35px;
+
+}
+
+.policy-card{
+
+    display:block;
+
+    text-decoration:none;
+
+    color:inherit;
+
+    border:1px solid var(--border);
+
+    border-radius:16px;
+
+    padding:22px;
+
+    transition:var(--transition);
+
+}
+
+.policy-card:hover{
+
+    border-color:var(--onboarding-primary);
+
+    transform:translateY(-4px);
+
+    box-shadow:0 12px 30px rgba(15,98,254,.15);
+
+}
+
+.policy-card h4{
+
+    color:var(--onboarding-primary);
+
+    margin-bottom:10px;
+
+}
+
+.policy-card p{
+
+    color:var(--muted);
+
+    line-height:1.7;
+
+}
+
+/* ==========================================================
+   AGREEMENT
+========================================================== */
+
+.agreement{
+
+    display:flex;
+
+    align-items:flex-start;
+
+    gap:14px;
+
+    padding:20px;
+
+    border-radius:14px;
+
+    background:#F8F9FB;
+
+    margin-bottom:30px;
+
+}
+
+.agreement input{
+
+    width:22px;
+
+    height:22px;
+
+    accent-color:var(--onboarding-primary);
+
+    margin-top:2px;
+
+}
+
+.agreement label{
+
+    line-height:1.8;
+
+}
+
+/* ==========================================================
+   FOOTER
+========================================================== */
+
+.onboarding-footer{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    border-top:1px solid var(--border);
+
+    padding:25px 45px;
+
+}
+
+.continue-btn{
+
+    border:none;
+
+    cursor:pointer;
+
+    padding:15px 36px;
+
+    border-radius:10px;
+
+    background:#B8C5D6;
+
+    color:white;
+
+    font-weight:600;
+
+    transition:.3s;
+
+}
+
+.continue-btn.enabled{
+
+    background:var(--onboarding-primary);
+
+}
+
+.continue-btn.enabled:hover{
+
+    background:var(--onboarding-primary-dark);
+
+}
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+@media(max-width:768px){
+
+.policy-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.onboarding-header{
+
+padding:30px;
+
+}
+
+.onboarding-body{
+
+padding:25px;
+
+}
+
+.onboarding-footer{
+
+padding:20px;
+
+flex-direction:column;
+
+gap:20px;
+
+}
+
+}

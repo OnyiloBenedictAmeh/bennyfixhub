@@ -43,6 +43,15 @@ const API_BASE = "https://bennyfix-backend-v.vercel.app/api";
 const UPLOAD_MEDIA_API_URL = `${API_BASE}/upload-media`;
 const GET_MEDIA_API_URL = `${API_BASE}/get-media`;
 const DELETE_MEDIA_API_URL = `${API_BASE}/delete-media`;
+const META_STATUS_API_URL = `${API_BASE}/meta-status`;
+const PUBLISH_POST_API_URL = `${API_BASE}/publish-post`;
+
+/* =========================
+   META CONNECT (must match the backend's registered redirect URI exactly)
+========================= */
+const META_APP_ID = "27447026251633882"; // public identifier, safe client-side
+const META_GRAPH_VERSION = "v23.0";
+const META_REDIRECT_URI = "https://bennyfix-backend-v.vercel.app/api/meta-callback";
 
 const POST_STATUSES = ["draft", "scheduled", "published"];
 
@@ -56,14 +65,6 @@ function showToast(msg) {
   setTimeout(() => {
     toast.style.display = "none";
   }, 3000);
-}
-
-function escapeHtml(str = "") {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }
 
 class MarketingManager {
@@ -85,13 +86,17 @@ class MarketingManager {
     this.editingPostId = null;
     this.editingPostStatus = null;
 
+    this.metaStatus = { facebook: { connected: false }, instagram: { connected: false } };
+
     this.cacheDOM();
     this.bindEvents();
     this.initUploader();
     this.initLibraryUploadInput();
+    this.handleConnectRedirect();
 
     onAuthStateChanged(auth, (user) => {
       this.currentUser = user;
+      if (user) this.loadMetaStatus();
     });
   }
 
@@ -106,6 +111,11 @@ class MarketingManager {
     this.facebookCheckbox = document.getElementById("facebookPlatform");
     this.instagramCheckbox = document.getElementById("instagramPlatform");
     this.linkedinCheckbox = document.getElementById("linkedinPlatform");
+
+    this.connectFacebookBtn = document.getElementById("connectFacebookBtn");
+    this.connectInstagramBtn = document.getElementById("connectInstagramBtn");
+    this.facebookStatusText = document.getElementById("facebookStatusText");
+    this.instagramStatusText = document.getElementById("instagramStatusText");
 
     this.editingBanner = document.getElementById("editingBanner");
     this.editingBannerText = document.getElementById("editingBannerText");
@@ -147,6 +157,14 @@ class MarketingManager {
 
     if (this.cancelEditBtn) {
       this.cancelEditBtn.addEventListener("click", () => this.cancelEdit());
+    }
+
+    if (this.connectFacebookBtn) {
+      this.connectFacebookBtn.addEventListener("click", () => this.connectPlatform("facebook"));
+    }
+
+    if (this.connectInstagramBtn) {
+      this.connectInstagramBtn.addEventListener("click", () => this.connectPlatform("instagram"));
     }
 
     this.tabButtons.forEach((btn) => {
@@ -196,6 +214,112 @@ class MarketingManager {
     });
 
     document.body.appendChild(this.libraryFileInput);
+  }
+
+  /* =========================
+     META CONNECT
+  ========================= */
+
+  handleConnectRedirect() {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get("metaConnect");
+    const message = params.get("metaMessage");
+
+    if (!status) return;
+
+    showToast(message || (status === "success" ? "Connected" : "Connection failed"));
+
+    params.delete("metaConnect");
+    params.delete("metaMessage");
+
+    const newUrl = window.location.pathname + (params.toString() ? `?${params}` : "") + window.location.hash;
+    window.history.replaceState({}, "", newUrl);
+  }
+
+  async loadMetaStatus() {
+    try {
+      const idToken = await this.getIdToken();
+
+      const response = await fetch(META_STATUS_API_URL, {
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) throw new Error(result.error || "Could not load connection status");
+
+      this.metaStatus = result;
+      this.renderMetaStatus();
+    } catch (err) {
+      console.error(err);
+
+      if (this.facebookStatusText) this.facebookStatusText.textContent = "Unknown";
+      if (this.instagramStatusText) this.instagramStatusText.textContent = "Unknown";
+    }
+  }
+
+  renderMetaStatus() {
+    if (this.facebookStatusText) {
+      this.facebookStatusText.textContent = this.metaStatus.facebook?.connected
+        ? this.metaStatus.facebook.pageName || "Connected"
+        : "Not connected";
+    }
+
+    if (this.connectFacebookBtn) {
+      this.connectFacebookBtn.textContent = this.metaStatus.facebook?.connected
+        ? "Reconnect"
+        : "Connect";
+    }
+
+    if (this.instagramStatusText) {
+      this.instagramStatusText.textContent = this.metaStatus.instagram?.connected
+        ? "Connected"
+        : "Not connected";
+    }
+
+    if (this.connectInstagramBtn) {
+      this.connectInstagramBtn.textContent = this.metaStatus.instagram?.connected
+        ? "Reconnect"
+        : "Connect";
+    }
+  }
+
+  async connectPlatform(platform) {
+    try {
+      const idToken = await this.getIdToken();
+      const state = `${platform}:${idToken}`;
+
+      let authorizeUrl;
+
+      if (platform === "instagram") {
+        authorizeUrl = new URL("https://www.instagram.com/oauth/authorize");
+        authorizeUrl.searchParams.set("client_id", META_APP_ID);
+        authorizeUrl.searchParams.set("redirect_uri", META_REDIRECT_URI);
+        authorizeUrl.searchParams.set("response_type", "code");
+        authorizeUrl.searchParams.set(
+          "scope",
+          "instagram_business_basic,instagram_business_content_publish"
+        );
+        authorizeUrl.searchParams.set("state", state);
+      } else if (platform === "facebook") {
+        authorizeUrl = new URL(`https://www.facebook.com/${META_GRAPH_VERSION}/dialog/oauth`);
+        authorizeUrl.searchParams.set("client_id", META_APP_ID);
+        authorizeUrl.searchParams.set("redirect_uri", META_REDIRECT_URI);
+        authorizeUrl.searchParams.set("response_type", "code");
+        authorizeUrl.searchParams.set(
+          "scope",
+          "pages_show_list,pages_read_engagement,pages_manage_posts"
+        );
+        authorizeUrl.searchParams.set("state", state);
+      } else {
+        return;
+      }
+
+      window.location.href = authorizeUrl.toString();
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || "Could not start connection");
+    }
   }
 
   setTab(tab) {
@@ -596,6 +720,13 @@ class MarketingManager {
     actions.appendChild(editBtn);
 
     if (status !== "published") {
+      const publishNowBtn = document.createElement("button");
+      publishNowBtn.type = "button";
+      publishNowBtn.className = "publish-now-btn";
+      publishNowBtn.textContent = "Publish Now";
+      publishNowBtn.addEventListener("click", () => this.publishExistingPost(post.id, publishNowBtn));
+      actions.appendChild(publishNowBtn);
+
       const publishBtn = document.createElement("button");
       publishBtn.type = "button";
       publishBtn.className = "publish-btn";
@@ -676,7 +807,7 @@ class MarketingManager {
 
   async markPublished(id) {
     const confirmed = window.confirm(
-      "Mark this post as published? This won't post to social media yet — use it once you've shared it manually, until Meta is connected."
+      "Mark this post as published without actually posting it? Use this only for something you already shared manually."
     );
 
     if (!confirmed) return;
@@ -713,6 +844,61 @@ class MarketingManager {
       console.error(err);
       showToast(err.message || "Could not delete post");
     }
+  }
+
+  // Publishes an already-saved draft/scheduled post via the real Meta APIs.
+  async publishExistingPost(id, buttonEl) {
+    if (buttonEl) {
+      buttonEl.disabled = true;
+      buttonEl.textContent = "Publishing...";
+    }
+
+    try {
+      await this.callPublishApi(id);
+    } finally {
+      if (buttonEl) {
+        buttonEl.disabled = false;
+        buttonEl.textContent = "Publish Now";
+      }
+    }
+  }
+
+  async callPublishApi(postId) {
+    try {
+      const idToken = await this.getIdToken();
+
+      const response = await fetch(PUBLISH_POST_API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ postId }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Publish failed");
+      }
+
+      this.reportPublishResults(result.results);
+      return result;
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || "Could not publish post");
+      throw err;
+    }
+  }
+
+  reportPublishResults(results = {}) {
+    Object.entries(results).forEach(([platform, result]) => {
+      showToast(
+        result.success
+          ? `Published to ${platform}`
+          : `${platform} failed: ${result.error || "unknown error"}`
+      );
+    });
   }
 
   /* =========================
@@ -785,10 +971,72 @@ class MarketingManager {
     this.saveBtn.innerText = isLoading ? "Saving..." : "Save Draft";
   }
 
-  publish() {
-    // Publishing to Facebook/Instagram/LinkedIn needs a connected Meta
-    // account, which hasn't been built yet (next step on the roadmap).
-    showToast("Connect a Meta account before publishing — coming soon");
+  // Saves (or updates) the post being composed, then publishes it immediately.
+  async publish() {
+    if (this.isPublishing) return;
+
+    if (!this.currentUser) {
+      return showToast("Login first");
+    }
+
+    const caption = this.caption?.value.trim() || "";
+    const hasImages = this.attachedImages.length > 0 || this.uploader.getFiles().length > 0;
+    const platforms = this.selectedPlatforms();
+
+    if (!caption && !hasImages) {
+      return showToast("Add a caption or at least one image");
+    }
+
+    if (!platforms.length) {
+      return showToast("Select at least one platform");
+    }
+
+    this.isPublishing = true;
+    this.setPublishButtonLoading(true);
+
+    try {
+      const images = await this.collectPostImages();
+
+      const payload = {
+        caption,
+        images,
+        platforms,
+        status: "draft",
+      };
+
+      let postId = this.editingPostId;
+
+      if (postId) {
+        await updateDoc(doc(db, "posts", postId), payload);
+      } else {
+        payload.createdBy = this.currentUser.uid;
+        payload.createdByEmail = this.currentUser.email || "";
+        payload.createdAt = serverTimestamp();
+
+        const created = await addDoc(collection(db, "posts"), payload);
+        postId = created.id;
+      }
+
+      await this.callPublishApi(postId);
+
+      this.editingPostId = null;
+      this.editingPostStatus = null;
+      this.hideEditingBanner();
+      this.resetCompose();
+    } catch (err) {
+      console.error(err);
+      showToast(err.message || "Could not publish post");
+    } finally {
+      this.isPublishing = false;
+      this.setPublishButtonLoading(false);
+    }
+  }
+
+  setPublishButtonLoading(isLoading) {
+    if (!this.publishBtn) return;
+
+    this.publishBtn.disabled = isLoading;
+    this.publishBtn.innerText = isLoading ? "Publishing..." : "Publish";
   }
 
   resetCompose() {

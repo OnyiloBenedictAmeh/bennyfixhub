@@ -30,7 +30,7 @@ import {
   validatePhoneField,
   setFieldError,
 } from "./ui.js";
-
+import { runOnboarding } from "./onboarding.js";
 let resendCooldown = 30;
 let resendInterval;
 let verifyInterval;
@@ -438,7 +438,11 @@ onAuthStateChanged(auth, async (user) => {
     showVerifyScreen(user);
     return;
   }
+const proceed = await runOnboarding(user);
 
+if (!proceed) {
+    return;
+}
   // Verified
   if (guestMenu) guestMenu.style.display = "none";
   if (userMenu) userMenu.style.display = "block";
@@ -448,8 +452,8 @@ onAuthStateChanged(auth, async (user) => {
   if (typeof window.loadUserRepairs === "function") window.loadUserRepairs();
   if (typeof window.listenToNotifications === "function") window.listenToNotifications();
   if (typeof window.loadProfile === "function") window.loadProfile();
-  if (typeof window.loadHeaderUser === "function") window.loadHeaderUser();
   if (document.getElementById("repairCount")) window.loadProfileStats?.();
+  if (typeof window.loadHeaderUser === "function") window.loadHeaderUser();
 
   const heading = document.querySelector(".main h1");
   if (heading) heading.innerText = "Welcome, " + user.email;

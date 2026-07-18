@@ -335,3 +335,43 @@ body {
   margin-right: 10px;
   vertical-align: middle;
 }
+.hamburger{
+    display:none;
+    cursor:pointer;
+    font-size:32px;
+    color:#fff;
+}
+
+@media (max-width:900px){
+
+.hamburger{
+    display:block;
+}
+
+.nav-wrapper{
+
+    position:fixed;
+
+    top:0;
+
+    right:-100%;
+
+    width:320px;
+
+    height:100vh;
+
+    background:#09131f;
+
+    transition:.35s;
+
+    z-index:999;
+
+}
+
+.nav-wrapper.active{
+
+    right:0;
+
+}
+
+}
