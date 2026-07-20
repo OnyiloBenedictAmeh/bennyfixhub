@@ -1,6 +1,7 @@
 /* =========================
    STATE VARIABLES
-========================= */ let loadingInterval = null;
+========================= */
+let loadingInterval = null;
 let loadingIndex = 0;
 let firstLoad = true;
 let pending = 0;
@@ -22,9 +23,9 @@ const sounds = {
 
 // set volume for all
 Object.values(sounds).forEach((s) => {
-  s.volume = 0.4;
+  s.volume = 1;
 });
-// notifySound.volume = 0.5;
+
 const loadingTexts = [
   "Initializing secure session...",
   "Authenticating admin credentials...",
@@ -259,8 +260,6 @@ function setLoginButtonLoading(isLoading) {
 }
 
 onAuthStateChanged(auth, async (user) => {
-  console.log("Current UID:", user?.uid);
-
   showLoading();
 
   try {
@@ -418,7 +417,6 @@ onSnapshot(collection(db, "repairs"), (snapshot) => {
     document.getElementById("completedRepairs").innerText = completed;
 
     updateChart();
-    console.log("🔥 Repairs snapshot size:", snapshot.size);
   });
 }
 

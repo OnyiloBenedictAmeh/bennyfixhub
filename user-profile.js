@@ -16,6 +16,7 @@ import {
 let currentUid = null;
 let viewedUid = null;
 let isViewingOwnProfile = true;
+let avatarCameraStream = null;
 let currentUserRole = "user";
 let userMessages = [];
 const AVATAR_UPLOAD_API_URL =
@@ -723,7 +724,7 @@ document.addEventListener(
       "click",
       () => {
         if (!isViewingOwnProfile) return;
-        file.click();
+        openAvatarCamera(file);
       }
     );
 
@@ -731,8 +732,69 @@ document.addEventListener(
       "change",
       handleAvatarSelection
     );
+
+    document
+      .getElementById("captureAvatarBtn")
+      ?.addEventListener("click", captureAvatarPhoto);
+
+    document
+      .getElementById("closeAvatarCameraBtn")
+      ?.addEventListener("click", closeAvatarCamera);
   }
 );
+
+async function openAvatarCamera(fileInput) {
+  if (!navigator.mediaDevices?.getUserMedia) {
+    fileInput.click();
+    return;
+  }
+
+  try {
+    const modal = document.getElementById("avatarCameraModal");
+    const video = document.getElementById("avatarCameraVideo");
+
+    avatarCameraStream =
+      await navigator.mediaDevices.getUserMedia({ video: true });
+
+    video.srcObject = avatarCameraStream;
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+  } catch {
+    fileInput.click();
+  }
+}
+
+function captureAvatarPhoto() {
+  const video = document.getElementById("avatarCameraVideo");
+  const canvas = document.createElement("canvas");
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext("2d").drawImage(video, 0, 0);
+
+  canvas.toBlob((blob) => {
+    if (!blob) return;
+    const file = new File([blob], `avatar-${Date.now()}.jpg`, {
+      type: "image/jpeg"
+    });
+    closeAvatarCamera();
+    openAvatarCropper(file);
+  }, "image/jpeg", 0.9);
+}
+
+function closeAvatarCamera() {
+  const modal = document.getElementById("avatarCameraModal");
+  const video = document.getElementById("avatarCameraVideo");
+
+  avatarCameraStream?.getTracks().forEach((track) => track.stop());
+  avatarCameraStream = null;
+  if (video) video.srcObject = null;
+  if (modal) {
+    modal.classList.add("hidden");
+    modal.style.display = "none";
+  }
+}
+
 function handleAvatarSelection(e) {
   if (!isViewingOwnProfile) {
     e.target.value = "";
@@ -743,6 +805,12 @@ function handleAvatarSelection(e) {
     e.target.files[0];
 
   if (!file) return;
+
+  openAvatarCropper(file);
+  e.target.value = "";
+}
+
+function openAvatarCropper(file) {
 
   const reader =
     new FileReader();

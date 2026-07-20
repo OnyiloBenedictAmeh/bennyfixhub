@@ -323,8 +323,11 @@ class MarketingManager {
   }
 
   setTab(tab) {
+    tab = tab === "drafts" ? "draft" : tab;
+
     this.tabButtons.forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.tab === tab);
+      const buttonTab = btn.dataset.tab === "drafts" ? "draft" : btn.dataset.tab;
+      btn.classList.toggle("active", buttonTab === tab);
     });
 
     if (this.composePanel) {
@@ -955,6 +958,7 @@ class MarketingManager {
       this.editingPostStatus = null;
       this.hideEditingBanner();
       this.resetCompose();
+      this.listenToPosts(status);
     } catch (err) {
       console.error(err);
       showToast(err.message || "Could not save post");

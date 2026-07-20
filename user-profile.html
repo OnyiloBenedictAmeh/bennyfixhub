@@ -96,8 +96,19 @@
     type="file"
     id="avatarFile"
     accept="image/*"
+    capture="environment"
     hidden
   />
+
+  <div id="avatarCameraModal" class="modal hidden">
+    <div class="modal-box avatar-camera-box">
+      <video id="avatarCameraVideo" autoplay playsinline></video>
+      <div class="crop-actions">
+        <button type="button" id="closeAvatarCameraBtn">Cancel</button>
+        <button type="button" id="captureAvatarBtn">Capture</button>
+      </div>
+    </div>
+  </div>
   
   
   <div id="cropModal" class="modal hidden">

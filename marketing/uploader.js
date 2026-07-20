@@ -29,6 +29,7 @@ export class Uploader {
                     class="bf-input-camera"
                     accept="image/*"
                     capture="environment"
+                    ${this.multiple ? "multiple" : ""}
                     hidden
                 >
 
@@ -64,6 +65,16 @@ export class Uploader {
 
                 <div class="bf-preview"></div>
 
+                <div class="bf-camera-modal" hidden>
+                    <div class="bf-camera-box">
+                        <video class="bf-camera-video" autoplay playsinline></video>
+                        <div class="bf-camera-actions">
+                            <button type="button" class="bf-action-btn bf-capture-btn">Capture</button>
+                            <button type="button" class="bf-action-btn bf-close-camera-btn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
         `;
@@ -79,6 +90,10 @@ export class Uploader {
         this.libraryBtn = this.container.querySelector(".bf-library-btn");
 
         this.preview = this.container.querySelector(".bf-preview");
+        this.cameraModal = this.container.querySelector(".bf-camera-modal");
+        this.cameraVideo = this.container.querySelector(".bf-camera-video");
+        this.captureBtn = this.container.querySelector(".bf-capture-btn");
+        this.closeCameraBtn = this.container.querySelector(".bf-close-camera-btn");
 
     }
 
@@ -88,9 +103,12 @@ export class Uploader {
 
             e.stopPropagation();
 
-            this.cameraInput.click();
+            this.openCamera();
 
         });
+
+        this.captureBtn.addEventListener("click", () => this.capturePhoto());
+        this.closeCameraBtn.addEventListener("click", () => this.closeCamera());
 
         this.libraryBtn.addEventListener("click", (e) => {
 
@@ -139,6 +157,48 @@ export class Uploader {
             this.addFiles(e.dataTransfer.files);
 
         });
+
+    }
+
+    async openCamera() {
+
+        if (!navigator.mediaDevices?.getUserMedia) {
+            this.cameraInput.click();
+            return;
+        }
+
+        try {
+            this.cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            this.cameraVideo.srcObject = this.cameraStream;
+            this.cameraModal.hidden = false;
+        } catch {
+            this.cameraInput.click();
+        }
+
+    }
+
+    capturePhoto() {
+
+        const canvas = document.createElement("canvas");
+        canvas.width = this.cameraVideo.videoWidth;
+        canvas.height = this.cameraVideo.videoHeight;
+        canvas.getContext("2d").drawImage(this.cameraVideo, 0, 0);
+
+        canvas.toBlob((blob) => {
+            if (!blob) return;
+            const file = new File([blob], `camera-${Date.now()}.jpg`, { type: "image/jpeg" });
+            this.addFiles([file]);
+            this.closeCamera();
+        }, "image/jpeg", 0.9);
+
+    }
+
+    closeCamera() {
+
+        this.cameraStream?.getTracks().forEach((track) => track.stop());
+        this.cameraStream = null;
+        this.cameraVideo.srcObject = null;
+        this.cameraModal.hidden = true;
 
     }
 
