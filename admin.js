@@ -259,6 +259,8 @@ function setLoginButtonLoading(isLoading) {
 }
 
 onAuthStateChanged(auth, async (user) => {
+  console.log("Current UID:", user?.uid);
+
   showLoading();
 
   try {
@@ -416,8 +418,104 @@ onSnapshot(collection(db, "repairs"), (snapshot) => {
     document.getElementById("completedRepairs").innerText = completed;
 
     updateChart();
+    console.log("🔥 Repairs snapshot size:", snapshot.size);
   });
 }
+
+function renderStars(rating) {
+  return Array.from({ length: 5 }, (_, i) =>
+    `<i class='bx ${i < rating ? "bxs-star" : "bx-star"}'></i>`
+  ).join("");
+}
+
+function escapeHtml(str = "") {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function listenToReviews() {
+  const container = document.getElementById("reviewsContainer");
+  if (!container) return;
+
+  onSnapshot(
+    query(collection(db, "repairs"), where("rating", ">=", 1)),
+    (snapshot) => {
+      const pendingReviews = [];
+
+      snapshot.forEach((docSnap) => {
+        const repair = docSnap.data();
+
+        if (!repair.reviewStatus || repair.reviewStatus === "pending") {
+          pendingReviews.push({ id: docSnap.id, ...repair });
+        }
+      });
+
+      if (!pendingReviews.length) {
+        container.innerHTML = `<p class="empty-state">No reviews waiting for approval.</p>`;
+        return;
+      }
+
+      container.innerHTML = pendingReviews
+        .map(
+          (repair) => `
+        <div class="review-card">
+          <div class="review-stars">${renderStars(repair.rating)}</div>
+          <p class="review-text">${repair.review ? escapeHtml(repair.review) : "<em>No written review</em>"}</p>
+          <small>${escapeHtml(repair.customerName || repair.email || "Customer")} — ${escapeHtml(repair.deviceName || "Unknown device")}</small>
+          <div class="review-actions">
+            <button class="btn btn-primary" onclick="approveReview('${repair.id}')">Approve</button>
+            <button class="btn btn-secondary" onclick="rejectReview('${repair.id}')">Reject</button>
+          </div>
+        </div>
+      `
+        )
+        .join("");
+    },
+    (err) => {
+      console.error(err);
+      container.innerHTML = `<p class="empty-state">Could not load reviews.</p>`;
+    }
+  );
+}
+
+window.approveReview = async function (repairId) {
+  try {
+    const repairSnap = await getDoc(doc(db, "repairs", repairId));
+    if (!repairSnap.exists()) return showToast("Repair not found");
+
+    const repair = repairSnap.data();
+
+    await addDoc(collection(db, "testimonials"), {
+      customerName: repair.customerName || "BennyFix Customer",
+      deviceName: repair.deviceName || "",
+      rating: repair.rating,
+      review: repair.review || "",
+      repairId,
+      approvedAt: serverTimestamp(),
+    });
+
+    await updateDoc(doc(db, "repairs", repairId), { reviewStatus: "approved" });
+
+    showToast("Review approved and published");
+  } catch (err) {
+    console.error(err);
+    showToast("Could not approve review");
+  }
+};
+
+window.rejectReview = async function (repairId) {
+  try {
+    await updateDoc(doc(db, "repairs", repairId), { reviewStatus: "rejected" });
+    showToast("Review rejected");
+  } catch (err) {
+    console.error(err);
+    showToast("Could not reject review");
+  }
+};
+
 function listenToNotifications() {
   const badge = document.getElementById("notifBadge");
 
@@ -1051,6 +1149,7 @@ if (sidebarBtn) {
 function loadAdminDashboard() {
   listenToNotifications();
   listenToRepairs();
+  listenToReviews();
   loadUsers();
   loadTechnicians();
   showSection("overview");

@@ -2319,3 +2319,73 @@ body {
     color:#fff;
 
 }
+
+/* ==========================
+   REVIEWS
+========================== */
+
+.review-card{
+
+    background:var(--card-bg,#fff);
+
+    border:1px solid #e5e7eb;
+
+    border-radius:14px;
+
+    padding:16px;
+
+}
+
+.review-stars{
+
+    color:#f59e0b;
+
+    font-size:18px;
+
+    margin-bottom:8px;
+
+}
+
+.review-text{
+
+    margin:0 0 10px;
+
+    color:#111827;
+
+    line-height:1.5;
+
+}
+
+.review-card small{
+
+    display:block;
+
+    color:#64748b;
+
+    margin-bottom:12px;
+
+}
+
+.review-actions{
+
+    display:flex;
+
+    gap:8px;
+
+}
+
+.review-actions button{
+
+    border:none;
+
+    border-radius:9px;
+
+    padding:8px 14px;
+
+    cursor:pointer;
+
+    font-weight:700;
+
+    font-size:13px;
+
+}

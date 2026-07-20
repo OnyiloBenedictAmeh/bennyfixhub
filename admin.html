@@ -98,6 +98,11 @@
   <span>Marketing</span>
 </button>
 
+  <button onclick="showSection('reviews')">
+  <i class='bx bx-star'></i>
+  <span>Reviews</span>
+</button>
+
   <button onclick="toggleNotifications()" id="sidebar-notifications">
     <i class="bx bx-bell"></i>
     <span>Messages</span>
@@ -392,6 +397,20 @@
   </div>
 
 </div>
+ <!-- REVIEWS SECTION -->
+<div id="reviews" class="section" style="display:none;">
+  <div class="marketing-header">
+    <div>
+      <h2>Reviews</h2>
+      <p>Approve customer reviews before they appear as public testimonials.</p>
+    </div>
+  </div>
+
+  <div id="reviewsContainer" class="marketing-post-list">
+    <p class="empty-state">Loading reviews...</p>
+  </div>
+</div>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script type="module" src="admin.js"></script>

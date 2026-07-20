@@ -18,6 +18,16 @@
     />
     <link rel="stylesheet" href="legal-gate.css" />
     <link rel="stylesheet" href="landing-tour.css" />
+    <style>
+      .testimonials { max-width: 1100px; margin: 60px auto; padding: 0 20px; }
+      .testimonials h2 { text-align: center; margin-bottom: 30px; }
+      .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+      .testimonial-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 16px; padding: 22px; box-shadow: 0 8px 20px rgba(0,0,0,.06); }
+      .testimonial-stars { color: #f59e0b; letter-spacing: 2px; margin-bottom: 10px; }
+      .testimonial-text { color: #475569; font-style: italic; margin: 0 0 14px; line-height: 1.6; }
+      .testimonial-name { display: block; }
+      .testimonial-device { color: #94a3b8; }
+    </style>
   </head>
   <body>
     <div class="auth-overlay" id="authModal">
@@ -221,17 +231,12 @@
           innovation, and digital support.
         </p>
 
-       <div class="hero-actions">
-  <button class="primary-btn" onclick="window.toggleRepairForm()">
-    <i class="bx bx-wrench"></i>
-    Start a Repair
-  </button>
-
-  <a href="services.html" class="ghost-btn">
-    <i class="bx bx-grid-alt"></i>
-    Explore Services
-  </a>
-</div>
+        <div class="hero-actions">
+          <button class="primary-btn" onclick="window.toggleRepairForm()">
+            Start a Repair
+          </button>
+          <button class="ghost-btn">Explore Services</button>
+        </div>
         <!-- REPAIR MODAL -->
         <div id="repairOverlay" class="repair-overlay">
           <div class="repair-form" id="repairForm">
@@ -425,6 +430,12 @@
         </article>
       </div>
     </div>
+
+    <div class="testimonials">
+      <h2>What customers are saying</h2>
+      <div id="testimonialsGrid" class="testimonials-grid"></div>
+    </div>
+
     <footer>
       <div class="footer-grid">
         <div class="footer-brand">
@@ -506,6 +517,58 @@
           </a>
         </div>
 
+        <!-- Legal
+        <div class="footer-section">
+          <h4>Legal</h4>
+
+          <a
+            href="terms-of-service.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Terms of Service
+          </a>
+
+          <a
+            href="privacy-policy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Privacy Policy
+          </a>
+
+          <a
+            href="cookie-policy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Cookie Policy
+          </a>
+
+          <a
+            href="refund-policy.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Refund Policy
+          </a>
+
+          <a
+            href="repair-warranty.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Repair Warranty
+          </a>
+
+          <a
+            href="acceptable-use.html"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Acceptable Use Policy
+          </a>
+        </div> -->
       </div>
       <hr />
       <div class="footer-bottom">
@@ -718,5 +781,6 @@
 
     <script type="module" src="./js/legal-gate.js"></script>
     <script type="module" src="./js/landing-tour.js"></script>
+    <script type="module" src="./js/testimonials.js"></script>
   </body>
 </html>

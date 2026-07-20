@@ -496,3 +496,69 @@ body{
     width: 94%;
   }
 }
+
+/* ==========================
+   RATING / REVIEW
+========================== */
+
+.rating-block{
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #e5e7eb;
+}
+
+.rating-block p{
+  margin: 0 0 6px;
+  font-size: 13px;
+  color: #475569;
+}
+
+.star-picker{
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.star-btn{
+  border: none;
+  background: none;
+  font-size: 22px;
+  color: #cbd5e1;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.star-btn.active{
+  color: #f59e0b;
+}
+
+.review-text-input{
+  width: 100%;
+  min-height: 60px;
+  resize: vertical;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-family: inherit;
+  font-size: 13px;
+}
+
+.submit-rating-btn{
+  padding: 8px 14px;
+  font-size: 13px;
+}
+
+.star-display{
+  color: #f59e0b;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+
+.rating-review{
+  font-style: italic;
+  color: #475569;
+  font-size: 13px;
+  margin: 6px 0;
+}

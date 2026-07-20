@@ -338,6 +338,7 @@ async function loadRepairs(uid) {
 
   repairsSnap.forEach((docSnap) => {
     const repair = docSnap.data();
+    const repairId = docSnap.id;
 
     const div = document.createElement("div");
 
@@ -356,6 +357,8 @@ async function loadRepairs(uid) {
     <small>
       ${repair.category || ""}
     </small>
+
+    ${repair.status === "Completed" ? buildRatingBlockHtml(repair) : ""}
   </div>
 
   <span class="repair-status ${repair.status.toLowerCase()}">
@@ -363,11 +366,112 @@ async function loadRepairs(uid) {
   </span>
 `;
 
-    div.addEventListener("click", () => {
+    div.addEventListener("click", (e) => {
+      if (e.target.closest(".rating-block")) return;
       showRepairJourney(repair);
     });
 
+    if (repair.status === "Completed" && !repair.rating) {
+      wireRatingForm(div, repairId);
+    }
+
     repairsContainer.appendChild(div);
+  });
+}
+
+function escapeHtml(str = "") {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function buildRatingBlockHtml(repair) {
+  if (repair.rating) {
+    const statusLabel =
+      repair.reviewStatus === "approved"
+        ? "Published as a testimonial"
+        : repair.reviewStatus === "rejected"
+        ? "Thanks for the feedback"
+        : "Submitted — awaiting review";
+
+    return `
+      <div class="rating-block">
+        <div class="star-display">${"★".repeat(repair.rating)}${"☆".repeat(5 - repair.rating)}</div>
+        ${repair.review ? `<p class="rating-review">"${escapeHtml(repair.review)}"</p>` : ""}
+        <small>${statusLabel}</small>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="rating-block">
+      <p>How did we do?</p>
+      <div class="star-picker" data-value="0">
+        ${[1, 2, 3, 4, 5]
+          .map((n) => `<button type="button" class="star-btn" data-star="${n}">★</button>`)
+          .join("")}
+      </div>
+      <textarea class="review-text-input" placeholder="Optional: tell us more"></textarea>
+      <button type="button" class="submit-rating-btn primary-btn">Submit Review</button>
+    </div>
+  `;
+}
+
+function wireRatingForm(container, repairId) {
+  const block = container.querySelector(".rating-block");
+  if (!block) return;
+
+  const picker = block.querySelector(".star-picker");
+  const stars = [...block.querySelectorAll(".star-btn")];
+  const textarea = block.querySelector(".review-text-input");
+  const submitBtn = block.querySelector(".submit-rating-btn");
+
+  function paintStars(value) {
+    stars.forEach((btn) => {
+      btn.classList.toggle("active", Number(btn.dataset.star) <= value);
+    });
+  }
+
+  stars.forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      picker.dataset.value = btn.dataset.star;
+      paintStars(Number(btn.dataset.star));
+    });
+  });
+
+  textarea?.addEventListener("click", (e) => e.stopPropagation());
+
+  submitBtn?.addEventListener("click", async (e) => {
+    e.stopPropagation();
+
+    const rating = Number(picker.dataset.value || 0);
+
+    if (!rating) {
+      return window.showToast("Pick a star rating first", "info");
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+
+    try {
+      await updateDoc(doc(db, "repairs", repairId), {
+        rating,
+        review: textarea?.value.trim() || "",
+        ratedAt: serverTimestamp(),
+      });
+
+      window.showToast("Thanks for your feedback!", "success");
+
+      if (currentUid) loadRepairs(currentUid);
+    } catch (err) {
+      console.error(err);
+      window.showToast("Could not submit review", "error");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit Review";
+    }
   });
 }
 async function loadActivity(uid) {
