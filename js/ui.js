@@ -336,7 +336,7 @@ document.addEventListener("keydown", function (e) {
     if (repairIsOpen && activeTag !== "textarea") {
       e.preventDefault();
       const step = window._currentRepairStep ?? 1;
-      if (step >= 1 && step < 6) {
+      if (step >= 1 && step < 7) {
         window.nextStep?.(step);
       } else {
         window.startRepair?.();
@@ -350,7 +350,7 @@ document.addEventListener("keydown", function (e) {
   const step = window._currentRepairStep ?? 1;
 
   if (repairIsOpen) {
-    if (e.key === "ArrowRight" && step < 6) window.nextStep?.(step);
+    if (e.key === "ArrowRight" && step < 7) window.nextStep?.(step);
     if (e.key === "ArrowLeft" && step > 1) window.prevStep?.(step);
   }
 });

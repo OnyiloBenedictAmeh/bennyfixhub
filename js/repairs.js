@@ -1,4 +1,3 @@
-console.log("repairs.js loaded");
 // =========================
 // REPAIRS
 // =========================
@@ -70,6 +69,9 @@ function validateStep(step) {
   for (let input of inputs) {
     if (input.type === "file" || input.id === "deviceImage") continue;
     if (input.disabled) continue;
+    if (input.closest("[hidden]")) continue;
+    if (input.dataset.optional === "true") continue;
+    if (input.type === "checkbox") continue;
 
     const value = input.value.trim();
     clearFieldError(input);
@@ -125,25 +127,65 @@ function validateRepairImage() {
 function collectFormData() {
   return {
     category: document.getElementById("category")?.value || "",
+    brand: document.getElementById("brand")?.value || "",
     deviceName: document.getElementById("deviceName")?.value || "",
+    serialNumber: document.getElementById("serialNumber")?.value || "",
     problemType: document.getElementById("problemType")?.value || "",
+    deviceCondition: document.getElementById("deviceCondition")?.value || "",
     issue: document.getElementById("issue")?.value || "",
+    warrantyStatus: document.getElementById("warrantyStatus")?.value || "",
     urgency: document.getElementById("urgency")?.value || "",
     contact: document.getElementById("contact")?.value || "",
+    preferredTime: document.getElementById("preferredTime")?.value || "",
     serviceType: document.getElementById("serviceType")?.value || "",
+    serviceAddress: document.getElementById("serviceAddress")?.value || "",
+    operatingSystem: document.getElementById("operatingSystem")?.value || "",
+    remoteAccessReady: document.getElementById("remoteAccessReady")?.checked
+      ? "Yes"
+      : "No",
+    approvalRequired: document.getElementById("approvalRequired")?.checked
+      ? "Yes"
+      : "No",
   };
+}
+
+function escapeHtml(value) {
+  return String(value || "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[char]);
 }
 
 function buildReview() {
   const data = collectFormData();
+  const safe = Object.fromEntries(
+    Object.entries(data).map(([key, value]) => [key, escapeHtml(value)])
+  );
+  const previewSrc = document.getElementById("previewImg")?.src || "";
+  const imageReview = previewSrc
+    ? `<div class="review-image"><img src="${previewSrc}" alt="Uploaded device preview" /></div>`
+    : "";
+
   document.getElementById("reviewBox").innerHTML = `
-    <p><b>Category:</b> ${data.category}</p>
-    <p><b>Device:</b> ${data.deviceName}</p>
-    <p><b>Problem:</b> ${data.problemType}</p>
-    <p><b>Issue:</b> ${data.issue}</p>
-    <p><b>Contact:</b> ${data.contact}</p>
-    <p><b>Urgency:</b> ${data.urgency}</p>
-    <p><b>Service:</b> ${data.serviceType}</p>
+    ${imageReview}
+    <p><b>Category:</b> ${safe.category}</p>
+    <p><b>Brand:</b> ${safe.brand}</p>
+    <p><b>Device:</b> ${safe.deviceName}</p>
+    ${data.serialNumber ? `<p><b>Serial/IMEI:</b> ${safe.serialNumber}</p>` : ""}
+    <p><b>Problem:</b> ${safe.problemType}</p>
+    <p><b>Condition:</b> ${safe.deviceCondition}</p>
+    <p><b>Issue:</b> ${safe.issue}</p>
+    <p><b>Warranty:</b> ${safe.warrantyStatus}</p>
+    <p><b>Contact:</b> ${safe.contact}</p>
+    <p><b>Urgency:</b> ${safe.urgency}</p>
+    <p><b>Preferred time:</b> ${safe.preferredTime || "Anytime"}</p>
+    <p><b>Service:</b> ${safe.serviceType}</p>
+    ${data.serviceAddress ? `<p><b>Address:</b> ${safe.serviceAddress}</p>` : ""}
+    ${data.operatingSystem ? `<p><b>Operating system:</b> ${safe.operatingSystem}</p>` : ""}
+    <p><b>Approve paid work first:</b> ${safe.approvalRequired}</p>
   `;
 }
 
@@ -247,9 +289,21 @@ function handleFile(file) {
     return showToast("Only image files allowed", "error");
   }
 
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    return showToast("Image must be 5MB or less", "error");
+  }
+
+  const fileInput = document.getElementById("deviceImage");
   const previewImg = document.getElementById("previewImg");
   const uploadContent = document.getElementById("uploadContent");
   const previewBox = document.getElementById("imagePreviewBox");
+
+  if (fileInput) {
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    fileInput.files = transfer.files;
+  }
 
   const reader = new FileReader();
   reader.onload = (e) => {
@@ -282,6 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     uploadBox.addEventListener("drop", (e) => {
       e.preventDefault();
+      uploadBox.style.borderColor = "#d1d5db";
       handleFile(e.dataTransfer.files[0]);
     });
 
@@ -298,6 +353,24 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  const serviceType = document.getElementById("serviceType");
+  const updateServiceFields = () => {
+    const value = serviceType?.value || "";
+    const locationFields = document.getElementById("locationFields");
+    const remoteFields = document.getElementById("remoteFields");
+
+    if (locationFields) {
+      locationFields.hidden = !["Home pickup", "Technician visit"].includes(value);
+    }
+
+    if (remoteFields) {
+      remoteFields.hidden = value !== "Remote support";
+    }
+  };
+
+  serviceType?.addEventListener("change", updateServiceFields);
+  updateServiceFields();
+
   // Restore draft
   const draft = localStorage.getItem("repairDraft");
   if (draft) {
@@ -306,6 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const el = document.getElementById(key);
       if (el) el.value = data[key];
     });
+    updateServiceFields();
   }
 });
 

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>BennyFix Hub</title>
     <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="dashboard.css" />
     <link
       rel="icon"
       type="image/png"
@@ -38,7 +37,7 @@
         <!-- LOGIN FORM -->
         <div id="loginForm" class="form-group">
           <h2>Welcome to BennyFix Hub</h2>
-          <p class="subtitle">Login to continue</p>
+          <p class="subtitle">Login when you are ready</p>
 
           <input type="email" id="email" placeholder="Email" />
           <input type="password" id="password" placeholder="Password" />
@@ -60,7 +59,7 @@
         <!-- REGISTER FORM -->
         <div id="registerForm" style="display: none" class="form-group">
           <h2>Create Account</h2>
-          <p class="subtitle">Register to continue</p>
+          <p class="subtitle">Create an account when you need one</p>
 
           <input type="text" id="regName" placeholder="Full name" />
           <input type="email" id="regEmail" placeholder="Email" />
@@ -257,6 +256,7 @@
             <div class="step active" id="step1">
               <h2>What device do you need fixed?</h2>
 
+              <label for="category">Device type</label>
               <select id="category">
                 <option value="">Select device type</option>
                 <option>Laptop</option>
@@ -270,12 +270,11 @@
                 <option>Game Console</option>
               </select>
 
-              <button onclick="nextStep(1)">Next</button>
               <div class="upload-box" id="uploadBox">
                 <input type="file" id="deviceImage" accept="image/*" hidden />
 
                 <div class="upload-content" id="uploadContent">
-                  <p>📷 Drag & drop or click to upload image</p>
+                  <p>Upload a device photo</p>
                   <small>PNG, JPG (max 5MB)</small>
                 </div>
 
@@ -284,20 +283,36 @@
                   id="imagePreviewBox"
                   style="display: none"
                 >
-                  <img id="previewImg" />
+                  <img id="previewImg" alt="Device preview" />
                   <button type="button" id="removeImageBtn">Remove</button>
                 </div>
               </div>
+
+              <button onclick="nextStep(1)">Next</button>
             </div>
 
             <!-- STEP 2 -->
             <div class="step" id="step2">
-              <h2>What’s the device model?</h2>
+              <h2>Device details</h2>
 
+              <label for="brand">Brand</label>
+              <input id="brand" type="text" placeholder="e.g Apple / Samsung / HP" />
+
+              <label for="deviceName">Model</label>
               <input
                 id="deviceName"
                 type="text"
                 placeholder="e.g iPhone 11 / HP EliteBook"
+              />
+
+              <label for="serialNumber">
+                Serial number or IMEI <span class="optional-text">optional</span>
+              </label>
+              <input
+                id="serialNumber"
+                type="text"
+                data-optional="true"
+                placeholder="Useful for warranty checks"
               />
 
               <div class="btn-row">
@@ -310,6 +325,7 @@
             <div class="step" id="step3">
               <h2>What is the problem?</h2>
 
+              <label for="problemType">Main problem</label>
               <select id="problemType">
                 <option value="">Select problem</option>
                 <option>Screen Damage</option>
@@ -322,6 +338,16 @@
                 <option>Slow Performance</option>
               </select>
 
+              <label for="deviceCondition">Current device condition</label>
+              <select id="deviceCondition">
+                <option value="">Select current condition</option>
+                <option>Turns on normally</option>
+                <option>Turns on but has issues</option>
+                <option>Does not turn on</option>
+                <option>Physical damage visible</option>
+                <option>Water or liquid exposure</option>
+              </select>
+
               <div class="btn-row">
                 <button onclick="prevStep(3)">Back</button>
                 <button onclick="nextStep(3)">Next</button>
@@ -332,11 +358,21 @@
             <div class="step" id="step4">
               <h2>Describe the issue</h2>
 
-              <input
+              <label for="issue">What happened?</label>
+              <textarea
                 id="issue"
-                type="text"
                 placeholder="Explain what happened"
-              />
+                rows="5"
+              ></textarea>
+
+              <label for="warrantyStatus">Warranty or receipt status</label>
+              <select id="warrantyStatus">
+                <option value="">Select warranty status</option>
+                <option>Still under warranty</option>
+                <option>Receipt available</option>
+                <option>No warranty or receipt</option>
+                <option>Not sure</option>
+              </select>
 
               <div class="btn-row">
                 <button onclick="prevStep(4)">Back</button>
@@ -348,13 +384,18 @@
             <div class="step" id="step5">
               <h2>Contact & Urgency</h2>
 
+              <label for="contact">Phone number</label>
               <input id="contact" type="tel" placeholder="Phone number" />
 
+              <label for="urgency">Urgency</label>
               <select id="urgency">
                 <option>Normal</option>
                 <option>Urgent</option>
                 <option>Emergency</option>
               </select>
+
+              <label for="preferredTime">Preferred date/time</label>
+              <input id="preferredTime" type="datetime-local" data-optional="true" />
 
               <div class="btn-row">
                 <button onclick="prevStep(5)">Back</button>
@@ -366,12 +407,37 @@
             <div class="step" id="step6">
               <h2>Service type</h2>
 
+              <label for="serviceType">How should we handle the repair?</label>
               <select id="serviceType">
                 <option>Bring to shop</option>
                 <option>Home pickup</option>
                 <option>Technician visit</option>
                 <option>Remote support</option>
               </select>
+
+              <div id="locationFields" class="conditional-fields" hidden>
+                <label for="serviceAddress">Pickup or visit address</label>
+                <textarea
+                  id="serviceAddress"
+                  placeholder="Enter address and nearby landmark"
+                  rows="3"
+                ></textarea>
+              </div>
+
+              <div id="remoteFields" class="conditional-fields" hidden>
+                <label for="operatingSystem">Operating system</label>
+                <input id="operatingSystem" type="text" placeholder="e.g Windows 11 / Android / iOS" />
+
+                <label class="checkbox-row" for="remoteAccessReady">
+                  <input id="remoteAccessReady" type="checkbox" />
+                  <span>Remote access can be arranged if needed</span>
+                </label>
+              </div>
+
+              <label class="checkbox-row" for="approvalRequired">
+                <input id="approvalRequired" type="checkbox" checked />
+                <span>Contact me before any paid repair work begins</span>
+              </label>
 
               <div class="btn-row">
                 <button onclick="prevStep(6)">Back</button>
@@ -383,6 +449,9 @@
               <h2>Review Your Request</h2>
 
               <div id="reviewBox"></div>
+              <p class="review-note">
+                A technician will review this request and contact you before repair work begins.
+              </p>
 
               <div class="btn-row">
                 <button onclick="prevStep(7)">Back</button>
@@ -443,6 +512,13 @@
     <img src="/bennyfix hub white-logo.png" width="100" alt="BennyFix Hub Logo">
 
     <h3>BennyFix Hub</h3>
+    <div class="footer-social">
+      <a href="https://instagram.com/yourusername" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+      <a href="https://x.com/yourusername" target="_blank" rel="noopener noreferrer" aria-label="X"><i class="bx bxl-twitter"></i></a>
+      <a href="https://facebook.com/yourpage" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+      <a href="#" aria-label="YouTube"><i class="bx bxl-youtube"></i></a>
+      <a href="#" aria-label="LinkedIn"><i class="bx bxl-linkedin"></i></a>
+    </div>
 </div>
         <!-- Company -->
         <div class="footer-section">
@@ -624,13 +700,6 @@
           <div class="copyright">
             &copy; 2026 BennyFix Hub. All rights reserved.
           </div>
-          <div class="footer-social">
-            <a href="#"><i class="bx bxl-instagram"></i></a>
-            <a href="#"><i class="bx bxl-twitter"></i></a>
-            <a href="#"><i class="bx bxl-facebook"></i></a>
-            <a href="#"><i class="bx bxl-youtube"></i></a>
-            <a href="#"><i class="bx bxl-linkedin"></i></a>
-          </div>
         </div>
       </div>
 
@@ -641,7 +710,6 @@
         `© ${new Date().getFullYear()} BennyFix Hub`;
     </script>
     <!-- Load all modules. Type="module" gives you import/export support -->
-    <script type="module" src="./js/firebase.js"></script>
     <script type="module" src="./js/ui.js"></script>
     <script type="module" src="./js/mega.js"></script>
     <script type="module" src="./js/auth.js"></script>
@@ -711,6 +779,18 @@
     </div>
     <div id="toastContainer"></div>
 
+    <div id="cookieConsent" class="cookie-consent hidden">
+      <div>
+        <strong>Cookies</strong>
+        <p>We use cookies to keep the site working and improve your experience.</p>
+      </div>
+      <div class="cookie-actions">
+        <a href="cookie-policy.html" target="_blank" rel="noopener noreferrer">Policy</a>
+        <button id="cookieDeclineBtn" type="button">Decline</button>
+        <button id="cookieAcceptBtn" type="button">Accept</button>
+      </div>
+    </div>
+
     <!-- LEGAL CONSENT GATE -->
     <div id="legalGateOverlay" class="legal-gate-overlay hidden">
       <div class="legal-gate-box">
@@ -779,8 +859,9 @@
       </div>
     </div>
 
-    <script type="module" src="./js/legal-gate.js"></script>
-    <script type="module" src="./js/landing-tour.js"></script>
-    <script type="module" src="./js/testimonials.js"></script>
+    <script type="module" src="js/legal-gate.js"></script>
+    <script type="module" src="js/cookie-consent.js"></script>
+    <script type="module" src="js/landing-tour.js"></script>
+    <script type="module" src="js/Testimonials.js"></script>
   </body>
 </html>

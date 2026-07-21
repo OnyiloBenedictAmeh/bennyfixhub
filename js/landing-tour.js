@@ -36,6 +36,7 @@ const STEPS = [
 let currentStep = 0;
 let spotlightEl = null;
 let tooltipEl = null;
+let repositionTimer = null;
 
 function isLegalGateOpen() {
   const overlay = document.getElementById("legalGateOverlay");
@@ -75,13 +76,15 @@ function renderStep(index) {
     return;
   }
 
-  target.scrollIntoView({ behavior: "smooth", block: "center" });
+  target.scrollIntoView({ behavior: "auto", block: "center", inline: "center" });
 
-  // Give the scroll a moment to settle before measuring position.
-  setTimeout(() => positionOverlay(target, step, index), 300);
+  clearTimeout(repositionTimer);
+  repositionTimer = setTimeout(() => positionOverlay(target, step, index), 80);
 }
 
 function positionOverlay(target, step, index) {
+  if (!spotlightEl || !tooltipEl || !target?.isConnected) return;
+
   const rect = target.getBoundingClientRect();
   const padding = 8;
 
@@ -106,8 +109,11 @@ function positionOverlay(target, step, index) {
   `;
 
   const tooltipWidth = tooltipEl.offsetWidth || 300;
+  const tooltipHeight = tooltipEl.offsetHeight || 170;
   const spaceBelow = window.innerHeight - rect.bottom;
-  const top = spaceBelow > 160 ? rect.bottom + 16 : Math.max(16, rect.top - 190);
+  const top = spaceBelow > tooltipHeight + 24
+    ? rect.bottom + 16
+    : Math.max(16, rect.top - tooltipHeight - 16);
   const left = Math.min(
     Math.max(16, rect.left),
     window.innerWidth - tooltipWidth - 16
@@ -141,6 +147,7 @@ function goToStep(index) {
 }
 
 function endTour() {
+  clearTimeout(repositionTimer);
   removeOverlayElements();
   localStorage.setItem(STORAGE_KEY, "true");
 }
@@ -175,4 +182,9 @@ function maybeAutoStart() {
 document.addEventListener("DOMContentLoaded", () => {
   addReplayButton();
   maybeAutoStart();
+});
+
+window.addEventListener("resize", () => {
+  if (!spotlightEl || !tooltipEl) return;
+  renderStep(currentStep);
 });

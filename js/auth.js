@@ -360,6 +360,7 @@ function startResendTimer() {
 window.openAuth = function () {
   const authModal = document.getElementById("authModal");
   if (authModal) authModal.style.display = "flex";
+  document.getElementById("accountDropdown")?.classList.remove("show");
 };
 
 window.openAccountPanel = function () {
@@ -374,12 +375,12 @@ window.closeAccountPanel = function () {
 window.toggleAccountMenu = function (e) {
   e.preventDefault();
   const user = auth.currentUser;
+  const dropdown = document.getElementById("accountDropdown");
 
   if (user) {
     window.openAccountPanel();
   } else {
-    const authModal = document.getElementById("authModal");
-    if (authModal) authModal.style.display = "flex";
+    dropdown?.classList.toggle("show");
   }
 };
 
@@ -424,7 +425,6 @@ onAuthStateChanged(auth, async (user) => {
   if (!user) {
     if (guestMenu) guestMenu.style.display = "block";
     if (userMenu) userMenu.style.display = "none";
-    if (authModal) authModal.style.display = "flex";
     return;
   }
 

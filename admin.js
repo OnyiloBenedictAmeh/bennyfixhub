@@ -364,6 +364,9 @@ onSnapshot(collection(db, "repairs"), (snapshot) => {
   const status = r.status || "Pending";
   const statusKey = status.toLowerCase();
   const deviceTitle = r.deviceName || r.device || "Unknown device";
+  const repairImage = r.imageUrl
+    ? `<img class="repair-thumb" src="${r.imageUrl}" alt="${deviceTitle}">`
+    : "";
 
   if (statusKey === "pending") pending++;
   else if (statusKey === "diagnosing" || statusKey === "fixing") progress++;
@@ -374,6 +377,7 @@ onSnapshot(collection(db, "repairs"), (snapshot) => {
 
   card.innerHTML = `
   <div class="repair-left">
+    ${repairImage}
     <h3>${r.deviceName || r.deviceTitle || "Unknown device"}</h3>
     <p class="issue">${r.issue}</p>
     <small class="email">${r.email || ""}</small>
@@ -835,6 +839,10 @@ updateData.completedBy = auth.currentUser?.email || "Admin";
 
   try {
     await updateDoc(ref, updateData);
+    if (status === "Completed") {
+      await createMarketingDraftFromRepair(id, data);
+      showToast("Marketing draft created");
+    }
     showToast("Repair updated");
 
   } catch (err) {
@@ -842,6 +850,41 @@ updateData.completedBy = auth.currentUser?.email || "Admin";
     showToast("Update failed");
   }
 };
+
+async function createMarketingDraftFromRepair(repairId, repairData) {
+  if (repairData.marketingPostId) return;
+
+  const device = repairData.deviceName || repairData.category || "device";
+  const problem = repairData.problemType || repairData.issue || "repair";
+  const caption = [
+    `Another ${device} repair completed at BennyFix Hub.`,
+    `Issue handled: ${problem}.`,
+    "Need a reliable fix? Send us your device and we will take care of it.",
+  ].join("\n\n");
+
+  const images = repairData.imageUrl
+    ? [{ url: repairData.imageUrl, filename: `${device} repair` }]
+    : [];
+
+  const postRef = await addDoc(collection(db, "posts"), {
+    caption,
+    images,
+    platforms: ["facebook", "instagram", "linkedin"],
+    facebookPageIds: [],
+    status: "scheduled",
+    scheduledAt: new Date(Date.now() + 60 * 60 * 1000),
+    repairId,
+    source: "repair-completion",
+    createdBy: auth.currentUser?.uid || "",
+    createdByEmail: auth.currentUser?.email || "",
+    createdAt: serverTimestamp(),
+  });
+
+  await updateDoc(doc(db, "repairs", repairId), {
+    marketingPostId: postRef.id,
+    marketingDraftCreatedAt: serverTimestamp(),
+  });
+}
 
 async function notifyUser(repairData) {
   try {

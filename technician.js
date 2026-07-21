@@ -13,7 +13,7 @@ import {
   signOut,
   serverTimestamp,
   onAuthStateChanged,
-} from "./js/firebase.js";
+} from "./firebase.js";
 
 let currentTechnician = null;
 let assignedRepairs = [];
@@ -191,10 +191,14 @@ function renderRepairList(containerId, repairs) {
 function repairCard(repair) {
   const status = repair.status || "Pending";
   const statusKey = status.toLowerCase();
+  const repairImage = repair.imageUrl
+    ? `<img class="repair-thumb" src="${repair.imageUrl}" alt="${repair.deviceName || "Repair image"}">`
+    : "";
 
   return `
     <article class="repair-card">
       <div>
+        ${repairImage}
         <span class="status ${statusKey}">${status}</span>
         <h3>${repair.deviceName || repair.device || "Unknown device"}</h3>
         <p>${repair.issue || repair.problemType || "No issue recorded"}</p>

@@ -1241,10 +1241,139 @@ footer {
   max-width: 1100px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: minmax(220px, 1.4fr) repeat(4, 1fr);
   gap: 25px;
   align-items: flex-start;
-  justify-items: center;
+  justify-items: start;
+  text-align: left;
+}
+
+/* COOKIE BANNER */
+.cookie-consent {
+  position: fixed;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+}
+
+.cookie-consent.hidden {
+  display: none;
+}
+
+.cookie-consent p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.cookie-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cookie-actions a,
+.cookie-actions button {
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cookie-actions a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.cookie-actions button {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.cookie-actions #cookieAcceptBtn {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.testimonials {
+  max-width: 1100px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.testimonials h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #111827;
+}
+
+.testimonials-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.testimonial-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.testimonial-stars {
+  color: #f59e0b;
+  letter-spacing: 2px;
+  margin-bottom: 10px;
+}
+
+.testimonial-text {
+  color: #475569;
+  font-style: italic;
+  margin: 0 0 14px;
+  line-height: 1.6;
+}
+
+.testimonial-name {
+  display: block;
+  color: #111827;
+}
+
+.testimonial-device {
+  color: #94a3b8;
+}
+
+body.dark .cookie-consent,
+body.dark .testimonial-card {
+  background: #111827;
+  border-color: #1f2937;
+  color: #f8fafc;
+}
+
+body.dark .testimonials h2,
+body.dark .testimonial-name {
+  color: #f8fafc;
+}
+
+body.dark .cookie-consent p,
+body.dark .testimonial-text,
+body.dark .testimonial-device {
+  color: #cbd5e1;
 }
 
 footer h4 {
@@ -1287,8 +1416,9 @@ footer hr {
 .footer-bottom {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 24px;
+  width: min(1100px, 100%);
 
   padding-top: 20px;
   font-size: 14px;
@@ -1297,8 +1427,9 @@ footer hr {
 .footer-links {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 20px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .footer-links a {
@@ -1320,12 +1451,20 @@ footer hr {
 .footer-social {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  margin: 8px 0 0;
 }
 
 .footer-social a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 8px;
   color: #fff;
-  font-size: 20px;
+  font-size: 18px;
   transition: .2s ease;
 }
 
@@ -1334,7 +1473,8 @@ footer hr {
 }
 .footer-brand {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
   font-weight: bold;
   font-size: 16px;
@@ -1412,7 +1552,8 @@ footer hr {
   display: block;
 }
 .repair-form select,
-.repair-form input {
+.repair-form input,
+.repair-form textarea {
   width: 100%;
   padding: 12px;
   margin-top: 6px;
@@ -1425,6 +1566,63 @@ footer hr {
 
   background: #fff;
   box-sizing: border-box;
+}
+
+.repair-form label {
+  display: block;
+  margin-top: 12px;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.repair-form textarea {
+  min-height: 96px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.45;
+}
+
+.optional-text {
+  color: #64748b;
+  font-weight: 500;
+}
+
+.conditional-fields {
+  margin-top: 8px;
+}
+
+.checkbox-row {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.4;
+}
+
+.checkbox-row input {
+  flex: 0 0 auto;
+  width: auto;
+  margin: 2px 0 0;
+}
+
+.review-note {
+  margin: 14px 0;
+  color: #475569;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.review-image {
+  margin-bottom: 12px;
+}
+
+.review-image img {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
 }
 
 /* improve dropdown arrow spacing */
@@ -2171,8 +2369,86 @@ button:hover {
 
   .footer-grid {
     grid-template-columns: 1fr;
-    text-align: center;
+  text-align: center;
+}
+
+.cookie-consent {
+  position: fixed;
+  left: 20px;
+  right: 20px;
+  bottom: 20px;
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 14px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+}
+
+.cookie-consent.hidden {
+  display: none;
+}
+
+.cookie-consent p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.cookie-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cookie-actions a,
+.cookie-actions button {
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cookie-actions a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.cookie-actions button {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.cookie-actions #cookieAcceptBtn {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+body.dark .cookie-consent {
+  background: #111827;
+  border-color: #1f2937;
+  color: #f8fafc;
+}
+
+body.dark .cookie-consent p {
+  color: #cbd5e1;
+}
+
+@media (max-width: 640px) {
+  .cookie-consent {
+    align-items: stretch;
+    flex-direction: column;
   }
+}
 
   .footer-section a,
   .newsletter-box {

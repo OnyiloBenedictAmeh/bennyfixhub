@@ -12,7 +12,7 @@ import {
   updateDoc,
   serverTimestamp,
   onAuthStateChanged,
-} from "./js/firebase.js";
+} from "./firebase.js";
 let currentUid = null;
 let viewedUid = null;
 let isViewingOwnProfile = true;

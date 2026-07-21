@@ -59,10 +59,13 @@ function showToast(msg) {
   const toast = document.getElementById("toast");
   if (!toast) return;
 
+  clearTimeout(showToast.hideTimer);
   toast.innerText = msg;
   toast.style.display = "block";
+  toast.classList.add("show");
 
-  setTimeout(() => {
+  showToast.hideTimer = setTimeout(() => {
+    toast.classList.remove("show");
     toast.style.display = "none";
   }, 3000);
 }
@@ -111,6 +114,7 @@ class MarketingManager {
     this.facebookCheckbox = document.getElementById("facebookPlatform");
     this.instagramCheckbox = document.getElementById("instagramPlatform");
     this.linkedinCheckbox = document.getElementById("linkedinPlatform");
+    this.facebookPageTargets = document.getElementById("facebookPageTargets");
 
     this.connectFacebookBtn = document.getElementById("connectFacebookBtn");
     this.connectInstagramBtn = document.getElementById("connectInstagramBtn");
@@ -257,31 +261,86 @@ class MarketingManager {
       if (this.instagramStatusText) this.instagramStatusText.textContent = "Unknown";
     }
   }
+renderMetaStatus() {
+  // Facebook
+  if (this.facebookStatusText) {
+    if (this.metaStatus.facebook?.connected) {
+      const pages = this.metaStatus.facebook.pages || [];
 
-  renderMetaStatus() {
-    if (this.facebookStatusText) {
-      this.facebookStatusText.textContent = this.metaStatus.facebook?.connected
-        ? this.metaStatus.facebook.pageName || "Connected"
-        : "Not connected";
+      if (pages.length) {
+        this.facebookStatusText.innerHTML = pages
+          .map(page => `Connected: ${this.escapeHtml(page.pageName || page.name || page.pageId || page.id)}`)
+          .join("<br>");
+      } else {
+        this.facebookStatusText.textContent = "Connected";
+      }
+    } else {
+      this.facebookStatusText.textContent = "Not connected";
+    }
+  }
+
+  this.renderFacebookPageTargets();
+
+  if (this.connectFacebookBtn) {
+    this.connectFacebookBtn.textContent =
+      this.metaStatus.facebook?.connected ? "Reconnect" : "Connect";
+  }
+
+  // Instagram
+  if (this.instagramStatusText) {
+    this.instagramStatusText.textContent =
+      this.metaStatus.instagram?.connected ? "Connected" : "Not connected";
+  }
+
+  if (this.connectInstagramBtn) {
+    this.connectInstagramBtn.textContent =
+      this.metaStatus.instagram?.connected ? "Reconnect" : "Connect";
+  }
+}
+
+  renderFacebookPageTargets(selectedPageIds = null) {
+    if (!this.facebookPageTargets) return;
+
+    const pages = this.metaStatus.facebook?.pages || [];
+    this.facebookPageTargets.innerHTML = "";
+
+    if (!this.metaStatus.facebook?.connected) {
+      return;
     }
 
-    if (this.connectFacebookBtn) {
-      this.connectFacebookBtn.textContent = this.metaStatus.facebook?.connected
-        ? "Reconnect"
-        : "Connect";
+    if (!pages.length) {
+      this.facebookPageTargets.innerHTML = `<small>No Facebook Pages were returned for this account. Reconnect with Page access if needed.</small>`;
+      return;
     }
 
-    if (this.instagramStatusText) {
-      this.instagramStatusText.textContent = this.metaStatus.instagram?.connected
-        ? "Connected"
-        : "Not connected";
-    }
+    const title = document.createElement("div");
+    title.className = "meta-page-targets-title";
+    title.textContent = "Facebook Pages";
+    this.facebookPageTargets.appendChild(title);
 
-    if (this.connectInstagramBtn) {
-      this.connectInstagramBtn.textContent = this.metaStatus.instagram?.connected
-        ? "Reconnect"
-        : "Connect";
-    }
+    const selected = selectedPageIds ? new Set(selectedPageIds) : null;
+
+    pages.forEach((page) => {
+      const pageId = page.pageId || page.id;
+      const pageName = page.pageName || page.name || pageId;
+      if (!pageId) return;
+
+      const label = document.createElement("label");
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.name = "facebookPageTarget";
+      checkbox.value = pageId;
+      checkbox.checked = selected ? selected.has(pageId) : true;
+
+      label.append(checkbox, document.createTextNode(pageName));
+      this.facebookPageTargets.appendChild(label);
+    });
+  }
+
+  escapeHtml(value) {
+    const div = document.createElement("div");
+    div.textContent = String(value || "");
+    return div.innerHTML;
   }
 
   async connectPlatform(platform) {
@@ -292,13 +351,13 @@ class MarketingManager {
       let authorizeUrl;
 
       if (platform === "instagram") {
-        authorizeUrl = new URL("https://www.instagram.com/oauth/authorize");
+        authorizeUrl = new URL(`https://www.facebook.com/${META_GRAPH_VERSION}/dialog/oauth`);
         authorizeUrl.searchParams.set("client_id", META_APP_ID);
         authorizeUrl.searchParams.set("redirect_uri", META_REDIRECT_URI);
         authorizeUrl.searchParams.set("response_type", "code");
         authorizeUrl.searchParams.set(
           "scope",
-          "instagram_business_basic,instagram_business_content_publish"
+          "pages_show_list,pages_read_engagement,instagram_basic,instagram_content_publish"
         );
         authorizeUrl.searchParams.set("state", state);
       } else if (platform === "facebook") {
@@ -578,6 +637,14 @@ class MarketingManager {
     return platforms;
   }
 
+  selectedFacebookPageIds() {
+    if (!this.facebookCheckbox?.checked) return [];
+
+    return [...document.querySelectorAll('input[name="facebookPageTarget"]:checked')]
+      .map((input) => input.value)
+      .filter(Boolean);
+  }
+
   /* =========================
      DRAFTS / SCHEDULED / PUBLISHED
   ========================= */
@@ -764,6 +831,7 @@ class MarketingManager {
     if (this.facebookCheckbox) this.facebookCheckbox.checked = platforms.includes("facebook");
     if (this.instagramCheckbox) this.instagramCheckbox.checked = platforms.includes("instagram");
     if (this.linkedinCheckbox) this.linkedinCheckbox.checked = platforms.includes("linkedin");
+    this.renderFacebookPageTargets(post.facebookPageIds || post.facebookTargets || null);
 
     if (this.scheduleInput) {
       this.scheduleInput.value = post.scheduledAt ? this.toDatetimeLocal(post.scheduledAt) : "";
@@ -896,6 +964,17 @@ class MarketingManager {
 
   reportPublishResults(results = {}) {
     Object.entries(results).forEach(([platform, result]) => {
+      if (platform === "facebook" && result.pages) {
+        Object.values(result.pages).forEach((pageResult) => {
+          showToast(
+            pageResult.success
+              ? `Published to ${pageResult.pageName || "Facebook Page"}`
+              : `${pageResult.pageName || "Facebook Page"} failed: ${pageResult.error || "unknown error"}`
+          );
+        });
+        return;
+      }
+
       showToast(
         result.success
           ? `Published to ${platform}`
@@ -924,6 +1003,11 @@ class MarketingManager {
 
     const scheduleValue = this.scheduleInput?.value || "";
     const status = scheduleValue ? "scheduled" : "draft";
+    const platforms = this.selectedPlatforms();
+
+    if (platforms.includes("facebook") && !this.selectedFacebookPageIds().length) {
+      return showToast("Select at least one Facebook Page");
+    }
 
     this.isSaving = true;
     this.setSaveButtonLoading(true);
@@ -934,7 +1018,8 @@ class MarketingManager {
       const payload = {
         caption,
         images,
-        platforms: this.selectedPlatforms(),
+        platforms,
+        facebookPageIds: this.selectedFacebookPageIds(),
         status,
       };
 
@@ -995,6 +1080,10 @@ class MarketingManager {
       return showToast("Select at least one platform");
     }
 
+    if (platforms.includes("facebook") && !this.selectedFacebookPageIds().length) {
+      return showToast("Select at least one Facebook Page");
+    }
+
     this.isPublishing = true;
     this.setPublishButtonLoading(true);
 
@@ -1005,6 +1094,7 @@ class MarketingManager {
         caption,
         images,
         platforms,
+        facebookPageIds: this.selectedFacebookPageIds(),
         status: "draft",
       };
 
@@ -1054,6 +1144,7 @@ class MarketingManager {
     this.attachedImages = [];
     this.uploader.clear();
     this.renderSelectedImages();
+    this.renderFacebookPageTargets();
 
     if (this.libraryLoaded) {
       this.renderLibraryGrid();
