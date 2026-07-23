@@ -3,15 +3,7 @@
    USER ONBOARDING
 ========================================================== */
 
-import { db } from "./firebase.js";
-
-import {
-  doc,
-  getDoc,
-  updateDoc,
-  serverTimestamp,
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+import { db, doc, getDoc, updateDoc, serverTimestamp } from "./firebase.js";
 const POLICY_VERSION = "1.0.0";
 
 let overlay;
