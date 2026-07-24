@@ -3,7 +3,7 @@
    USER ONBOARDING
 ========================================================== */
 
-import { db, doc, getDoc, updateDoc, serverTimestamp } from "./firebase.js";
+import { db, doc, getDoc, updateDoc, serverTimestamp, auth, signOut } from "./firebase.js";
 const POLICY_VERSION = "1.0.0";
 
 let overlay;
@@ -146,19 +146,12 @@ Repair Warranty and Acceptable Use Policy.
 
 <div class="onboarding-footer">
 
-<span>
+<span>Policy Version ${POLICY_VERSION}</span>
 
-Policy Version ${POLICY_VERSION}
-
-</span>
-
-<button
-class="continue-btn"
-disabled>
-
-Continue
-
-</button>
+<div class="onboarding-footer-actions">
+<button class="logout-btn" id="onboardingLogoutBtn" type="button">Log out instead</button>
+<button class="continue-btn" disabled>Continue</button>
+</div>
 
 </div>
 
@@ -176,6 +169,11 @@ Continue
     continueBtn.disabled = !checkbox.checked;
 
     continueBtn.classList.toggle("enabled", checkbox.checked);
+  });
+
+  document.getElementById("onboardingLogoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+    overlay.remove();
   });
 
   requestAnimationFrame(() => {

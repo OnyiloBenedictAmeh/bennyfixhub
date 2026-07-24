@@ -63,7 +63,30 @@
     visibility:visible;
 
 }
+.policy-grid {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
 
+.policy-card {
+  padding: 12px 14px;
+  border-radius: 10px;
+}
+
+.policy-card h4 {
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.policy-card p {
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.policy-card:hover {
+  transform: none;
+  box-shadow: none;
+}
 /* ==========================================================
    MODAL
 ========================================================== */
