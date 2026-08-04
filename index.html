@@ -32,6 +32,9 @@
   <body>
     <div class="auth-overlay" id="authModal">
       <div class="auth-box">
+        <button class="auth-close-btn" type="button" onclick="closeAuth()" aria-label="Close login dialog">
+          &times;
+        </button>
         <!-- LOGO -->
         <img src="bennyfix hub white-logo.png" class="auth-logo" alt="Logo" />
 
@@ -86,24 +89,28 @@
     <div class="topbar">
       <div class="wrap topbar-inner">
         <div>BennyFix Hub | Device Repair & Support</div>
-        <div>
+        <div class="topbar-actions">
           <div class="account-wrapper">
-            <a href="#" onclick="toggleAccountMenu(event)">
-              <i class="bx bx-user"></i> My Account
+            <a href="#" class="topbar-action" onclick="toggleAccountMenu(event)" aria-label="My account">
+              <i class="bx bx-user"></i> <span>My Account</span>
             </a>
 
             <div class="account-dropdown" id="accountDropdown">
               <div id="guestMenu">
-                <a href="#" onclick="openAuth()">Login / Register</a>
+                <strong>Welcome</strong>
+                <small>Sign in or create an account.</small>
+                <a href="#" onclick="openAuth()"><i class="bx bx-log-in"></i> Login / Register</a>
               </div>
 
               <div id="userMenu" style="display: none">
-                <a href="#">Dashboard</a>
-                <a href="#" onclick="logout()">Logout</a>
+                <a href="user-profile.html"><i class="bx bx-grid-alt"></i> Dashboard</a>
+                <a href="#" onclick="logout()"><i class="bx bx-log-out"></i> Logout</a>
               </div>
             </div>
           </div>
-          <a href="#"><i class="bx bx-file"></i> Claims</a>
+          <a href="#" class="topbar-action" aria-label="Claims">
+            <i class="bx bx-file"></i> <span>Claims</span>
+          </a>
           <button
             type="button"
             class="theme-toggle"
@@ -235,7 +242,9 @@
           <button class="primary-btn" onclick="window.toggleRepairForm()">
             Start a Repair
           </button>
-          <button class="ghost-btn">Explore Services</button>
+          <button class="ghost-btn explore-repairs-btn" onclick="window.location.href='services.html'">
+            Explore Services
+          </button>
         </div>
         <!-- REPAIR MODAL -->
         <div id="repairOverlay" class="repair-overlay">
@@ -702,6 +711,7 @@
             &copy; 2026 BennyFix Hub. All rights reserved.
           </div>
         </div>
+        <p class="footer-credit">Built with care. Thanks for choosing BennyFix Hub.</p>
       </div>
 
       <button class="back-to-top" onclick="scrollToTop()">↑ Back to Top</button>

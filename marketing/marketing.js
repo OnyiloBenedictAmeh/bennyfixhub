@@ -43,15 +43,9 @@ const API_BASE = "https://bennyfix-backend-v.vercel.app/api";
 const UPLOAD_MEDIA_API_URL = `${API_BASE}/upload-media`;
 const GET_MEDIA_API_URL = `${API_BASE}/get-media`;
 const DELETE_MEDIA_API_URL = `${API_BASE}/delete-media`;
+const META_CONNECT_API_URL = `${API_BASE}/meta-connect`;
 const META_STATUS_API_URL = `${API_BASE}/meta-status`;
 const PUBLISH_POST_API_URL = `${API_BASE}/publish-post`;
-
-/* =========================
-   META CONNECT (must match the backend's registered redirect URI exactly)
-========================= */
-const META_APP_ID = "27447026251633882"; // public identifier, safe client-side
-const META_GRAPH_VERSION = "v23.0";
-const META_REDIRECT_URI = "https://bennyfix-backend-v.vercel.app/api/meta-callback";
 
 const POST_STATUSES = ["draft", "scheduled", "published"];
 
@@ -288,8 +282,9 @@ renderMetaStatus() {
 
   // Instagram
   if (this.instagramStatusText) {
-    this.instagramStatusText.textContent =
-      this.metaStatus.instagram?.connected ? "Connected" : "Not connected";
+    this.instagramStatusText.textContent = this.metaStatus.instagram?.connected
+      ? `Connected${this.metaStatus.instagram.username ? `: @${this.metaStatus.instagram.username}` : ""}`
+      : "Not connected";
   }
 
   if (this.connectInstagramBtn) {
@@ -345,36 +340,14 @@ renderMetaStatus() {
 
   async connectPlatform(platform) {
     try {
+      if (!["facebook", "instagram"].includes(platform)) return;
+
       const idToken = await this.getIdToken();
-      const state = `${platform}:${idToken}`;
+      const connectUrl = new URL(META_CONNECT_API_URL);
+      connectUrl.searchParams.set("platform", platform);
+      connectUrl.searchParams.set("idToken", idToken);
 
-      let authorizeUrl;
-
-      if (platform === "instagram") {
-        authorizeUrl = new URL(`https://www.facebook.com/${META_GRAPH_VERSION}/dialog/oauth`);
-        authorizeUrl.searchParams.set("client_id", META_APP_ID);
-        authorizeUrl.searchParams.set("redirect_uri", META_REDIRECT_URI);
-        authorizeUrl.searchParams.set("response_type", "code");
-        authorizeUrl.searchParams.set(
-          "scope",
-          "pages_show_list,pages_read_engagement,instagram_basic,instagram_content_publish"
-        );
-        authorizeUrl.searchParams.set("state", state);
-      } else if (platform === "facebook") {
-        authorizeUrl = new URL(`https://www.facebook.com/${META_GRAPH_VERSION}/dialog/oauth`);
-        authorizeUrl.searchParams.set("client_id", META_APP_ID);
-        authorizeUrl.searchParams.set("redirect_uri", META_REDIRECT_URI);
-        authorizeUrl.searchParams.set("response_type", "code");
-        authorizeUrl.searchParams.set(
-          "scope",
-          "pages_show_list,pages_read_engagement,pages_manage_posts"
-        );
-        authorizeUrl.searchParams.set("state", state);
-      } else {
-        return;
-      }
-
-      window.location.href = authorizeUrl.toString();
+      window.open(connectUrl.toString(), "_blank", "noopener,noreferrer");
     } catch (err) {
       console.error(err);
       showToast(err.message || "Could not start connection");

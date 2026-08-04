@@ -10,6 +10,7 @@ function hideCookieBanner(choice) {
   const banner = document.getElementById("cookieConsent");
   localStorage.setItem(COOKIE_KEY, choice);
   banner?.classList.add("hidden");
+  window.dispatchEvent(new CustomEvent("cookie-consent:resolved"));
 }
 
 document.addEventListener("DOMContentLoaded", () => {

@@ -6,9 +6,9 @@ body {
 }
 
 .theme-toggle {
-  width: 34px;
-  height: 34px;
-  margin-left: 12px;
+  width: 32px;
+  height: 32px;
+  margin-left: 8px;
   padding: 0;
   border: 1px solid rgba(203, 213, 225, 0.25);
   border-radius: 50%;
@@ -230,6 +230,7 @@ a {
 }
 
 .auth-box {
+  position: relative;
   width: min(360px, 100%);
   max-height: calc(100vh - 40px);
   overflow-y: auto;
@@ -244,6 +245,25 @@ a {
   text-align: center;
 
   animation: popIn 0.25s ease;
+}
+
+.auth-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #111827;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.auth-close-btn:hover {
+  background: #e2e8f0;
 }
 @keyframes popIn {
   from {
@@ -278,13 +298,14 @@ a {
   display: none;
   position: absolute;
   right: 0;
-  top: 35px;
+  top: calc(100% + 10px);
   background: white;
-  width: 170px;
-  border-radius: 10px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  overflow: hidden;
-  z-index: 999;
+  width: 220px;
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+  z-index: 1002;
 }
 
 .account-dropdown.show {
@@ -292,10 +313,31 @@ a {
 }
 
 .account-dropdown a {
-  display: block;
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 12px;
+  border-radius: 10px;
   font-size: 14px;
   color: #111;
+}
+
+.account-dropdown strong,
+.account-dropdown small {
+  display: block;
+  padding: 0 4px;
+}
+
+.account-dropdown strong {
+  color: #111827;
+  font-size: 14px;
+}
+
+.account-dropdown small {
+  margin: 4px 0 10px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .account-dropdown a:hover {
@@ -522,13 +564,33 @@ a {
 .topbar-inner {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 12px;
 }
 
 .topbar a {
-  margin-left: 12px;
+  margin-left: 8px;
   display: inline-flex;
   align-items: center;
   gap: 5px;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.topbar-action {
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 999px;
+}
+
+.topbar-action:hover,
+.theme-toggle:hover {
+  background: rgba(37, 99, 235, 0.22);
 }
 
 /* =========================
@@ -1159,7 +1221,8 @@ header .hamburger {
 footer {
   background: #0b1220;
   color: #94a3b8;
-  padding: 50px 0;
+  min-height: 46vh;
+  padding: 50px 24px 32px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -1224,17 +1287,23 @@ footer {
   cursor: pointer;
 }
 .back-to-top {
-  position: fixed;
-  bottom: 90px;
-  right: 20px;
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+  margin-top: 24px;
   background: #111827;
   color: #fff;
   border: none;
   padding: 10px 14px;
   border-radius: 10px;
   cursor: pointer;
-  display: none;
-  z-index: 9999;
+  font-weight: 700;
+}
+
+.back-to-top:hover {
+  background: #2563eb;
 }
 .footer-grid {
   width: 100%;
@@ -1251,17 +1320,15 @@ footer {
 /* COOKIE BANNER */
 .cookie-consent {
   position: fixed;
-  left: 20px;
-  right: 20px;
+  right: 18px;
   bottom: 20px;
   z-index: 9000;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 14px 16px;
+  gap: 12px;
+  width: min(420px, calc(100vw - 32px));
+  padding: 12px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #ffffff;
@@ -1276,7 +1343,8 @@ footer {
 .cookie-consent p {
   margin: 4px 0 0;
   color: #64748b;
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .cookie-actions {
@@ -1290,8 +1358,9 @@ footer {
 .cookie-actions button {
   border: 0;
   border-radius: 8px;
-  padding: 9px 12px;
+  padding: 8px 10px;
   font-weight: 700;
+  font-size: 13px;
   cursor: pointer;
 }
 
@@ -1487,6 +1556,105 @@ footer hr {
   color: #487de7;
   font-weight: bold;
   font-size: 20px;
+}
+
+.footer-credit {
+  width: 100%;
+  margin: 10px 0 0;
+  color: #94a3b8;
+  font-size: 13px;
+  text-align: center;
+}
+
+@media (min-width: 901px) {
+  .footer-bottom {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 1024px) {
+  footer {
+    min-height: 40vh;
+    padding: 44px 20px 32px;
+  }
+
+  .footer-grid {
+    max-width: 760px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-items: center;
+    text-align: center;
+    gap: 28px 36px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+    align-items: center;
+  }
+
+  .footer-social {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 640px) {
+  footer {
+    min-height: 48vh;
+    padding: 36px 18px 28px;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 24px;
+  }
+
+  .footer-section {
+    width: 100%;
+    max-width: 320px;
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .footer-section a,
+  .footer-section.active a,
+  .footer-links,
+  .footer-section.active .footer-links {
+    display: flex;
+  }
+
+  .footer-section a,
+  .footer-section.active a {
+    justify-content: center;
+  }
+
+  .footer-section h4 {
+    padding-right: 0;
+    cursor: default;
+  }
+
+  .footer-section h4::after {
+    content: none;
+  }
+
+  .footer-bottom {
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 12px;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .copyright,
+  .footer-credit {
+    display: block;
+    text-align: center;
+  }
 }
 /* =========================
    HAMBURGER MENU
@@ -1952,6 +2120,9 @@ button:hover {
     flex-wrap: wrap;
     gap: 8px;
   }
+  .topbar-actions {
+    justify-content: flex-end;
+  }
   .hero-premium {
     height: auto;
     padding: 80px 20px;
@@ -2274,24 +2445,49 @@ button:hover {
     gap: 6px;
   }
 
-  .topbar a {
-    width: 34px;
-    height: 34px;
+  .topbar-action {
+    width: 32px;
+    height: 32px;
+    min-height: 32px;
+    padding: 0;
     margin-left: 0;
     justify-content: center;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.08);
-    font-size: 0;
   }
 
-  .topbar a i {
-    font-size: 18px;
+  .topbar-action span {
+    display: none;
+  }
+
+  .topbar-action i {
+    font-size: 17px;
   }
 
   .theme-toggle {
     width: 32px;
     height: 32px;
-    margin-left: 4px;
+    margin-left: 0;
+  }
+
+  .account-dropdown {
+    right: -44px;
+    top: calc(100% + 8px);
+    width: min(240px, calc(100vw - 32px));
+    text-align: left;
+  }
+
+  .account-dropdown a {
+    width: auto;
+    height: auto;
+    justify-content: flex-start;
+    border-radius: 10px;
+    background: transparent;
+    font-size: 14px;
+  }
+
+  .account-dropdown a i {
+    font-size: 18px;
   }
   .related-grid {
     grid-template-columns: 1fr;
@@ -2374,17 +2570,15 @@ button:hover {
 
 .cookie-consent {
   position: fixed;
-  left: 20px;
-  right: 20px;
+  right: 18px;
   bottom: 20px;
   z-index: 9000;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  max-width: 860px;
-  margin: 0 auto;
-  padding: 14px 16px;
+  gap: 12px;
+  width: min(420px, calc(100vw - 32px));
+  padding: 12px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #ffffff;
@@ -2399,7 +2593,8 @@ button:hover {
 .cookie-consent p {
   margin: 4px 0 0;
   color: #64748b;
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 .cookie-actions {
@@ -2413,8 +2608,9 @@ button:hover {
 .cookie-actions button {
   border: 0;
   border-radius: 8px;
-  padding: 9px 12px;
+  padding: 8px 10px;
   font-weight: 700;
+  font-size: 13px;
   cursor: pointer;
 }
 
@@ -2552,5 +2748,116 @@ body.dark .cookie-consent p {
   .mobile-mega .mega-card img {
     width: 72px;
     height: 68px;
+  }
+}
+
+/* Final footer responsive override */
+@media (max-width: 1024px) {
+  footer {
+    min-height: 40vh;
+    padding: 44px 20px 32px;
+  }
+
+  .footer-grid {
+    max-width: 760px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-items: center;
+    text-align: center;
+    gap: 28px 36px;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+    align-items: center;
+  }
+
+  .footer-social {
+    justify-content: center;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 640px) {
+  footer {
+    min-height: 48vh;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .footer-section {
+    width: 100%;
+    max-width: 320px;
+    padding: 0;
+    border-bottom: 0;
+  }
+
+  .footer-section a,
+  .footer-links {
+    display: flex;
+    justify-content: center;
+  }
+
+  .footer-section h4 {
+    padding-right: 0;
+    cursor: default;
+  }
+
+  .footer-section h4::after {
+    content: none;
+  }
+
+  .footer-links {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .copyright,
+  .footer-credit {
+    display: block;
+    text-align: center;
+  }
+}
+
+/* iPhone XR and smaller header polish */
+@media (max-width: 430px) {
+  .topbar {
+    padding: 7px 0;
+    font-size: 11px;
+  }
+
+  .topbar-inner {
+    gap: 8px;
+  }
+
+  .topbar-inner > div:first-child {
+    max-width: calc(100vw - 150px);
+  }
+
+  .topbar-actions {
+    gap: 5px;
+  }
+
+  .topbar-action,
+  .theme-toggle {
+    width: 30px;
+    height: 30px;
+    min-height: 30px;
+  }
+
+  .topbar-action i,
+  .theme-toggle i {
+    font-size: 16px;
+  }
+
+  .account-dropdown {
+    right: -39px;
+    width: min(232px, calc(100vw - 24px));
   }
 }

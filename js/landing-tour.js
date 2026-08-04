@@ -1,15 +1,30 @@
 const STORAGE_KEY = "bennyfix-tour-completed";
 
-const STEPS = [
+const DESKTOP_STEPS = [
   {
     selector: ".logo",
     title: "Welcome to BennyFix Hub",
     text: "This is home base for booking and tracking device repairs. Let's take a 30-second look around.",
   },
   {
-    selector: ".nav-item[data-menu='repairs']",
-    title: "Browse repair services",
-    text: "Hover or tap here to see the kinds of repairs we handle.",
+    selector: ".account-wrapper .topbar-action",
+    title: "Your account",
+    text: "Open this to log in, create an account, or access your dashboard.",
+  },
+  {
+    selector: ".topbar-action[aria-label='Claims']",
+    title: "Claims",
+    text: "Use this for repair claims and warranty follow-up.",
+  },
+  {
+    selector: ".theme-toggle",
+    title: "Dark mode",
+    text: "Switch between light and dark mode anytime.",
+  },
+  {
+    selector: ".explore-repairs-btn",
+    title: "Explore services",
+    text: "Open the full services page to browse repair options, pricing, and turnaround times.",
   },
   {
     selector: ".nav-item[onclick=\"toggleSearch(event)\"]",
@@ -33,10 +48,16 @@ const STEPS = [
   },
 ];
 
+const MOBILE_STEPS = DESKTOP_STEPS.filter((step) => !step.selector.includes("toggleSearch"));
+
 let currentStep = 0;
 let spotlightEl = null;
 let tooltipEl = null;
 let repositionTimer = null;
+
+function getSteps() {
+  return window.innerWidth <= 900 ? MOBILE_STEPS : DESKTOP_STEPS;
+}
 
 function isLegalGateOpen() {
   const overlay = document.getElementById("legalGateOverlay");
@@ -44,8 +65,10 @@ function isLegalGateOpen() {
 }
 
 function findFirstAvailableStepIndex(fromIndex) {
-  for (let i = fromIndex; i < STEPS.length; i++) {
-    if (document.querySelector(STEPS[i].selector)) return i;
+  const steps = getSteps();
+
+  for (let i = fromIndex; i < steps.length; i++) {
+    if (document.querySelector(steps[i].selector)) return i;
   }
   return -1;
 }
@@ -68,7 +91,7 @@ function removeOverlayElements() {
 }
 
 function renderStep(index) {
-  const step = STEPS[index];
+  const step = getSteps()[index];
   const target = document.querySelector(step.selector);
 
   if (!target) {
@@ -76,6 +99,7 @@ function renderStep(index) {
     return;
   }
 
+  step.prepare?.();
   target.scrollIntoView({ behavior: "auto", block: "center", inline: "center" });
 
   clearTimeout(repositionTimer);
@@ -94,7 +118,7 @@ function positionOverlay(target, step, index) {
   spotlightEl.style.height = `${rect.height + padding * 2}px`;
 
   tooltipEl.innerHTML = `
-    <div class="tour-progress">STEP ${index + 1} OF ${STEPS.length}</div>
+    <div class="tour-progress">STEP ${index + 1} OF ${getSteps().length}</div>
     <h3>${step.title}</h3>
     <p>${step.text}</p>
     <div class="tour-actions">
@@ -102,7 +126,7 @@ function positionOverlay(target, step, index) {
       <div>
         ${index > 0 ? '<button class="tour-back-btn" type="button" data-action="back">Back</button>' : ""}
         <button class="tour-next-btn" type="button" data-action="next">
-          ${index === STEPS.length - 1 ? "Done" : "Next"}
+          ${index === getSteps().length - 1 ? "Done" : "Next"}
         </button>
       </div>
     </div>
@@ -130,7 +154,7 @@ function positionOverlay(target, step, index) {
 function goToStep(index) {
   if (index < 0) return;
 
-  if (index >= STEPS.length) {
+  if (index >= getSteps().length) {
     endTour();
     return;
   }
@@ -170,6 +194,11 @@ function addReplayButton() {
 
 function maybeAutoStart() {
   if (localStorage.getItem(STORAGE_KEY)) return;
+
+  if (!localStorage.getItem("bennyfix-cookie-consent")) {
+    window.addEventListener("cookie-consent:resolved", maybeAutoStart, { once: true });
+    return;
+  }
 
   if (isLegalGateOpen()) {
     setTimeout(maybeAutoStart, 500);

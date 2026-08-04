@@ -363,6 +363,11 @@ window.openAuth = function () {
   document.getElementById("accountDropdown")?.classList.remove("show");
 };
 
+window.closeAuth = function () {
+  const authModal = document.getElementById("authModal");
+  if (authModal) authModal.style.display = "none";
+};
+
 window.openAccountPanel = function () {
   document.getElementById("accountPanel").classList.add("open");
 };

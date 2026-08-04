@@ -1272,22 +1272,20 @@ body {
 
   .sidebar button {
     flex: 0 0 auto;
-    width: auto;
-    min-width: max-content;
+    width: 44px;
+    min-width: 44px;
     height: 44px;
 
-    padding: 0 14px;
+    padding: 0;
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    gap: 8px;
-    white-space: nowrap;
   }
 
   .sidebar button span {
-    display: inline-block;
+    display: none;
   }
 
   .section {

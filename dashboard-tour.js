@@ -36,6 +36,7 @@ const STEPS = [
 let currentStep = 0;
 let spotlightEl = null;
 let tooltipEl = null;
+let repositionTimer = null;
 
 function findFirstAvailableStepIndex(fromIndex) {
   for (let i = fromIndex; i < STEPS.length; i++) {
@@ -70,11 +71,15 @@ function renderStep(index) {
     return;
   }
 
-  target.scrollIntoView({ behavior: "smooth", block: "center" });
-  setTimeout(() => positionOverlay(target, step, index), 300);
+  target.scrollIntoView({ behavior: "auto", block: "center", inline: "center" });
+
+  clearTimeout(repositionTimer);
+  repositionTimer = setTimeout(() => positionOverlay(target, step, index), 80);
 }
 
 function positionOverlay(target, step, index) {
+  if (!spotlightEl || !tooltipEl || !target?.isConnected) return;
+
   const rect = target.getBoundingClientRect();
   const padding = 8;
 
@@ -99,8 +104,11 @@ function positionOverlay(target, step, index) {
   `;
 
   const tooltipWidth = tooltipEl.offsetWidth || 300;
+  const tooltipHeight = tooltipEl.offsetHeight || 170;
   const spaceBelow = window.innerHeight - rect.bottom;
-  const top = spaceBelow > 160 ? rect.bottom + 16 : Math.max(16, rect.top - 190);
+  const top = spaceBelow > tooltipHeight + 24
+    ? rect.bottom + 16
+    : Math.max(16, rect.top - tooltipHeight - 16);
   const left = Math.min(
     Math.max(16, rect.left),
     window.innerWidth - tooltipWidth - 16
@@ -134,6 +142,7 @@ function goToStep(index) {
 }
 
 function endTour() {
+  clearTimeout(repositionTimer);
   removeOverlayElements();
   localStorage.setItem(STORAGE_KEY, "true");
 }
@@ -175,3 +184,18 @@ document.addEventListener("DOMContentLoaded", () => {
   addReplayButton();
   maybeAutoStart();
 });
+
+window.addEventListener("resize", () => {
+  if (!spotlightEl || !tooltipEl) return;
+  renderStep(currentStep);
+});
+
+window.addEventListener("scroll", () => {
+  if (!spotlightEl || !tooltipEl) return;
+  const step = STEPS[currentStep];
+  const target = document.querySelector(step.selector);
+  if (!target) return;
+
+  clearTimeout(repositionTimer);
+  repositionTimer = setTimeout(() => positionOverlay(target, step, currentStep), 40);
+}, { passive: true });
