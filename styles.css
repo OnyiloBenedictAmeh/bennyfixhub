@@ -1,3 +1,9 @@
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   font-family: Arial, sans-serif;
@@ -40,8 +46,7 @@ body.dark .related,
 body.dark .auth-box,
 body.dark .account-panel,
 body.dark .mega-inner,
-body.dark .mobile-mega,
-body.dark .search-box {
+body.dark .mobile-mega {
   background: #111827;
   color: #e5e7eb;
 }
@@ -101,7 +106,6 @@ body.dark .mobile-mega .mega-card {
 }
 
 body.dark .auth-box input,
-body.dark .search-box input,
 body.dark .repair-form input,
 body.dark .repair-form select {
   background: #020617;
@@ -369,6 +373,7 @@ a {
   right: -380px;
 
   width: 340px;
+  max-width: 92vw;
   height: 100vh;
 
   background: rgba(255, 255, 255, 0.85);
@@ -605,7 +610,7 @@ header .header-inner {
   min-height: 82px;
   height: auto;
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto auto 1fr;
   align-items: center;
   gap: 18px;
 }
@@ -634,6 +639,33 @@ header .nav-wrapper {
 header .hamburger {
   display: none;
 }
+
+.header-search-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.08);
+  color: inherit;
+  font-size: 19px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.header-search-btn:hover {
+  background: rgba(37, 99, 235, 0.18);
+}
+
+body.dark .header-search-btn {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+body.dark .header-search-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
 /* jumbotron */
 /* =========================
    PREMIUM HERO (FUTURE LAB)
@@ -645,6 +677,7 @@ header .hamburger {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 
   background-size: cover;
   background-position: center;
@@ -1678,28 +1711,136 @@ footer hr {
   left: 50%;
   transform: translateX(-50%);
   display: none;
-  z-index: 999;
+  z-index: 10050;
 }
 
 .search-box {
-  width: 420px;
-  max-width: 90vw;
+  width: 480px;
+  max-width: 92vw;
   background: #fff;
-  padding: 12px;
-  border-radius: 8px;
-  margin: 0 auto;
-  outline: 1px solid #000;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.search-input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 18px;
+  border: 1px solid #d1d5db;
+  border-radius: 24px;
+}
+
+.search-input-icon {
+  font-size: 18px;
+  color: #6b7280;
+  flex-shrink: 0;
 }
 
 .search-box input {
-  width: 100%;
-  padding: 12px 14px;
-  font-size: 14px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
+  flex: 1;
+  min-width: 0;
+  padding: 12px 4px;
+  font-size: 15px;
+  border: none;
   outline: none;
-  box-sizing: border-box;
+  background: transparent;
+}
+
+.search-clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #6b7280;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.search-clear-btn:hover {
+  background: #f1f5f9;
+}
+
+.search-clear-btn.hidden {
+  display: none;
+}
+
+.search-results {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.search-results:not(:empty) {
+  border-top: 1px solid #e5e7eb;
+  padding: 6px 0;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  text-decoration: none;
+  color: #111827;
+  cursor: pointer;
+}
+
+.search-result-item:hover,
+.search-result-item.active {
+  background: #f1f5f9;
+}
+
+.search-result-item i {
+  font-size: 17px;
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+.search-result-text strong {
+  display: block;
+  font-size: 14px;
+}
+
+.search-result-text small {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.search-empty-state {
+  padding: 18px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 13.5px;
+}
+
+body.dark .search-box {
+  background: #1e293b;
+}
+
+body.dark .search-input-row {
+  border-color: #334155;
+}
+
+body.dark .search-box input {
+  color: #e5e7eb;
+}
+
+body.dark .search-results:not(:empty) {
+  border-top-color: #334155;
+}
+
+body.dark .search-result-item {
+  color: #e5e7eb;
+}
+
+body.dark .search-result-item:hover,
+body.dark .search-result-item.active {
+  background: #273449;
 }
 /* start repair styles */
 .repair-form {
@@ -2141,7 +2282,8 @@ button:hover {
   }
 
   header .header-inner {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr auto auto;
+    gap: 10px;
     position: relative;
   }
 
@@ -2320,7 +2462,7 @@ button:hover {
   }
 
   .mega-inner {
-    width: 450px;
+    width: min(450px, 92vw);
     grid-template-columns: 1fr;
   }
 
@@ -2859,5 +3001,102 @@ body.dark .cookie-consent p {
   .account-dropdown {
     right: -39px;
     width: min(232px, calc(100vw - 24px));
+  }
+
+  .header-search-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 17px;
+  }
+
+  header .header-inner {
+    gap: 8px;
+  }
+
+  header .logo span {
+    font-size: 15px;
+  }
+}
+
+/* ==========================================================
+   iPhone 8 and smaller (≤375px width)
+   iPhone 8/7/6: 375px, iPhone SE (2nd/3rd gen): 375px,
+   iPhone SE (1st gen)/5: 320px
+========================================================== */
+@media (max-width: 375px) {
+  .wrap {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .topbar-inner > div:first-child {
+    max-width: calc(100vw - 130px);
+    font-size: 10.5px;
+  }
+
+  header .logo span {
+    font-size: 14px;
+  }
+
+  .logo-img {
+    height: 28px;
+  }
+
+  .hero-content h1 {
+    font-size: 26px;
+    line-height: 1.25;
+  }
+
+  .hero-content p {
+    font-size: 13px;
+    padding: 0 6px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .hero-actions .primary-btn,
+  .hero-actions .ghost-btn {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .related-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .testimonials-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .repair-form {
+    width: min(100%, 94vw);
+    padding: 16px;
+  }
+
+  .onboarding-modal {
+    width: 96vw;
+  }
+
+  .policy-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .search-box {
+    width: min(94vw, 340px);
+  }
+
+  .mega-inner {
+    width: 94vw;
+    padding: 14px;
   }
 }

@@ -32,7 +32,7 @@
   <body>
     <div class="auth-overlay" id="authModal">
       <div class="auth-box">
-        <button class="auth-close-btn" type="button" onclick="closeAuth()" aria-label="Close login dialog">
+        <button class="auth-close-btn" type="button" onclick="closeAuth()" aria-label="Close login dialog" title="Close">
           &times;
         </button>
         <!-- LOGO -->
@@ -91,7 +91,7 @@
         <div>BennyFix Hub | Device Repair & Support</div>
         <div class="topbar-actions">
           <div class="account-wrapper">
-            <a href="#" class="topbar-action" onclick="toggleAccountMenu(event)" aria-label="My account">
+            <a href="#" class="topbar-action" onclick="toggleAccountMenu(event)" aria-label="My account" title="My Account">
               <i class="bx bx-user"></i> <span>My Account</span>
             </a>
 
@@ -108,7 +108,7 @@
               </div>
             </div>
           </div>
-          <a href="#" class="topbar-action" aria-label="Claims">
+          <a href="#" class="topbar-action" aria-label="Claims" title="Claims">
             <i class="bx bx-file"></i> <span>Claims</span>
           </a>
           <button
@@ -116,6 +116,7 @@
             class="theme-toggle"
             onclick="toggleSiteTheme()"
             aria-label="Toggle dark mode"
+            title="Toggle dark mode"
           >
             <i class="bx bx-moon"></i>
           </button>
@@ -156,11 +157,25 @@
         onclick="event.stopPropagation()"
         onmousedown="event.stopPropagation()"
       >
-        <input
-          id="searchInput"
-          placeholder="Search help..."
-          aria-label="Search help"
-        />
+        <div class="search-input-row">
+          <i class="bx bx-search search-input-icon"></i>
+          <input
+            id="searchInput"
+            placeholder="Search repairs, services, help..."
+            aria-label="Search"
+            autocomplete="off"
+          />
+          <button
+            type="button"
+            class="search-clear-btn hidden"
+            id="searchClearBtn"
+            aria-label="Clear search"
+            title="Clear"
+          >
+            <i class="bx bx-x"></i>
+          </button>
+        </div>
+        <div class="search-results" id="searchResults"></div>
       </div>
     </div>
 
@@ -174,7 +189,16 @@
           />
           <a href="index.html"><span> BennyFix Hub</span></a>
         </div>
-        <div class="hamburger" onclick="toggleMenu()">
+        <button
+          type="button"
+          class="header-search-btn"
+          onclick="toggleSearch(event)"
+          aria-label="Search"
+          title="Search"
+        >
+          <i class="bx bx-search"></i>
+        </button>
+        <div class="hamburger" onclick="toggleMenu()" role="button" tabindex="0" aria-label="Menu" title="Menu">
           <i class="bx bx-menu"></i>
         </div>
         <!-- WRAPPER ADDED (IMPORTANT FIX) -->
@@ -192,10 +216,6 @@
             <div class="nav-item" data-menu="sales">
               <span>Sell a device <i class="bx bx-chevron-down"></i></span>
               <div class="mobile-mega"></div>
-            </div>
-
-            <div class="nav-item" onclick="toggleSearch(event)">
-              <span><i class="bx bx-search"></i></span>
             </div>
           </div>
         </div>
@@ -254,6 +274,7 @@
               class="repair-close-btn"
               onclick="window.closeRepairForm()"
               aria-label="Close repair form"
+              title="Close"
             >
               &times;
             </button>
@@ -523,11 +544,11 @@
 
     <h3>BennyFix Hub</h3>
     <div class="footer-social">
-      <a href="https://instagram.com/yourusername" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
-      <a href="https://x.com/yourusername" target="_blank" rel="noopener noreferrer" aria-label="X"><i class="bx bxl-twitter"></i></a>
-      <a href="https://facebook.com/yourpage" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
-      <a href="#" aria-label="YouTube"><i class="bx bxl-youtube"></i></a>
-      <a href="#" aria-label="LinkedIn"><i class="bx bxl-linkedin"></i></a>
+      <a href="https://instagram.com/yourusername" target="_blank" rel="noopener noreferrer" aria-label="Instagram" title="Instagram"><i class="bx bxl-instagram"></i></a>
+      <a href="https://x.com/yourusername" target="_blank" rel="noopener noreferrer" aria-label="X" title="X"><i class="bx bxl-twitter"></i></a>
+      <a href="https://facebook.com/yourpage" target="_blank" rel="noopener noreferrer" aria-label="Facebook" title="Facebook"><i class="bx bxl-facebook"></i></a>
+      <a href="#" aria-label="YouTube" title="YouTube"><i class="bx bxl-youtube"></i></a>
+      <a href="#" aria-label="LinkedIn" title="LinkedIn"><i class="bx bxl-linkedin"></i></a>
     </div>
 </div>
         <!-- Company -->
@@ -747,6 +768,7 @@
           tabindex="0"
           onclick="document.getElementById('avatarInput').click()"
           aria-label="Change profile photo"
+          title="Change profile photo"
         >
           <div class="avatar" id="avatarCircle">
             <i class="bx bx-user"></i>
@@ -768,7 +790,7 @@
           <small id="userRole">BennyFix Hub Member</small>
         </div>
 
-        <span class="close-btn" onclick="closeAccountPanel()">✕</span>
+        <span class="close-btn" onclick="closeAccountPanel()" role="button" tabindex="0" aria-label="Close" title="Close">✕</span>
       </div>
 
       <div class="account-links">

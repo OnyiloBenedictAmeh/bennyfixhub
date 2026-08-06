@@ -583,3 +583,25 @@
     flex-direction: column;
   }
 }
+.meta-item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin:4px 0;
+}
+
+.meta-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:#17a34a;
+    flex-shrink:0;
+}
+
+.meta-dot.offline{
+    background:#d93025;
+}
+
+.meta-label{
+    color:inherit;
+}

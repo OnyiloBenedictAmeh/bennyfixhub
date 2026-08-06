@@ -153,22 +153,154 @@ export function friendlyError(err) {
 // =========================
 const searchModal = document.getElementById("searchModal");
 const searchInput = document.getElementById("searchInput");
+const searchResults = document.getElementById("searchResults");
+const searchClearBtn = document.getElementById("searchClearBtn");
+
+// Searchable index of site pages/services. Add entries here as pages are added.
+const SEARCH_INDEX = [
+  { title: "Phone Repair", desc: "Screens, batteries, charging ports", icon: "bx-mobile", url: "services.html#phone" },
+  { title: "Laptop Repair", desc: "Windows and Mac troubleshooting", icon: "bx-laptop", url: "services.html#laptop" },
+  { title: "Tablet Repair", desc: "Screens and accessories", icon: "bx-tab", url: "services.html#tablet" },
+  { title: "PC Repair", desc: "Desktop diagnostics and fixes", icon: "bx-desktop", url: "services.html#pc" },
+  { title: "WiFi Fix", desc: "Network drops, weak signal, router setup", icon: "bx-wifi", url: "index.html#wifi-fix" },
+  { title: "Overheating", desc: "Thermal cleaning, fan checks, cooling", icon: "bx-hive", url: "index.html#overheating" },
+  { title: "Slow PC", desc: "Startup cleanup, malware scan, speed tuning", icon: "bx-tachometer", url: "index.html#slow-pc" },
+  { title: "Sell a Device", desc: "Get cash for your old device", icon: "bx-dollar-circle", url: "shop.html" },
+  { title: "Get Tech Support", desc: "Phone, laptop, tablet, diagnostics", icon: "bx-support", url: "help-center.html" },
+  { title: "Track Repair", desc: "Check the status of your repair", icon: "bx-search-alt", url: "track-repair.html" },
+  { title: "Start a Repair", desc: "Submit a new repair request", icon: "bx-wrench", url: "javascript:void(0)", onSelect: () => window.toggleRepairForm?.() },
+  { title: "My Account", desc: "Login, register, or manage your account", icon: "bx-user", url: "javascript:void(0)", onSelect: () => window.openAuth?.() },
+  { title: "FAQ", desc: "Frequently asked questions", icon: "bx-help-circle", url: "faq.html" },
+  { title: "Contact Us", desc: "Get in touch with BennyFix Hub", icon: "bx-envelope", url: "contact.html" },
+];
+
+let activeResultIndex = -1;
+
+function renderSearchResults(query) {
+  if (!searchResults) return;
+
+  const trimmed = query.trim().toLowerCase();
+  activeResultIndex = -1;
+
+  if (searchClearBtn) searchClearBtn.classList.toggle("hidden", !trimmed);
+
+  if (!trimmed) {
+    searchResults.innerHTML = "";
+    return;
+  }
+
+  const matches = SEARCH_INDEX.filter(
+    (item) =>
+      item.title.toLowerCase().includes(trimmed) ||
+      item.desc.toLowerCase().includes(trimmed)
+  ).slice(0, 8);
+
+  if (!matches.length) {
+    searchResults.innerHTML = `<div class="search-empty-state">No results for "${escapeSearchHtml(query)}"</div>`;
+    return;
+  }
+
+  searchResults.innerHTML = matches
+    .map(
+      (item, i) => `
+      <a class="search-result-item" href="${item.url}" data-index="${i}">
+        <i class='bx ${item.icon}'></i>
+        <div class="search-result-text">
+          <strong>${escapeSearchHtml(item.title)}</strong>
+          <small>${escapeSearchHtml(item.desc)}</small>
+        </div>
+      </a>
+    `
+    )
+    .join("");
+
+  [...searchResults.querySelectorAll(".search-result-item")].forEach((el, i) => {
+    el.addEventListener("click", (e) => {
+      const match = matches[i];
+      if (match.onSelect) {
+        e.preventDefault();
+        match.onSelect();
+        closeSearch();
+      }
+    });
+  });
+}
+
+function escapeSearchHtml(str = "") {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function moveActiveResult(delta) {
+  const items = searchResults ? [...searchResults.querySelectorAll(".search-result-item")] : [];
+  if (!items.length) return;
+
+  items[activeResultIndex]?.classList.remove("active");
+  activeResultIndex = (activeResultIndex + delta + items.length) % items.length;
+  items[activeResultIndex].classList.add("active");
+  items[activeResultIndex].scrollIntoView({ block: "nearest" });
+}
+
+function closeSearch() {
+  if (searchModal) searchModal.style.display = "none";
+  if (searchInput) searchInput.value = "";
+  if (searchResults) searchResults.innerHTML = "";
+  if (searchClearBtn) searchClearBtn.classList.add("hidden");
+  activeResultIndex = -1;
+}
 
 export function toggleSearch(e) {
   if (!searchModal || !searchInput) return;
-  e.stopPropagation();
+  e?.stopPropagation();
 
   const isOpen = searchModal.style.display === "block";
-  searchModal.style.display = isOpen ? "none" : "block";
 
-  if (!isOpen) setTimeout(() => searchInput.focus(), 50);
+  if (isOpen) {
+    closeSearch();
+    return;
+  }
+
+  // Close the mobile nav drawer if it's open, so search always renders on top
+  const navWrapper = document.getElementById("navWrapper");
+  const drawerBackdrop = document.getElementById("drawerBackdrop");
+  navWrapper?.classList.remove("open");
+  drawerBackdrop?.classList.remove("show");
+
+  searchModal.style.display = "block";
+  setTimeout(() => searchInput.focus(), 50);
 }
 
 window.toggleSearch = toggleSearch;
 
+searchInput?.addEventListener("input", (e) => renderSearchResults(e.target.value));
+
+searchInput?.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    moveActiveResult(1);
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    moveActiveResult(-1);
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    const items = searchResults ? [...searchResults.querySelectorAll(".search-result-item")] : [];
+    const target = items[activeResultIndex] || items[0];
+    target?.click();
+  }
+});
+
+searchClearBtn?.addEventListener("click", () => {
+  if (!searchInput) return;
+  searchInput.value = "";
+  searchInput.focus();
+  renderSearchResults("");
+});
+
 document.addEventListener("click", (e) => {
-  if (!e.target.closest(".search-box") && !e.target.closest(".bx-search")) {
-    if (searchModal) searchModal.style.display = "none";
+  if (!e.target.closest(".search-box") && !e.target.closest(".header-search-btn")) {
+    closeSearch();
   }
 });
 
@@ -250,7 +382,7 @@ window.addEventListener("scroll", () => {
   clearTimeout(scrollTimeout);
 
   scrollTimeout = setTimeout(() => {
-    if (searchModal) searchModal.style.display = "none";
+    closeSearch();
     const megaEl = mega();
     if (megaEl) megaEl.classList.remove("show");
   }, 100);
@@ -290,16 +422,13 @@ document.addEventListener("keydown", function (e) {
   // Ctrl/Cmd + K → open search
   if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
     e.preventDefault();
-    if (searchModal) {
-      searchModal.style.display = "block";
-      setTimeout(() => searchInput?.focus(), 50);
-    }
+    if (searchModal.style.display !== "block") toggleSearch();
     return;
   }
 
   // Escape → close all panels
   if (e.key === "Escape") {
-    if (searchModal) searchModal.style.display = "none";
+    closeSearch();
     if (megaEl) megaEl.classList.remove("show");
     if (navWrapper) navWrapper.classList.remove("open");
 

@@ -83,7 +83,12 @@ class MarketingManager {
     this.editingPostId = null;
     this.editingPostStatus = null;
 
-    this.metaStatus = { facebook: { connected: false }, instagram: { connected: false } };
+    this.metaStatus = {
+      facebook: { connected: false },
+      instagram: { connected: false },
+      linkedin: { connected: false },
+      twitter: { connected: false },
+    };
 
     this.cacheDOM();
     this.bindEvents();
@@ -108,12 +113,17 @@ class MarketingManager {
     this.facebookCheckbox = document.getElementById("facebookPlatform");
     this.instagramCheckbox = document.getElementById("instagramPlatform");
     this.linkedinCheckbox = document.getElementById("linkedinPlatform");
+    this.twitterCheckbox = document.getElementById("twitterPlatform");
     this.facebookPageTargets = document.getElementById("facebookPageTargets");
 
     this.connectFacebookBtn = document.getElementById("connectFacebookBtn");
     this.connectInstagramBtn = document.getElementById("connectInstagramBtn");
+    this.connectLinkedinBtn = document.getElementById("connectLinkedinBtn");
+    this.connectTwitterBtn = document.getElementById("connectTwitterBtn");
     this.facebookStatusText = document.getElementById("facebookStatusText");
     this.instagramStatusText = document.getElementById("instagramStatusText");
+    this.linkedinStatusText = document.getElementById("linkedinStatusText");
+    this.twitterStatusText = document.getElementById("twitterStatusText");
 
     this.editingBanner = document.getElementById("editingBanner");
     this.editingBannerText = document.getElementById("editingBannerText");
@@ -163,6 +173,14 @@ class MarketingManager {
 
     if (this.connectInstagramBtn) {
       this.connectInstagramBtn.addEventListener("click", () => this.connectPlatform("instagram"));
+    }
+
+    if (this.connectLinkedinBtn) {
+      this.connectLinkedinBtn.addEventListener("click", () => this.connectPlatform("linkedin"));
+    }
+
+    if (this.connectTwitterBtn) {
+      this.connectTwitterBtn.addEventListener("click", () => this.connectPlatform("twitter"));
     }
 
     this.tabButtons.forEach((btn) => {
@@ -253,44 +271,200 @@ class MarketingManager {
 
       if (this.facebookStatusText) this.facebookStatusText.textContent = "Unknown";
       if (this.instagramStatusText) this.instagramStatusText.textContent = "Unknown";
+      if (this.linkedinStatusText) this.linkedinStatusText.textContent = "Unknown";
+      if (this.twitterStatusText) this.twitterStatusText.textContent = "Unknown";
     }
   }
 renderMetaStatus() {
-  // Facebook
-  if (this.facebookStatusText) {
-    if (this.metaStatus.facebook?.connected) {
-      const pages = this.metaStatus.facebook.pages || [];
 
-      if (pages.length) {
-        this.facebookStatusText.innerHTML = pages
-          .map(page => `Connected: ${this.escapeHtml(page.pageName || page.name || page.pageId || page.id)}`)
-          .join("<br>");
-      } else {
-        this.facebookStatusText.textContent = "Connected";
-      }
-    } else {
-      this.facebookStatusText.textContent = "Not connected";
+    /* ==========================
+       FACEBOOK
+    ========================== */
+
+    if (this.facebookStatusText) {
+
+        const fb = this.metaStatus.facebook || {};
+
+        if (!fb.connected) {
+
+            this.facebookStatusText.innerHTML = `
+                <div class="meta-platform-status disconnected">
+                    🔴 Facebook Not Connected
+                </div>
+            `;
+
+        } else {
+
+            const pages = fb.pages || [];
+
+            let html = `
+                <div class="meta-platform-status connected">
+                    🟢 Facebook Connected
+                </div>
+            `;
+
+            if (pages.length) {
+
+                html += `<div class="meta-platform-list">`;
+
+                pages.forEach(page => {
+
+                    html += `
+                        <div class="meta-item">
+                            <span class="meta-dot"></span>
+                            <span class="meta-label">
+                                ${this.escapeHtml(
+                                    page.pageName ||
+                                    page.name ||
+                                    page.pageId ||
+                                    page.id
+                                )}
+                            </span>
+                        </div>
+                    `;
+
+                });
+
+                html += `</div>`;
+
+            }
+
+            this.facebookStatusText.innerHTML = html;
+
+        }
+
     }
-  }
 
-  this.renderFacebookPageTargets();
+    this.renderFacebookPageTargets();
 
-  if (this.connectFacebookBtn) {
-    this.connectFacebookBtn.textContent =
-      this.metaStatus.facebook?.connected ? "Reconnect" : "Connect";
-  }
+    if (this.connectFacebookBtn) {
+        this.connectFacebookBtn.textContent =
+            this.metaStatus.facebook?.connected ? "Reconnect" : "Connect";
+    }
 
-  // Instagram
-  if (this.instagramStatusText) {
-    this.instagramStatusText.textContent = this.metaStatus.instagram?.connected
-      ? `Connected${this.metaStatus.instagram.username ? `: @${this.metaStatus.instagram.username}` : ""}`
-      : "Not connected";
-  }
 
-  if (this.connectInstagramBtn) {
-    this.connectInstagramBtn.textContent =
-      this.metaStatus.instagram?.connected ? "Reconnect" : "Connect";
-  }
+    /* ==========================
+       INSTAGRAM
+    ========================== */
+
+    if (this.instagramStatusText) {
+
+        const ig = this.metaStatus.instagram || {};
+
+        if (!ig.connected) {
+
+            this.instagramStatusText.innerHTML = `
+                <div class="meta-platform-status disconnected">
+                    🔴 Instagram Not Connected
+                </div>
+            `;
+
+        } else {
+
+            this.instagramStatusText.innerHTML = `
+                <div class="meta-platform-status connected">
+                    🟢 Instagram Connected
+                </div>
+
+                <div class="meta-item">
+                    <span class="meta-dot"></span>
+                    <span class="meta-label">
+                        @${this.escapeHtml(ig.username)}
+                    </span>
+                </div>
+            `;
+
+        }
+
+    }
+
+    if (this.connectInstagramBtn) {
+        this.connectInstagramBtn.textContent =
+            this.metaStatus.instagram?.connected ? "Reconnect" : "Connect";
+    }
+
+
+    /* ==========================
+       LINKEDIN
+    ========================== */
+
+    if (this.linkedinStatusText) {
+
+        const li = this.metaStatus.linkedin || {};
+
+        if (!li.connected) {
+
+            this.linkedinStatusText.innerHTML = `
+                <div class="meta-platform-status disconnected">
+                    🔴 LinkedIn Not Connected
+                </div>
+            `;
+
+        } else {
+
+            this.linkedinStatusText.innerHTML = `
+                <div class="meta-platform-status connected">
+                    🟢 LinkedIn Connected
+                </div>
+
+                <div class="meta-item">
+                    <span class="meta-dot"></span>
+                    <span class="meta-label">
+                        ${this.escapeHtml(li.name)}
+                    </span>
+                </div>
+            `;
+
+        }
+
+    }
+
+    if (this.connectLinkedinBtn) {
+        this.connectLinkedinBtn.textContent =
+            this.metaStatus.linkedin?.connected ? "Reconnect" : "Connect";
+    }
+
+
+    /* ==========================
+       TWITTER / X
+    ========================== */
+
+    if (this.twitterStatusText) {
+
+        const tw = this.metaStatus.twitter || {};
+
+        if (!tw.connected) {
+
+            this.twitterStatusText.innerHTML = `
+                <div class="meta-platform-status disconnected">
+                    🔴 X Not Connected
+                </div>
+            `;
+
+        } else {
+
+            this.twitterStatusText.innerHTML = `
+                <div class="meta-platform-status connected">
+                    🟢 X Connected
+                </div>
+
+                <div class="meta-item">
+                    <span class="meta-dot"></span>
+                    <span class="meta-label">
+                        @${this.escapeHtml(tw.username)}
+                    </span>
+                </div>
+            `;
+
+        }
+
+    }
+
+    if (this.connectTwitterBtn) {
+        this.connectTwitterBtn.textContent =
+            this.metaStatus.twitter?.connected ? "Reconnect" : "Connect";
+    }
+
 }
 
   renderFacebookPageTargets(selectedPageIds = null) {
@@ -340,7 +514,7 @@ renderMetaStatus() {
 
   async connectPlatform(platform) {
     try {
-      if (!["facebook", "instagram"].includes(platform)) return;
+      if (!["facebook", "instagram", "linkedin", "twitter"].includes(platform)) return;
 
       const idToken = await this.getIdToken();
       const connectUrl = new URL(META_CONNECT_API_URL);
@@ -606,6 +780,7 @@ renderMetaStatus() {
     if (this.facebookCheckbox?.checked) platforms.push("facebook");
     if (this.instagramCheckbox?.checked) platforms.push("instagram");
     if (this.linkedinCheckbox?.checked) platforms.push("linkedin");
+    if (this.twitterCheckbox?.checked) platforms.push("twitter");
 
     return platforms;
   }
@@ -804,6 +979,7 @@ renderMetaStatus() {
     if (this.facebookCheckbox) this.facebookCheckbox.checked = platforms.includes("facebook");
     if (this.instagramCheckbox) this.instagramCheckbox.checked = platforms.includes("instagram");
     if (this.linkedinCheckbox) this.linkedinCheckbox.checked = platforms.includes("linkedin");
+    if (this.twitterCheckbox) this.twitterCheckbox.checked = platforms.includes("twitter");
     this.renderFacebookPageTargets(post.facebookPageIds || post.facebookTargets || null);
 
     if (this.scheduleInput) {
@@ -1113,6 +1289,7 @@ renderMetaStatus() {
     if (this.facebookCheckbox) this.facebookCheckbox.checked = true;
     if (this.instagramCheckbox) this.instagramCheckbox.checked = true;
     if (this.linkedinCheckbox) this.linkedinCheckbox.checked = false;
+    if (this.twitterCheckbox) this.twitterCheckbox.checked = false;
 
     this.attachedImages = [];
     this.uploader.clear();
