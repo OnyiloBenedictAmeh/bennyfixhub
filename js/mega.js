@@ -13,10 +13,10 @@ const megaData = {
     title: "Get expert help anytime, anywhere",
     text: "Our experts help you get the most out of your plan with premium expert tech support.",
     cards: [
-      { img: "phone.jpg", title: "Phone Support", desc: "Fix software and hardware issues." },
-      { img: "laptop.jpg", title: "Laptop Support", desc: "Troubleshoot Windows and Mac devices." },
-      { img: "tablet.jpg", title: "Tablet Support", desc: "Get help with tablets and accessories." },
-      { img: "diagnostic.jpg", title: "Diagnostics", desc: "Run tests and identify problems." },
+      { img: "support/bennyfix_phone_support.png", title: "Phone Support", desc: "Fix software and hardware issues." },
+      { img: "support/bennyfix_laptop_support.png", title: "Laptop Support", desc: "Troubleshoot Windows and Mac devices." },
+      { img: "support/bennyfix_tablet_support.png", title: "Tablet Support", desc: "Get help with tablets and accessories." },
+      { img: "support/bennyfix_diagnostics.png", title: "Diagnostics", desc: "Run tests and identify problems." },
     ],
   },
   repairs: {
@@ -24,10 +24,10 @@ const megaData = {
     title: "Fast & Reliable Repairs",
     text: "Certified technicians ready to fix your devices with warranty protection.",
     cards: [
-      { img: "repair-phone.jpg", title: "Phone Repair", desc: "Fix your phone's issues." },
-      { img: "repair-laptop.jpg", title: "Laptop Repair", desc: "Get your laptop fixed." },
-      { img: "repair-tablet.jpg", title: "Tablet Repair", desc: "Repair your tablet." },
-      { img: "repair-pc.jpg", title: "PC Repair", desc: "Fix your PC issues." },
+      { img: "repairs/repair-phone.jpg", title: "Phone Repair", desc: "Fix your phone's issues." },
+      { img: "repairs/repair-laptop.jpg", title: "Laptop Repair", desc: "Get your laptop fixed." },
+      { img: "repairs/repair-tablet.jpg", title: "Tablet Repair", desc: "Repair your tablet." },
+      { img: "repairs/repair-pc.jpg", title: "PC Repair", desc: "Fix your PC issues." },
     ],
   },
   sales: {
