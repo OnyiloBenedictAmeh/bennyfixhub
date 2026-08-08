@@ -932,7 +932,7 @@ body.dark .header-search-btn:hover {
   grid-template-columns: 300px 1fr;
   gap: 40px;
   padding: 32px;
-  max-height: 75vh;
+  max-height: calc(100vh - 140px);
   overflow-y: auto;
   transform: translateY(-12px);
   opacity: 0;
@@ -2234,18 +2234,29 @@ button:hover {
     gap: 10px;
   }
   .mega-inner {
-    width: min(95vw, 950px);
-    grid-template-columns: 280px 1fr;
-    gap: 20px;
-    padding: 20px;
+    width: min(95vw, 700px);
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 22px;
+    max-height: calc(100vh - 120px);
+  }
+
+  .mega-context {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 16px;
   }
 
   .mega-context h2 {
-    font-size: 26px;
+    font-size: 24px;
+  }
+
+  .mega-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
   }
 
   .mega-card img {
-    height: 140px;
+    height: 120px;
   }
 }
 
@@ -2310,7 +2321,7 @@ button:hover {
     right: -360px;
     width: 340px;
     max-width: 90vw;
-    height: 100vh;
+    height: calc(100vh - 132px);
     background: #fff;
     transform: none;
     opacity: 1;
@@ -2459,24 +2470,6 @@ button:hover {
 
     object-fit: cover;
     border-radius: 10px;
-  }
-
-  .mega-inner {
-    width: min(450px, 92vw);
-    grid-template-columns: 1fr;
-  }
-
-  .mega-context {
-    border-bottom: 1px solid #eee;
-    padding-bottom: 16px;
-  }
-
-  .mega-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .mega-card img {
-    height: 130px;
   }
 
   .hero-premium {
@@ -2843,36 +2836,9 @@ body.dark .cookie-consent p {
   .newsletter-box button {
     width: 100%;
   }
-  .mega-inner {
-    padding: 16px;
-    gap: 16px;
-    border-radius: 12px;
-  }
-
-  .mega-context h2 {
-    font-size: 22px;
-    line-height: 1.2;
-  }
-
-  .mega-context p {
-    font-size: 14px;
-  }
 
   .mega-btn {
     width: 100%;
-  }
-
-  .mega-grid {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .mega-card img {
-    height: 180px;
-  }
-
-  .mega-card-content {
-    padding: 12px;
   }
 
   .mega-card-content h4 {
@@ -3093,10 +3059,5 @@ body.dark .cookie-consent p {
 
   .search-box {
     width: min(94vw, 340px);
-  }
-
-  .mega-inner {
-    width: 94vw;
-    padding: 14px;
   }
 }

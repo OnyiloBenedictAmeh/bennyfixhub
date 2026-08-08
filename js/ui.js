@@ -402,14 +402,9 @@ window.scrollToTop = function () {
   window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
-// =========================
-// FOOTER ACCORDION
-// =========================
-document.querySelectorAll(".footer-section h4").forEach((h4) => {
-  h4.addEventListener("click", () => {
-    h4.parentElement.classList.toggle("active");
-  });
-});
+// Footer accordion click binding now lives in footer-loader.js — it has to
+// run *after* the shared footer is fetched and injected, so it can't live
+// here at module top-level (this ran before the footer existed in the DOM).
 
 // =========================
 // KEYBOARD SHORTCUTS
