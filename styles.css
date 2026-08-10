@@ -529,7 +529,6 @@ a {
   outline: none;
 }
 .auth-box button {
-  width: 100%;
   padding: 12px;
   color: white;
   font-weight: 600;
@@ -542,7 +541,7 @@ a {
 
 .auth-box button:first-of-type {
   background: #2563eb;
-  /* color: white; */
+  color: white;
 }
 .auth-box button:first-of-type:hover {
   background: #1d4ed8;
@@ -550,7 +549,7 @@ a {
 }
 .auth-box button:last-of-type {
   background: #111;
-  /* color: white; */
+  color: white;
 }
 .auth-box button:last-of-type:hover {
   opacity: 0.85;
@@ -1351,65 +1350,331 @@ footer {
 }
 
 /* COOKIE BANNER */
+/* =========================
+   COOKIE CONSENT
+   Styled like a native browser permission prompt (icon + title +
+   description + action row). Docks bottom-right on desktop, becomes a
+   full-width bottom sheet on phones.
+   ========================= */
 .cookie-consent {
   position: fixed;
   right: 18px;
   bottom: 20px;
+  left: auto;
   z-index: 9000;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: min(420px, calc(100vw - 32px));
-  padding: 12px;
+  align-items: flex-start;
+  gap: 14px;
+  width: min(380px, calc(100vw - 32px));
+  padding: 16px;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #ffffff;
   color: #111827;
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+  animation: cookieConsentIn 0.3s ease;
+}
+
+@keyframes cookieConsentIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .cookie-consent.hidden {
   display: none;
 }
 
+.cookie-consent-icon {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eef2ff;
+  color: #2563eb;
+  font-size: 19px;
+}
+
+.cookie-consent-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.cookie-consent-body strong {
+  display: block;
+  font-size: 14.5px;
+  margin-bottom: 4px;
+}
+
 .cookie-consent p {
-  margin: 4px 0 0;
+  margin: 0;
   color: #64748b;
   font-size: 13px;
-  line-height: 1.4;
+  line-height: 1.5;
+}
+
+.cookie-consent p a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.cookie-consent p a:hover {
+  text-decoration: underline;
 }
 
 .cookie-actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  margin-top: 12px;
+  width: 100%;
 }
 
-.cookie-actions a,
-.cookie-actions button {
+.cookie-btn {
+  flex: 1;
   border: 0;
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: 9px 12px;
   font-weight: 700;
   font-size: 13px;
   cursor: pointer;
+  transition: 0.2s;
 }
 
-.cookie-actions a {
-  color: #2563eb;
-  text-decoration: none;
-}
-
-.cookie-actions button {
-  background: #e5e7eb;
+.cookie-btn-secondary {
+  background: #eef2f7;
   color: #111827;
 }
 
-.cookie-actions #cookieAcceptBtn {
+.cookie-btn-secondary:hover {
+  background: #e2e8f0;
+}
+
+.cookie-btn-primary {
   background: #2563eb;
   color: #ffffff;
+}
+
+.cookie-btn-primary:hover {
+  background: #1d4ed8;
+}
+
+body.dark .cookie-consent {
+  background: #111827;
+  border-color: #1f2937;
+  color: #f8fafc;
+}
+
+body.dark .cookie-consent-icon {
+  background: rgba(37, 99, 235, 0.18);
+}
+
+body.dark .cookie-consent p {
+  color: #cbd5e1;
+}
+
+body.dark .cookie-btn-secondary {
+  background: #1f2937;
+  color: #f8fafc;
+}
+
+body.dark .cookie-btn-secondary:hover {
+  background: #273449;
+}
+
+/* Phones: dock as a full-width bottom sheet instead of a floating card */
+/* ==========================================================
+   COOKIE CONSENT — MOBILE
+   ========================================================== */
+
+@media (max-width: 640px) {
+
+  .cookie-consent {
+    position: fixed;
+
+    left: 10px;
+    right: 10px;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+
+    width: auto;
+    max-width: none;
+
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+
+    gap: 12px;
+
+    padding: 16px;
+
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+
+    background: #ffffff;
+
+    box-shadow:
+      0 10px 35px rgba(15, 23, 42, 0.20);
+
+    z-index: 99999;
+
+    animation: cookieSheetIn 0.3s ease;
+  }
+
+
+  /* Cookie icon */
+
+  .cookie-consent-icon {
+    width: 38px;
+    height: 38px;
+
+    flex: 0 0 38px;
+
+    align-self: flex-start;
+
+    font-size: 20px;
+  }
+
+
+  /* Main content */
+
+  .cookie-consent-content {
+    width: 100%;
+    min-width: 0;
+  }
+
+
+  .cookie-consent-body {
+    width: 100%;
+  }
+
+
+  .cookie-consent-body strong {
+    display: block;
+
+    margin-bottom: 6px;
+
+    font-size: 15px;
+    line-height: 1.3;
+  }
+
+
+  .cookie-consent p {
+    margin: 0;
+
+    font-size: 13px;
+    line-height: 1.55;
+
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+
+  .cookie-consent p a {
+    display: inline;
+    white-space: normal;
+  }
+
+
+  /* Buttons */
+
+  .cookie-actions {
+    display: flex;
+    flex-direction: column;
+
+    width: 100%;
+
+    gap: 8px;
+
+    margin-top: 14px;
+  }
+
+
+  .cookie-btn {
+    display: block;
+
+    width: 100%;
+    min-width: 0;
+
+    box-sizing: border-box;
+
+    padding: 12px 14px;
+
+    font-size: 14px;
+    line-height: 1.2;
+
+    min-height: 44px;
+  }
+
+
+  /* Mobile animation */
+
+  @keyframes cookieSheetIn {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+
+/* ==========================================================
+   VERY SMALL PHONES
+   ========================================================== */
+
+@media (max-width: 380px) {
+
+  .cookie-consent {
+    left: 8px;
+    right: 8px;
+
+    padding: 14px;
+  }
+
+  .cookie-consent-icon {
+    width: 34px;
+    height: 34px;
+
+    flex-basis: 34px;
+
+    font-size: 18px;
+  }
+
+  .cookie-consent-body strong {
+    font-size: 14px;
+  }
+
+  .cookie-consent p {
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+
+  .cookie-actions {
+    margin-top: 12px;
+  }
+
+  .cookie-btn {
+    min-height: 42px;
+    padding: 11px 12px;
+    font-size: 13px;
+  }
 }
 
 .testimonials {
@@ -1460,7 +1725,6 @@ footer {
   color: #94a3b8;
 }
 
-body.dark .cookie-consent,
 body.dark .testimonial-card {
   background: #111827;
   border-color: #1f2937;
@@ -1472,7 +1736,6 @@ body.dark .testimonial-name {
   color: #f8fafc;
 }
 
-body.dark .cookie-consent p,
 body.dark .testimonial-text,
 body.dark .testimonial-device {
   color: #cbd5e1;
@@ -1857,6 +2120,27 @@ body.dark .search-result-item.active {
   overflow: hidden;
 }
 
+.repair-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  margin: 0;
+  border: none;
+  background: transparent;
+
+  font-size: 28px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 20;
+}
 .repair-form.show {
   display: block;
 }
@@ -2701,84 +2985,6 @@ button:hover {
   .footer-grid {
     grid-template-columns: 1fr;
   text-align: center;
-}
-
-.cookie-consent {
-  position: fixed;
-  right: 18px;
-  bottom: 20px;
-  z-index: 9000;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: min(420px, calc(100vw - 32px));
-  padding: 12px;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  background: #ffffff;
-  color: #111827;
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
-}
-
-.cookie-consent.hidden {
-  display: none;
-}
-
-.cookie-consent p {
-  margin: 4px 0 0;
-  color: #64748b;
-  font-size: 13px;
-  line-height: 1.4;
-}
-
-.cookie-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.cookie-actions a,
-.cookie-actions button {
-  border: 0;
-  border-radius: 8px;
-  padding: 8px 10px;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.cookie-actions a {
-  color: #2563eb;
-  text-decoration: none;
-}
-
-.cookie-actions button {
-  background: #e5e7eb;
-  color: #111827;
-}
-
-.cookie-actions #cookieAcceptBtn {
-  background: #2563eb;
-  color: #ffffff;
-}
-
-body.dark .cookie-consent {
-  background: #111827;
-  border-color: #1f2937;
-  color: #f8fafc;
-}
-
-body.dark .cookie-consent p {
-  color: #cbd5e1;
-}
-
-@media (max-width: 640px) {
-  .cookie-consent {
-    align-items: stretch;
-    flex-direction: column;
-  }
 }
 
   .footer-section a,

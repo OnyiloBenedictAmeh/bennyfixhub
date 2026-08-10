@@ -609,15 +609,23 @@
     </div>
     <div id="toastContainer"></div>
 
-    <div id="cookieConsent" class="cookie-consent hidden">
-      <div>
-        <strong>Cookies</strong>
-        <p>We use cookies to keep the site working and improve your experience.</p>
+    <div id="cookieConsent" class="cookie-consent hidden" role="dialog" aria-live="polite" aria-label="Cookie consent">
+      <div class="cookie-consent-icon">
+        <i class="bx bx-cookie"></i>
       </div>
-      <div class="cookie-actions">
-        <a href="cookie-policy.html" target="_blank" rel="noopener noreferrer">Policy</a>
-        <button id="cookieDeclineBtn" type="button">Decline</button>
-        <button id="cookieAcceptBtn" type="button">Accept</button>
+      <div class="cookie-consent-content">
+        <div class="cookie-consent-body">
+          <strong>We use cookies</strong>
+          <p>
+            We use cookies to keep BennyFix Hub running smoothly and to improve your experience.
+            Read our <a href="cookie-policy.html" target="_blank" rel="noopener noreferrer">Cookie Policy</a>
+            and <a href="privacy-policy.html" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
+          </p>
+        </div>
+        <div class="cookie-actions">
+          <button id="cookieDeclineBtn" type="button" class="cookie-btn cookie-btn-secondary">Decline</button>
+          <button id="cookieAcceptBtn" type="button" class="cookie-btn cookie-btn-primary">Accept</button>
+        </div>
       </div>
     </div>
 

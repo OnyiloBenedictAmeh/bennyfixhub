@@ -7,7 +7,7 @@ const services = [
 {
     title:"Screen Replacement",
     description:"Cracked or dead display? Genuine-grade screen replacement with calibration and 90-day warranty.",
-    icon:"bx-mobile-alt",
+    img:"images/services/screen-replacement.jpg",
     device:["Phone","Tablet","Laptop"],
     price:"₦18,000",
     turnaround:"2–24 hrs",
@@ -17,7 +17,7 @@ const services = [
 {
     title:"Battery Replacement",
     description:"Restore battery life using high-quality replacement batteries tested for performance.",
-    icon:"bx-battery",
+    img:"images/services/battery-replacement.jpg",
     device:["Phone","Laptop","Tablet","Ear Buds"],
     price:"₦12,000",
     turnaround:"1–3 hrs",
@@ -27,7 +27,7 @@ const services = [
 {
     title:"Charging Port Repair",
     description:"Repair damaged charging ports using professional soldering techniques.",
-    icon:"bx-plug",
+    img:"images/services/charging-port-repair.jpg",
     device:["Phone","Laptop","Tablet","Console"],
     price:"₦8,000",
     turnaround:"Same Day"
@@ -36,7 +36,7 @@ const services = [
 {
     title:"Water Damage Recovery",
     description:"Advanced board cleaning, diagnostics and recovery for liquid damaged devices.",
-    icon:"bx-droplet",
+    img:"images/services/water-damage-recovery.jpg",
     device:["Phone","Laptop","Tablet"],
     price:"₦25,000",
     turnaround:"2–5 Days",
@@ -46,7 +46,7 @@ const services = [
 {
     title:"Overheating Repair",
     description:"Thermal paste replacement, fan servicing and cooling optimization.",
-    icon:"bx-hot",
+    img:"images/services/overheating-repair.jpg",
     device:["Laptop","Desktop","Console"],
     price:"₦10,000",
     turnaround:"Same Day"
@@ -55,7 +55,7 @@ const services = [
 {
     title:"Performance Optimization",
     description:"Speed up slow computers with malware removal, startup cleanup and tuning.",
-    icon:"bx-tachometer",
+    img:"images/services/performance-optimization.jpg",
     device:["Laptop","Desktop"],
     price:"₦7,500",
     turnaround:"1–2 Hours",
@@ -65,7 +65,7 @@ const services = [
 {
     title:"RAM & SSD Upgrade",
     description:"Upgrade RAM or SSD with complete data migration.",
-    icon:"bx-hdd",
+    img:"images/services/ram-ssd-upgrade.jpg",
     device:["Laptop","Desktop"],
     price:"₦22,000",
     turnaround:"2–4 Hours"
@@ -74,7 +74,7 @@ const services = [
 {
     title:"WiFi & Network Repair",
     description:"Router setup, signal improvement and network troubleshooting.",
-    icon:"bx-wifi",
+    img:"images/services/wifi-network-repair.jpg",
     device:["Network"],
     price:"₦5,000",
     turnaround:"Same Day"
@@ -83,7 +83,7 @@ const services = [
 {
     title:"TV Repair",
     description:"Repair Smart TVs, LED TVs, HDMI faults and backlight issues.",
-    icon:"bx-tv",
+    img:"images/services/tv-repair.jpg",
     device:["TV"],
     price:"₦15,000",
     turnaround:"1–3 Days"
@@ -92,7 +92,7 @@ const services = [
 {
     title:"Game Console Repair",
     description:"PlayStation, Xbox and Nintendo repairs including HDMI ports and overheating.",
-    icon:"bx-joystick",
+    img:"images/services/game-console-repair.jpg",
     device:["Console"],
     price:"₦12,000",
     turnaround:"1–2 Days"
@@ -101,7 +101,7 @@ const services = [
 {
     title:"Printer Repair",
     description:"Fix paper jams, ink issues, rollers and printer configuration.",
-    icon:"bx-printer",
+    img:"images/services/printer-repair.jpg",
     device:["Printer"],
     price:"₦6,000",
     turnaround:"Same Day"
@@ -110,7 +110,7 @@ const services = [
 {
     title:"Ear Bud Repair",
     description:"Charging case, speaker replacement and pairing issues.",
-    icon:"bx-headphone",
+    img:"images/services/ear-bud-repair.jpg",
     device:["Ear Buds"],
     price:"₦5,000",
     turnaround:"24 Hours"
@@ -119,7 +119,7 @@ const services = [
 {
     title:"Home Appliance Repair",
     description:"Repair microwaves, blenders, electric kettles and other appliances.",
-    icon:"bx-home",
+    img:"images/services/home-appliance-repair.jpg",
     device:["Appliance"],
     price:"₦8,000",
     turnaround:"1–3 Days"
@@ -128,7 +128,7 @@ const services = [
 {
     title:"Custom PC Build",
     description:"Gaming PCs, Workstations and Creator systems built to your specification.",
-    icon:"bx-desktop",
+    img:"images/services/custom-pc-build.jpg",
     device:["Desktop"],
     price:"₦45,000",
     turnaround:"3–7 Days",
@@ -203,7 +203,7 @@ ${service.tag ? `<div class="service-tag">${service.tag}</div>`:""}
 
 <div class="service-icon">
 
-<i class='bx ${service.icon}'></i>
+<img src="${service.img}" alt="" class="service-icon-img">
 
 </div>
 

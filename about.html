@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" sizes="512x512" href="bennyfix hub white-logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css">
+<title>About Us | BennyFix Hub</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="about.css">
+</head>
+<body>
+<header>
+<div class="wrap header-inner">
+<div class="logo"><img src="bennyfix hub white-logo.png" alt="BennyFix Hub Logo" class="logo-img"><a href="index.html"><span>BennyFix Hub</span></a></div>
+<div class="hamburger" onclick="toggleMenu()"><i class="bx bx-menu"></i></div>
+<div class="nav-wrapper" id="navWrapper"><div class="nav">
+<div class="nav-item" data-menu="support"><span>Get Tech Support <i class="bx bx-chevron-down"></i></span><div class="mobile-mega"></div></div>
+<div class="nav-item" data-menu="repairs"><span>Repair a device <i class="bx bx-chevron-down"></i></span><div class="mobile-mega"></div></div>
+<div class="nav-item" data-menu="sales"><span>Sell a device <i class="bx bx-chevron-down"></i></span><div class="mobile-mega"></div></div>
+<div class="nav-item" onclick="toggleSearch(event)"><span><i class="bx bx-search"></i></span></div>
+</div></div>
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+<div class="mega-overlay" id="mega"><div class="mega-inner"><div class="mega-context">
+<div class="mega-icon" id="megaIcon"><i class="bx bx-support"></i></div><span class="mega-tag">BENNYFIX HUB</span>
+<h2 id="megaTitle">Support</h2><p id="megaText">Default text</p><button class="mega-btn">Get Started</button>
+<img src="support-banner.jpg" class="context-banner" alt="Support">
+</div><div class="mega-grid" id="megaGrid"></div></div></div>
+</div>
+</header>
+
+<main class="about-container">
+<section class="company-hero">
+<div class="company-hero-content">
+<span class="company-badge">About BennyFix Hub</span>
+<h1>Technology support built around your device.</h1>
+<p class="company-hero-text">BennyFix Hub brings repair services, technical support, device solutions, and helpful resources together in one place. Our goal is to make getting help with your technology simpler, clearer, and easier to manage.</p>
+<div class="company-hero-actions"><a href="repair.html" class="primary-btn">Request a Repair</a><a href="contact.html" class="secondary-btn">Contact Support</a></div>
+</div>
+</section>
+
+<section class="company-card intro-card">
+<div class="section-icon"><i class="bx bx-devices"></i></div>
+<div><h2>Welcome to BennyFix Hub</h2>
+<p>BennyFix Hub is designed to give customers a straightforward place to get help with their devices. Whether you need to request a repair, follow repair progress, contact support, explore products, or find useful technical information, the platform brings those experiences together.</p>
+<p>We believe technology support should feel understandable and organised. From the first request through the support process, we aim to provide clear information and practical ways to stay connected with your device and its repair journey.</p>
+</div>
+</section>
+
+<section class="company-section">
+<div class="section-heading"><span>What we do</span><h2>One hub for your technology needs</h2><p>BennyFix Hub combines several parts of the device-support journey so customers can find the right next step without unnecessary complexity.</p></div>
+<div class="company-grid">
+<article class="feature-card"><div class="feature-icon"><i class="bx bx-wrench"></i></div><h3>Device Repairs</h3><p>Request repairs and keep track of the information associated with your device and its repair process.</p><a href="repair.html">Request a repair <i class="bx bx-right-arrow-alt"></i></a></article>
+<article class="feature-card"><div class="feature-icon"><i class="bx bx-support"></i></div><h3>Technical Support</h3><p>Find support resources and ways to get assistance when a device or technical issue needs attention.</p><a href="help-center.html">Visit Help Center <i class="bx bx-right-arrow-alt"></i></a></article>
+<article class="feature-card"><div class="feature-icon"><i class="bx bx-package"></i></div><h3>Device Solutions</h3><p>Explore devices, accessories, manuals, training resources, and other services available through BennyFix Hub.</p><a href="shop.html">Explore devices <i class="bx bx-right-arrow-alt"></i></a></article>
+<article class="feature-card"><div class="feature-icon"><i class="bx bx-book-open"></i></div><h3>Technical Resources</h3><p>Access practical information designed to help you understand, maintain, and troubleshoot your technology.</p><a href="manuals.html">Explore resources <i class="bx bx-right-arrow-alt"></i></a></article>
+</div>
+</section>
+
+<section class="company-card approach-card">
+<div><span class="section-label">Our approach</span><h2>Clear support. Practical solutions.</h2>
+<p>A device problem can be frustrating enough without having to work through a confusing support process. BennyFix Hub is built around making that process easier to understand.</p>
+<p>We focus on useful information, organised service experiences, and clear communication so customers can understand what they need to do next.</p></div>
+<div class="approach-points">
+<div><i class="bx bx-check-circle"></i>Clear service information</div>
+<div><i class="bx bx-check-circle"></i>Organised repair journeys</div>
+<div><i class="bx bx-check-circle"></i>Accessible support resources</div>
+<div><i class="bx bx-check-circle"></i>One connected platform</div>
+</div>
+</section>
+
+<section class="company-section">
+<div class="section-heading"><span>The BennyFix Hub experience</span><h2>Designed to keep everything connected</h2><p>Your account, repair activity, support resources, and service information are designed to work together rather than feeling like separate experiences.</p></div>
+<div class="journey-grid">
+<div class="journey-card"><strong>01</strong><h3>Tell us what you need</h3><p>Start with a repair request, support question, or another service available through the platform.</p></div>
+<div class="journey-card"><strong>02</strong><h3>Stay informed</h3><p>Use the available account and repair tools to keep up with your service information and progress.</p></div>
+<div class="journey-card"><strong>03</strong><h3>Get back to using your device</h3><p>Follow the repair or support journey through to the point where you have the information or assistance you need.</p></div>
+</div>
+</section>
+
+<section class="company-card trust-card">
+<div class="section-icon"><i class="bx bx-shield-quarter"></i></div>
+<div><h2>Built with trust in mind</h2><p>BennyFix Hub is designed with security, privacy, and transparency as important parts of the customer experience. We explain how information is handled and provide dedicated policy and support resources so customers can make informed decisions.</p><a href="privacy-policy.html" class="text-link">Read our Privacy Policy <i class="bx bx-right-arrow-alt"></i></a></div>
+</section>
+
+<section class="company-closing"><div class="closing-content"><span>Need help with your device?</span><h2>Let's get you moving again.</h2><p>Start a repair request, explore support resources, or contact the BennyFix Hub team to find the right next step.</p><a href="repair.html" class="primary-btn">Start a Repair</a><a href="contact.html" class="closing-link">Contact Us</a></div></section>
+</main>
+
+<footer>
+<div class="footer-grid">
+<div class="footer-brand"><img src="bennyfix hub white-logo.png" width="100" alt="BennyFix Hub Logo"><h3>BennyFix Hub</h3></div>
+<div class="footer-section"><h4>Company</h4><a href="about.html">About Us</a><a href="careers.html">Careers</a><a href="blog.html">Tech Blog</a></div>
+<div class="footer-section"><h4>Services</h4><a href="repair.html">Request a Repair</a><a href="track-repair.html">Track Repair</a><a href="shop.html">Shop Devices</a><a href="manuals.html">Manual Library</a><a href="training.html">Tech Training</a></div>
+<div class="footer-section"><h4>Support</h4><a href="help-center.html">Help Center</a><a href="contact.html">Contact Us</a><a href="faq.html">Frequently Asked Questions</a></div>
+<div class="footer-section"><h4>Connect</h4><a href="https://instagram.com/bennyfixhub" target="_blank">Instagram</a><a href="https://x.com/bennyfixhub" target="_blank">X (Twitter)</a><a href="https://facebook.com/bennyfixhub" target="_blank">Facebook</a><a href="https://www.youtube.com/channel/UCYR1Ygi1RUF9GpJYsVTrLbQ" target="_blank">YouTube</a></div>
+</div>
+<hr>
+<div class="footer-bottom"><div class="footer-links"><a href="terms-of-service.html">Terms of Service</a><a href="privacy-policy.html">Privacy Policy</a><a href="cookie-policy.html">Cookie Policy</a><a href="refund-policy.html">Refund &amp; Cancellation Policy</a><a href="repair-warranty-policy.html">Repair Warranty</a><a href="acceptable-use-policy.html">Acceptable Use Policy</a><div class="copyright">&copy; 2026 BennyFix Hub. All rights reserved.</div></div>
+<div class="footer-social"><a href="https://instagram.com/bennyfixhub" target="_blank" aria-label="Instagram"><i class="bx bxl-instagram"></i></a><a href="https://x.com/bennyfixhub" target="_blank" aria-label="X"><i class="bx bxl-twitter"></i></a><a href="https://facebook.com/bennyfixhub" target="_blank" aria-label="Facebook"><i class="bx bxl-facebook"></i></a><a href="https://www.youtube.com/channel/UCYR1Ygi1RUF9GpJYsVTrLbQ" target="_blank" aria-label="YouTube"><i class="bx bxl-youtube"></i></a></div></div>
+<button class="back-to-top" onclick="scrollToTop()">↑ Back to Top</button>
+</footer>
+<script src="policy.js"></script>
+</body>
+</html>

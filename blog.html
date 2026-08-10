@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" sizes="512x512" href="bennyfix hub white-logo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.4/css/boxicons.min.css">
+  <title>Tech Blog | BennyFix Hub</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="blog.css">
+</head>
+
+<body>
+<header>
+  <div class="wrap header-inner">
+    <div class="logo">
+      <img src="bennyfix hub white-logo.png" alt="BennyFix Hub Logo" class="logo-img">
+      <a href="index.html"><span>BennyFix Hub</span></a>
+    </div>
+
+    <div class="hamburger" onclick="toggleMenu()">
+      <i class="bx bx-menu"></i>
+    </div>
+
+    <div class="nav-wrapper" id="navWrapper">
+      <div class="nav">
+        <div class="nav-item" data-menu="support">
+          <span>Get Tech Support <i class="bx bx-chevron-down"></i></span>
+          <div class="mobile-mega"></div>
+        </div>
+        <div class="nav-item" data-menu="repairs">
+          <span>Repair a device <i class="bx bx-chevron-down"></i></span>
+          <div class="mobile-mega"></div>
+        </div>
+        <div class="nav-item" data-menu="sales">
+          <span>Sell a device <i class="bx bx-chevron-down"></i></span>
+          <div class="mobile-mega"></div>
+        </div>
+        <div class="nav-item" onclick="toggleSearch(event)">
+          <span><i class="bx bx-search"></i></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+    <div class="mega-overlay" id="mega">
+      <div class="mega-inner">
+        <div class="mega-context">
+          <div class="mega-icon" id="megaIcon"><i class="bx bx-support"></i></div>
+          <span class="mega-tag">BENNYFIX HUB</span>
+          <h2 id="megaTitle">Support</h2>
+          <p id="megaText">Default text</p>
+          <button class="mega-btn">Get Started</button>
+          <img src="support-banner.jpg" class="context-banner" alt="Support">
+        </div>
+        <div class="mega-grid" id="megaGrid"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="blog-container">
+
+  <section class="blog-hero">
+    <div class="blog-hero-content">
+      <span class="blog-badge">BennyFix Hub Tech Blog</span>
+      <h1>Practical technology advice, without the confusion.</h1>
+      <p>
+        Helpful guides, repair tips, device advice, and technology explainers
+        written to help you understand your devices and make better decisions.
+      </p>
+
+      <div class="blog-search">
+        <i class="bx bx-search"></i>
+        <input id="blogSearch" type="search" placeholder="Search the tech blog..." aria-label="Search the tech blog">
+      </div>
+    </div>
+  </section>
+
+  <section class="blog-layout">
+
+    <div class="blog-main">
+
+      <div class="section-heading">
+        <span>Latest from BennyFix Hub</span>
+        <h2>Useful things to know</h2>
+        <p>
+          Explore practical articles about repairs, troubleshooting,
+          maintenance, devices, and everyday technology.
+        </p>
+      </div>
+
+      <div class="featured-post" data-title="phone overheating battery device repair">
+        <div class="featured-image">
+          <div class="image-placeholder">
+            <i class="bx bx-mobile-alt"></i>
+            <span>Featured article</span>
+          </div>
+        </div>
+
+        <div class="featured-content">
+          <span class="post-category">Device Care</span>
+          <h2>Why your phone gets hot — and when you should worry</h2>
+          <p>
+            A phone can warm up for many normal reasons, but persistent or
+            excessive heat can be a sign that something needs attention.
+            Learn what to check before the problem gets worse.
+          </p>
+
+          <div class="post-meta">
+            <span><i class="bx bx-calendar"></i> Coming soon</span>
+            <span><i class="bx bx-time-five"></i> 5 min read</span>
+          </div>
+
+          <a href="#" class="read-more disabled-link" aria-disabled="true">
+            Read article <i class="bx bx-right-arrow-alt"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="posts-grid" id="postsGrid">
+
+        <article class="post-card" data-title="slow laptop speed performance troubleshooting">
+          <div class="post-image"><i class="bx bx-laptop"></i></div>
+          <div class="post-content">
+            <span class="post-category">Troubleshooting</span>
+            <h3>What to check when your laptop suddenly becomes slow</h3>
+            <p>
+              A practical checklist for identifying common causes of poor
+              laptop performance.
+            </p>
+            <div class="post-footer">
+              <span>Coming soon</span>
+              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card" data-title="phone battery health charging battery">
+          <div class="post-image"><i class="bx bx-battery"></i></div>
+          <div class="post-content">
+            <span class="post-category">Device Care</span>
+            <h3>Simple habits that can help your phone battery last longer</h3>
+            <p>
+              Understand charging habits, heat, battery wear, and the things
+              that can affect everyday battery life.
+            </p>
+            <div class="post-footer">
+              <span>Coming soon</span>
+              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card" data-title="water liquid phone laptop repair damage">
+          <div class="post-image"><i class="bx bx-droplet"></i></div>
+          <div class="post-content">
+            <span class="post-category">Repair Advice</span>
+            <h3>What to do immediately after liquid reaches your device</h3>
+            <p>
+              The first few steps can matter. Learn what to avoid and what to
+              do before seeking professional inspection.
+            </p>
+            <div class="post-footer">
+              <span>Coming soon</span>
+              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card" data-title="storage full phone laptop cleanup">
+          <div class="post-image"><i class="bx bx-hdd"></i></div>
+          <div class="post-content">
+            <span class="post-category">Maintenance</span>
+            <h3>Running out of storage? Start with these checks</h3>
+            <p>
+              Find the files, apps, and cached data that commonly consume
+              storage space on everyday devices.
+            </p>
+            <div class="post-footer">
+              <span>Coming soon</span>
+              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card" data-title="charger charging cable power adapter safety">
+          <div class="post-image"><i class="bx bx-plug"></i></div>
+          <div class="post-content">
+            <span class="post-category">Accessories</span>
+            <h3>How to tell when a charger or cable may need replacing</h3>
+            <p>
+              Warning signs that can help you identify damaged charging
+              accessories before they cause bigger problems.
+            </p>
+            <div class="post-footer">
+              <span>Coming soon</span>
+              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
+            </div>
+          </div>
+        </article>
+
+        <article class="post-card" data-title="backup data phone laptop security files">
+          <div class="post-image"><i class="bx bx-cloud-upload"></i></div>
+          <div class="post-content">
+            <span class="post-category">Data &amp; Security</span>
+            <h3>Why backing up your important files matters</h3>
+            <p>
+              A simple look at backups and why they are one of the best forms
+              of protection against device failure or loss.
+            </p>
+            <div class="post-footer">
+              <span>Coming soon</span>
+              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+
+      <div class="no-results" id="noResults" hidden>
+        <i class="bx bx-search-alt"></i>
+        <h3>No articles found</h3>
+        <p>Try a different search term.</p>
+      </div>
+    </div>
+
+    <aside class="blog-sidebar">
+
+      <div class="sidebar-card">
+        <span class="sidebar-label">Browse</span>
+        <h3>Categories</h3>
+
+        <button class="category-filter active" data-category="all">
+          <span><i class="bx bx-grid-alt"></i> All articles</span>
+          <strong>6</strong>
+        </button>
+
+        <button class="category-filter" data-category="Device Care">
+          <span><i class="bx bx-heart"></i> Device Care</span>
+          <strong>2</strong>
+        </button>
+
+        <button class="category-filter" data-category="Troubleshooting">
+          <span><i class="bx bx-wrench"></i> Troubleshooting</span>
+          <strong>1</strong>
+        </button>
+
+        <button class="category-filter" data-category="Repair Advice">
+          <span><i class="bx bx-cog"></i> Repair Advice</span>
+          <strong>1</strong>
+        </button>
+
+        <button class="category-filter" data-category="Maintenance">
+          <span><i class="bx bx-refresh"></i> Maintenance</span>
+          <strong>1</strong>
+        </button>
+
+        <button class="category-filter" data-category="Accessories">
+          <span><i class="bx bx-plug"></i> Accessories</span>
+          <strong>1</strong>
+        </button>
+
+        <button class="category-filter" data-category="Data & Security">
+          <span><i class="bx bx-shield-quarter"></i> Data &amp; Security</span>
+          <strong>1</strong>
+        </button>
+      </div>
+
+      <div class="sidebar-card help-card">
+        <div class="help-icon"><i class="bx bx-support"></i></div>
+        <h3>Need help with a device?</h3>
+        <p>
+          Reading about a problem is useful, but sometimes a device needs
+          hands-on attention.
+        </p>
+        <a href="repair.html">Request a Repair <i class="bx bx-right-arrow-alt"></i></a>
+      </div>
+
+      <div class="sidebar-card newsletter-card">
+        <span class="sidebar-label">Stay informed</span>
+        <h3>Get useful tech updates</h3>
+        <p>
+          When the BennyFix Hub newsletter is available, this area can be used
+          for sign-ups and updates.
+        </p>
+        <a href="contact.html">Contact Us <i class="bx bx-right-arrow-alt"></i></a>
+      </div>
+
+    </aside>
+  </section>
+
+  <section class="blog-bottom">
+    <div>
+      <span>Have a topic in mind?</span>
+      <h2>Tell us what you want to learn.</h2>
+      <p>
+        If there is a device problem, repair question, or technology topic you
+        would like us to cover, let the BennyFix Hub team know.
+      </p>
+    </div>
+    <a href="contact.html" class="primary-btn">Suggest a Topic</a>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="bennyfix hub white-logo.png" width="100" alt="BennyFix Hub Logo">
+      <h3>BennyFix Hub</h3>
+    </div>
+
+    <div class="footer-section">
+      <h4>Company</h4>
+      <a href="about.html">About Us</a>
+      <a href="careers.html">Careers</a>
+      <a href="blog.html">Tech Blog</a>
+    </div>
+
+    <div class="footer-section">
+      <h4>Services</h4>
+      <a href="repair.html">Request a Repair</a>
+      <a href="track-repair.html">Track Repair</a>
+      <a href="shop.html">Shop Devices</a>
+      <a href="manuals.html">Manual Library</a>
+      <a href="training.html">Tech Training</a>
+    </div>
+
+    <div class="footer-section">
+      <h4>Support</h4>
+      <a href="help-center.html">Help Center</a>
+      <a href="contact.html">Contact Us</a>
+      <a href="faq.html">Frequently Asked Questions</a>
+    </div>
+
+    <div class="footer-section">
+      <h4>Connect</h4>
+      <a href="https://instagram.com/bennyfixhub" target="_blank" rel="noopener noreferrer">Instagram</a>
+      <a href="https://x.com/bennyfixhub" target="_blank" rel="noopener noreferrer">X (Twitter)</a>
+      <a href="https://facebook.com/bennyfixhub" target="_blank" rel="noopener noreferrer">Facebook</a>
+      <a href="https://www.youtube.com/channel/UCYR1Ygi1RUF9GpJYsVTrLbQ" target="_blank" rel="noopener noreferrer">YouTube</a>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="footer-bottom">
+    <div class="footer-links">
+      <a href="terms-of-service.html">Terms of Service</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="cookie-policy.html">Cookie Policy</a>
+      <a href="refund-policy.html">Refund &amp; Cancellation Policy</a>
+      <a href="repair-warranty-policy.html">Repair Warranty</a>
+      <a href="acceptable-use-policy.html">Acceptable Use Policy</a>
+      <div class="copyright">&copy; 2026 BennyFix Hub. All rights reserved.</div>
+    </div>
+
+    <div class="footer-social">
+      <a href="https://instagram.com/bennyfixhub" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="bx bxl-instagram"></i></a>
+      <a href="https://x.com/bennyfixhub" target="_blank" rel="noopener noreferrer" aria-label="X"><i class="bx bxl-twitter"></i></a>
+      <a href="https://facebook.com/bennyfixhub" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="bx bxl-facebook"></i></a>
+      <a href="https://www.youtube.com/channel/UCYR1Ygi1RUF9GpJYsVTrLbQ" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><i class="bx bxl-youtube"></i></a>
+    </div>
+  </div>
+
+  <button class="back-to-top" onclick="scrollToTop()">↑ Back to Top</button>
+</footer>
+
+<script src="policy.js"></script>
+
+<script>
+(() => {
+  const searchInput = document.getElementById("blogSearch");
+  const cards = [...document.querySelectorAll(".post-card")];
+  const filters = [...document.querySelectorAll(".category-filter")];
+  const noResults = document.getElementById("noResults");
+
+  let activeCategory = "all";
+
+  function filterPosts() {
+    const query = searchInput.value.trim().toLowerCase();
+    let visible = 0;
+
+    cards.forEach(card => {
+      const title = card.dataset.title || "";
+      const category = card.querySelector(".post-category")?.textContent.trim() || "";
+
+      const matchesSearch = !query || title.toLowerCase().includes(query);
+      const matchesCategory =
+        activeCategory === "all" || category === activeCategory;
+
+      const show = matchesSearch && matchesCategory;
+      card.hidden = !show;
+
+      if (show) visible++;
+    });
+
+    noResults.hidden = visible !== 0;
+  }
+
+  searchInput?.addEventListener("input", filterPosts);
+
+  filters.forEach(button => {
+    button.addEventListener("click", () => {
+      activeCategory = button.dataset.category || "all";
+
+      filters.forEach(item => item.classList.remove("active"));
+      button.classList.add("active");
+
+      filterPosts();
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
