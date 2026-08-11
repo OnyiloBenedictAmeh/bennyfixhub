@@ -419,6 +419,109 @@
   </div>
 
 </div>
+<section id="blog" class="section" style="display:none;">
+
+  <div class="section-header">
+    <div>
+      <span class="section-label">Content</span>
+      <h2>Blog Management</h2>
+      <p>Create, edit, publish and manage BennyFix Hub articles.</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="openBlogEditor()">
+      <i class='bx bx-plus'></i>
+      New Post
+    </button>
+  </div>
+
+  <div class="blog-admin-toolbar">
+
+    <input
+      id="blogAdminSearch"
+      type="search"
+      placeholder="Search blog posts..."
+      oninput="renderBlogAdmin()"
+    >
+
+    <select id="blogAdminFilter" onchange="renderBlogAdmin()">
+      <option value="all">All Posts</option>
+      <option value="published">Published</option>
+      <option value="draft">Drafts</option>
+    </select>
+
+  </div>
+
+  <div id="blogAdminGrid" class="blog-admin-grid">
+    <p class="empty-state">Loading posts...</p>
+  </div>
+<div id="blogEditorModal" class="modal hidden">
+
+  <div class="modal-overlay" onclick="closeBlogEditor()"></div>
+
+  <div class="modal-box blog-editor">
+
+    <button class="close-btn" onclick="closeBlogEditor()">×</button>
+
+    <h3 id="blogEditorTitle">Create Blog Post</h3>
+
+    <input type="hidden" id="blogPostId">
+
+    <label>Title</label>
+    <input
+      id="blogTitle"
+      type="text"
+      placeholder="Enter blog title"
+    >
+
+    <label>Category</label>
+    <input
+      id="blogCategory"
+      type="text"
+      placeholder="e.g. Repairs, Tips, Technology"
+    >
+
+    <label>Excerpt</label>
+    <textarea
+      id="blogExcerpt"
+      placeholder="Short description shown on the blog cards..."
+    ></textarea>
+
+    <label>Content</label>
+    <textarea
+      id="blogContent"
+      class="blog-content-editor"
+      placeholder="Write your article..."
+    ></textarea>
+
+    <label>Featured Image URL</label>
+    <input
+      id="blogImage"
+      type="url"
+      placeholder="https://..."
+    >
+
+    <div class="blog-editor-actions">
+
+      <button
+        class="btn btn-secondary"
+        onclick="saveBlogPost('draft')"
+      >
+        Save Draft
+      </button>
+
+      <button
+        class="btn btn-primary"
+        onclick="saveBlogPost('published')"
+      >
+        Publish
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+</section>
  <!-- REVIEWS SECTION -->
 <div id="reviews" class="section" style="display:none;">
   <div class="marketing-header">
