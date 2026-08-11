@@ -1,9 +1,56 @@
-/* =========================
+/* ==========================================================
    BLOG MANAGEMENT
-========================= */
+   ========================================================== */
+
+import {
+  db,
+  auth,
+  onAuthStateChanged,
+  collection,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  serverTimestamp,
+} from "./js/firebase.js";
 
 let adminBlogPosts = [];
 
+function syncAdminBlogPosts(posts) {
+    adminBlogPosts = posts;
+    window.adminBlogPosts = adminBlogPosts;
+}
+function escapeHtml(value = "") {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function formatDate(timestamp) {
+  if (!timestamp) {
+    return "Recently";
+  }
+
+  const date = timestamp?.toDate
+    ? timestamp.toDate()
+    : timestamp?.seconds
+      ? new Date(timestamp.seconds * 1000)
+      : new Date(timestamp);
+
+  if (Number.isNaN(date.getTime())) {
+    return "Recently";
+  }
+
+  return new Intl.DateTimeFormat("en-NG", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
 function listenToBlogPosts() {
   const container = document.getElementById("blogAdminGrid");
   if (!container) return;
@@ -11,11 +58,12 @@ function listenToBlogPosts() {
   onSnapshot(
     collection(db, "blogPosts"),
     (snapshot) => {
-
-      adminBlogPosts = snapshot.docs.map(docSnap => ({
+      syncAdminBlogPosts(
+    snapshot.docs.map(docSnap => ({
         id: docSnap.id,
         ...docSnap.data()
-      }));
+    }))
+);
 
       adminBlogPosts.sort((a, b) => {
         const aTime = a.createdAt?.seconds || 0;
@@ -27,36 +75,28 @@ function listenToBlogPosts() {
     },
     (err) => {
       console.error(err);
-      container.innerHTML =
-        `<p class="empty-state">Could not load blog posts.</p>`;
-    }
+      container.innerHTML = `<p class="empty-state">Could not load blog posts.</p>`;
+    },
   );
 }
 
-
 window.renderBlogAdmin = function () {
-
   const container = document.getElementById("blogAdminGrid");
   if (!container) return;
 
   const search =
-    document.getElementById("blogAdminSearch")?.value
-      .trim()
-      .toLowerCase() || "";
+    document.getElementById("blogAdminSearch")?.value.trim().toLowerCase() ||
+    "";
 
-  const filter =
-    document.getElementById("blogAdminFilter")?.value || "all";
+  const filter = document.getElementById("blogAdminFilter")?.value || "all";
 
-  const posts = adminBlogPosts.filter(post => {
-
+  const posts = adminBlogPosts.filter((post) => {
     const matchesSearch =
       !search ||
       post.title?.toLowerCase().includes(search) ||
       post.category?.toLowerCase().includes(search);
 
-    const matchesFilter =
-      filter === "all" ||
-      post.status === filter;
+    const matchesFilter = filter === "all" || post.status === filter;
 
     return matchesSearch && matchesFilter;
   });
@@ -71,15 +111,15 @@ window.renderBlogAdmin = function () {
     return;
   }
 
-  container.innerHTML = posts.map(post => {
-
-    const image = post.image
-      ? `<img src="${escapeHtml(post.image)}" alt="">`
-      : `<div class="blog-admin-image-placeholder">
+  container.innerHTML = posts
+    .map((post) => {
+      const image = post.image
+        ? `<img src="${escapeHtml(post.image)}" alt="">`
+        : `<div class="blog-admin-image-placeholder">
           <i class='bx bx-image'></i>
         </div>`;
 
-    return `
+      return `
       <article class="blog-admin-card">
 
         <div class="blog-admin-image">
@@ -103,9 +143,7 @@ window.renderBlogAdmin = function () {
           <div class="blog-admin-meta">
 
             <span class="blog-status ${post.status}">
-              ${post.status === "published"
-                ? "Published"
-                : "Draft"}
+              ${post.status === "published" ? "Published" : "Draft"}
             </span>
 
             <span>
@@ -129,16 +167,10 @@ window.renderBlogAdmin = function () {
               class="btn btn-primary"
             >
               <i class='bx ${
-                post.status === "published"
-                  ? "bx-hide"
-                  : "bx-show"
+                post.status === "published" ? "bx-hide" : "bx-show"
               }'></i>
 
-              ${
-                post.status === "published"
-                  ? "Unpublish"
-                  : "Publish"
-              }
+              ${post.status === "published" ? "Unpublish" : "Publish"}
 
             </button>
 
@@ -155,10 +187,10 @@ window.renderBlogAdmin = function () {
 
       </article>
     `;
-  }).join("");
+    })
+    .join("");
 };
 window.openBlogEditor = function () {
-
   document.getElementById("blogPostId").value = "";
   document.getElementById("blogTitle").value = "";
   document.getElementById("blogCategory").value = "";
@@ -166,25 +198,17 @@ window.openBlogEditor = function () {
   document.getElementById("blogContent").value = "";
   document.getElementById("blogImage").value = "";
 
-  document.getElementById("blogEditorTitle").innerText =
-    "Create Blog Post";
+  document.getElementById("blogEditorTitle").innerText = "Create Blog Post";
 
-  document
-    .getElementById("blogEditorModal")
-    .classList.remove("hidden");
+  document.getElementById("blogEditorModal").classList.remove("hidden");
 };
-
 
 window.closeBlogEditor = function () {
-  document
-    .getElementById("blogEditorModal")
-    .classList.add("hidden");
+  document.getElementById("blogEditorModal").classList.add("hidden");
 };
 
-
 window.editBlogPost = function (id) {
-
-  const post = adminBlogPosts.find(p => p.id === id);
+  const post = adminBlogPosts.find((p) => p.id === id);
 
   if (!post) return;
 
@@ -195,35 +219,29 @@ window.editBlogPost = function (id) {
   document.getElementById("blogContent").value = post.content || "";
   document.getElementById("blogImage").value = post.image || "";
 
-  document.getElementById("blogEditorTitle").innerText =
-    "Edit Blog Post";
+  document.getElementById("blogEditorTitle").innerText = "Edit Blog Post";
 
-  document
-    .getElementById("blogEditorModal")
-    .classList.remove("hidden");
+  document.getElementById("blogEditorModal").classList.remove("hidden");
 };
 window.saveBlogPost = async function (status) {
 
-  const id =
-    document.getElementById("blogPostId").value;
+  const user = auth.currentUser;
 
-  const title =
-    document.getElementById("blogTitle").value.trim();
+  if (!user) {
+    console.error("Cannot save blog post: no authenticated user.");
+    return window.showToast("Please wait for admin authentication to finish.");
+  }
 
-  const category =
-    document.getElementById("blogCategory").value.trim();
+  const id = document.getElementById("blogPostId").value;
 
-  const excerpt =
-    document.getElementById("blogExcerpt").value.trim();
-
-  const content =
-    document.getElementById("blogContent").value.trim();
-
-  const image =
-    document.getElementById("blogImage").value.trim();
+  const title = document.getElementById("blogTitle").value.trim();
+  const category = document.getElementById("blogCategory").value.trim();
+  const excerpt = document.getElementById("blogExcerpt").value.trim();
+  const content = document.getElementById("blogContent").value.trim();
+  const image = document.getElementById("blogImage").value.trim();
 
   if (!title || !content) {
-    return showToast("Title and content are required");
+    return window.showToast("Title and content are required");
   }
 
   const data = {
@@ -234,7 +252,7 @@ window.saveBlogPost = async function (status) {
     image,
     status,
     updatedAt: serverTimestamp(),
-    updatedBy: auth.currentUser?.uid || ""
+    updatedBy: user.uid,
   };
 
   try {
@@ -246,7 +264,7 @@ window.saveBlogPost = async function (status) {
         data
       );
 
-      showToast("Blog post updated");
+      window.showToast("Blog post updated");
 
     } else {
 
@@ -255,73 +273,67 @@ window.saveBlogPost = async function (status) {
         {
           ...data,
           createdAt: serverTimestamp(),
-          createdBy: auth.currentUser?.uid || "",
+          createdBy: user.uid,
         }
       );
 
-      showToast(
+      window.showToast(
         status === "published"
           ? "Blog post published"
           : "Draft saved"
       );
     }
 
-    closeBlogEditor();
+    window.closeBlogEditor();
 
   } catch (err) {
 
-    console.error(err);
-    showToast("Could not save blog post");
+    console.error("BLOG SAVE ERROR:", err);
+
+    window.showToast("Could not save blog post");
   }
 };
 window.toggleBlogPublish = async function (id) {
-
-  const post = adminBlogPosts.find(p => p.id === id);
+  const post = adminBlogPosts.find((p) => p.id === id);
 
   if (!post) return;
 
-  const newStatus =
-    post.status === "published"
-      ? "draft"
-      : "published";
+  const newStatus = post.status === "published" ? "draft" : "published";
 
   try {
+    await updateDoc(doc(db, "blogPosts", id), {
+      status: newStatus,
+      updatedAt: serverTimestamp(),
+    });
 
-    await updateDoc(
-      doc(db, "blogPosts", id),
-      {
-        status: newStatus,
-        updatedAt: serverTimestamp()
-      }
-    );
-
-    showToast(
+    window.showToast(
       newStatus === "published"
         ? "Blog post published"
-        : "Blog post unpublished"
+        : "Blog post unpublished",
     );
-
   } catch (err) {
-
     console.error(err);
-    showToast("Could not update post");
+    window.showToast("Could not update post");
   }
 };
 window.deleteBlogPost = async function (id) {
-
   if (!confirm("Delete this blog post?")) return;
 
   try {
+    await deleteDoc(doc(db, "blogPosts", id));
 
-    await deleteDoc(
-      doc(db, "blogPosts", id)
-    );
-
-    showToast("Blog post deleted");
-
+    window.showToast("Blog post deleted");
   } catch (err) {
-
     console.error(err);
-    showToast("Could not delete post");
+    window.showToast("Could not delete post");
   }
 };
+onAuthStateChanged(auth, (user) => {
+
+  if (!user) {
+    console.error("No authenticated user. Blog admin access denied.");
+    return;
+  }
+
+  listenToBlogPosts();
+});

@@ -91,133 +91,14 @@
         </p>
       </div>
 
-      <div class="featured-post" data-title="phone overheating battery device repair">
-        <div class="featured-image">
-          <div class="image-placeholder">
-            <i class="bx bx-mobile-alt"></i>
-            <span>Featured article</span>
-          </div>
-        </div>
+      <div id="featuredPost" class="featured-post" hidden></div>
 
-        <div class="featured-content">
-          <span class="post-category">Device Care</span>
-          <h2>Why your phone gets hot — and when you should worry</h2>
-          <p>
-            A phone can warm up for many normal reasons, but persistent or
-            excessive heat can be a sign that something needs attention.
-            Learn what to check before the problem gets worse.
-          </p>
-
-          <div class="post-meta">
-            <span><i class="bx bx-calendar"></i> Coming soon</span>
-            <span><i class="bx bx-time-five"></i> 5 min read</span>
-          </div>
-
-          <a href="#" class="read-more disabled-link" aria-disabled="true">
-            Read article <i class="bx bx-right-arrow-alt"></i>
-          </a>
-        </div>
+      <div id="blogLoading" class="blog-loading" aria-live="polite">
+        <i class="bx bx-loader-alt bx-spin"></i>
+        <span>Loading articles...</span>
       </div>
 
-      <div class="posts-grid" id="postsGrid">
-
-        <article class="post-card" data-title="slow laptop speed performance troubleshooting">
-          <div class="post-image"><i class="bx bx-laptop"></i></div>
-          <div class="post-content">
-            <span class="post-category">Troubleshooting</span>
-            <h3>What to check when your laptop suddenly becomes slow</h3>
-            <p>
-              A practical checklist for identifying common causes of poor
-              laptop performance.
-            </p>
-            <div class="post-footer">
-              <span>Coming soon</span>
-              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="post-card" data-title="phone battery health charging battery">
-          <div class="post-image"><i class="bx bx-battery"></i></div>
-          <div class="post-content">
-            <span class="post-category">Device Care</span>
-            <h3>Simple habits that can help your phone battery last longer</h3>
-            <p>
-              Understand charging habits, heat, battery wear, and the things
-              that can affect everyday battery life.
-            </p>
-            <div class="post-footer">
-              <span>Coming soon</span>
-              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="post-card" data-title="water liquid phone laptop repair damage">
-          <div class="post-image"><i class="bx bx-droplet"></i></div>
-          <div class="post-content">
-            <span class="post-category">Repair Advice</span>
-            <h3>What to do immediately after liquid reaches your device</h3>
-            <p>
-              The first few steps can matter. Learn what to avoid and what to
-              do before seeking professional inspection.
-            </p>
-            <div class="post-footer">
-              <span>Coming soon</span>
-              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="post-card" data-title="storage full phone laptop cleanup">
-          <div class="post-image"><i class="bx bx-hdd"></i></div>
-          <div class="post-content">
-            <span class="post-category">Maintenance</span>
-            <h3>Running out of storage? Start with these checks</h3>
-            <p>
-              Find the files, apps, and cached data that commonly consume
-              storage space on everyday devices.
-            </p>
-            <div class="post-footer">
-              <span>Coming soon</span>
-              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="post-card" data-title="charger charging cable power adapter safety">
-          <div class="post-image"><i class="bx bx-plug"></i></div>
-          <div class="post-content">
-            <span class="post-category">Accessories</span>
-            <h3>How to tell when a charger or cable may need replacing</h3>
-            <p>
-              Warning signs that can help you identify damaged charging
-              accessories before they cause bigger problems.
-            </p>
-            <div class="post-footer">
-              <span>Coming soon</span>
-              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
-            </div>
-          </div>
-        </article>
-
-        <article class="post-card" data-title="backup data phone laptop security files">
-          <div class="post-image"><i class="bx bx-cloud-upload"></i></div>
-          <div class="post-content">
-            <span class="post-category">Data &amp; Security</span>
-            <h3>Why backing up your important files matters</h3>
-            <p>
-              A simple look at backups and why they are one of the best forms
-              of protection against device failure or loss.
-            </p>
-            <div class="post-footer">
-              <span>Coming soon</span>
-              <a href="#" class="disabled-link" aria-disabled="true">Read <i class="bx bx-right-arrow-alt"></i></a>
-            </div>
-          </div>
-        </article>
-
-      </div>
+      <div class="posts-grid" id="postsGrid"></div>
 
       <div class="no-results" id="noResults" hidden>
         <i class="bx bx-search-alt"></i>
@@ -231,41 +112,12 @@
       <div class="sidebar-card">
         <span class="sidebar-label">Browse</span>
         <h3>Categories</h3>
-
-        <button class="category-filter active" data-category="all">
-          <span><i class="bx bx-grid-alt"></i> All articles</span>
-          <strong>6</strong>
-        </button>
-
-        <button class="category-filter" data-category="Device Care">
-          <span><i class="bx bx-heart"></i> Device Care</span>
-          <strong>2</strong>
-        </button>
-
-        <button class="category-filter" data-category="Troubleshooting">
-          <span><i class="bx bx-wrench"></i> Troubleshooting</span>
-          <strong>1</strong>
-        </button>
-
-        <button class="category-filter" data-category="Repair Advice">
-          <span><i class="bx bx-cog"></i> Repair Advice</span>
-          <strong>1</strong>
-        </button>
-
-        <button class="category-filter" data-category="Maintenance">
-          <span><i class="bx bx-refresh"></i> Maintenance</span>
-          <strong>1</strong>
-        </button>
-
-        <button class="category-filter" data-category="Accessories">
-          <span><i class="bx bx-plug"></i> Accessories</span>
-          <strong>1</strong>
-        </button>
-
-        <button class="category-filter" data-category="Data & Security">
-          <span><i class="bx bx-shield-quarter"></i> Data &amp; Security</span>
-          <strong>1</strong>
-        </button>
+        <div id="categoryFilters">
+          <button class="category-filter active" data-category="all">
+            <span><i class="bx bx-grid-alt"></i> All articles</span>
+            <strong>0</strong>
+          </button>
+        </div>
       </div>
 
       <div class="sidebar-card help-card">
@@ -301,6 +153,16 @@
       </p>
     </div>
     <a href="contact.html" class="primary-btn">Suggest a Topic</a>
+  </section>
+
+
+  <section id="articleView" class="article-view" hidden>
+    <div class="article-shell">
+      <a href="blog.html" class="article-back">
+        <i class="bx bx-left-arrow-alt"></i> Back to all articles
+      </a>
+      <div id="articleContent"></div>
+    </div>
   </section>
 
 </main>
@@ -370,50 +232,7 @@
 
 <script src="policy.js"></script>
 
-<script>
-(() => {
-  const searchInput = document.getElementById("blogSearch");
-  const cards = [...document.querySelectorAll(".post-card")];
-  const filters = [...document.querySelectorAll(".category-filter")];
-  const noResults = document.getElementById("noResults");
-
-  let activeCategory = "all";
-
-  function filterPosts() {
-    const query = searchInput.value.trim().toLowerCase();
-    let visible = 0;
-
-    cards.forEach(card => {
-      const title = card.dataset.title || "";
-      const category = card.querySelector(".post-category")?.textContent.trim() || "";
-
-      const matchesSearch = !query || title.toLowerCase().includes(query);
-      const matchesCategory =
-        activeCategory === "all" || category === activeCategory;
-
-      const show = matchesSearch && matchesCategory;
-      card.hidden = !show;
-
-      if (show) visible++;
-    });
-
-    noResults.hidden = visible !== 0;
-  }
-
-  searchInput?.addEventListener("input", filterPosts);
-
-  filters.forEach(button => {
-    button.addEventListener("click", () => {
-      activeCategory = button.dataset.category || "all";
-
-      filters.forEach(item => item.classList.remove("active"));
-      button.classList.add("active");
-
-      filterPosts();
-    });
-  });
-})();
-</script>
+<script type="module" src="blog-public.js"></script>
 
 </body>
 </html>

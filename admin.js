@@ -1,4 +1,25 @@
 /* =========================
+FIREBASE
+========================= */
+
+import {
+  auth,
+  db,
+  addDoc,
+  getDocs,
+  doc,
+  getDoc,
+  collection,
+  onSnapshot,
+  updateDoc,
+  query,
+  where,
+  serverTimestamp,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
+} from "./js/firebase.js";
+/* =========================
    STATE VARIABLES
 ========================= */
 let loadingInterval = null;
@@ -163,51 +184,6 @@ function showLoading() {
   showScreen("loading", "flex");
   startLoadingAnimation();
 }
-
-/* =========================
-   FIREBASE IMPORTS
-========================= */
-import {
-  addDoc,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  collection,
-  onSnapshot,
-  updateDoc,
-  query,
-  where,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-/* =========================
-   CONFIG
-========================= */
-const firebaseConfig = {
-  apiKey: "AIzaSyA4btiZMSBa4g6vt3XKf1uHeJiu8GJtTj4",
-  authDomain: "bennyfixhub.firebaseapp.com",
-  projectId: "bennyfixhub",
-  storageBucket: "bennyfixhub.appspot.com",
-  messagingSenderId: "281036247412",
-  appId: "1:281036247412:web:19db51739bc6c81fbc1c21",
-  measurementId: "G-EZ4FHYDFZB",
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
 if (localStorage.getItem("bennyfix-admin-theme") === "dark") {
   document.body.classList.add("dark");
 }
@@ -1129,7 +1105,7 @@ window.unemployTechnician = async function (id) {
 /* =========================
    TOAST SYSTEM
 ========================= */
-function showToast(msg) {
+window.showToast = function showToast(msg) {
   const toast = document.getElementById("toast");
 
   if (!toast) return;

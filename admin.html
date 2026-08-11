@@ -74,55 +74,107 @@
   <!-- SIDEBAR -->
   <div class="sidebar">
   <h2>🛠 Admin</h2>
+<button
+  onclick="showSection('overview')"
+  title="Dashboard Overview"
+  data-tooltip="View repair statistics and dashboard activity"
+>
+  <i class='bx bxs-dashboard'></i>
+  <span>Overview</span>
+</button>
 
-  <button onclick="showSection('overview')">
-    <i class='bx bxs-dashboard'></i>
-    <span>Overview</span>
-  </button>
+<button
+  onclick="showSection('repairs')"
+  title="Repair Management"
+  data-tooltip="View and manage customer repair requests"
+>
+  <i class='bx bx-wrench'></i>
+  <span>Repairs</span>
+</button>
 
-  <button onclick="showSection('repairs')">
-    <i class='bx bx-wrench'></i>
-    <span>Repairs</span>
-  </button>
+<button
+  onclick="showSection('users')"
+  title="User Management"
+  data-tooltip="View and manage registered users"
+>
+  <i class='bx bx-user'></i>
+  <span>Users</span>
+</button>
 
-  <button onclick="showSection('users')">
-    <i class='bx bx-user'></i>
-    <span>Users</span>
-  </button>
+<button
+  onclick="showSection('technicians')"
+  title="Technicians"
+  data-tooltip="Manage technicians and technician roles"
+>
+  <i class='bx bx-hard-hat'></i>
+  <span>Technicians</span>
+</button>
 
-  <button onclick="showSection('technicians')">
-    <i class='bx bx-hard-hat'></i>
-    <span>Technicians</span>
-  </button>
-  <button onclick="showSection('marketing')">
+<button
+  onclick="showSection('marketing')"
+  title="Marketing"
+  data-tooltip="Create and publish social media content"
+>
   <i class='bx bx-bullseye'></i>
   <span>Marketing</span>
 </button>
 
-  <button onclick="showSection('reviews')">
+<button
+  onclick="showSection('blog')"
+  title="Blog Management"
+  data-tooltip="Create, edit, publish and manage blog articles"
+>
+  <i class='bx bx-news'></i>
+  <span>Blog</span>
+</button>
+
+<button
+  onclick="showSection('reviews')"
+  title="Customer Reviews"
+  data-tooltip="Approve and manage customer reviews"
+>
   <i class='bx bx-star'></i>
   <span>Reviews</span>
 </button>
 
-  <button onclick="toggleNotifications()" id="sidebar-notifications">
-    <i class="bx bx-bell"></i>
-    <span>Messages</span>
-    <span id="notifBadge" class="badge">0</span>
-  </button>
-  <hr />
-<button onclick="enableAdminPushNotifications()" id="enablePushBtn">
-  <i class="bx bx-bell-plus"></i>
-  <span></span>
+<button
+  onclick="toggleNotifications()"
+  id="sidebar-notifications"
+  title="Messages"
+  data-tooltip="View messages and notifications"
+>
+  <i class="bx bx-bell"></i>
+  <span>Messages</span>
+  <span id="notifBadge" class="badge">0</span>
 </button>
-  <button onclick="toggleDarkMode()">
+  <hr />
+<button
+    onclick="enableAdminPushNotifications()"
+    id="enablePushBtn"
+    title="Enable Notifications"
+    data-tooltip="Enable browser notifications for important admin alerts"
+>
+    <i class="bx bx-bell-plus"></i>
+    <span>Notifications</span>
+</button>
+
+<button
+    onclick="toggleDarkMode()"
+    title="Dark Mode"
+    data-tooltip="Switch between light and dark dashboard appearance"
+>
     <i class='bx bx-moon'></i>
     <span>Dark Mode</span>
-  </button>
+</button>
 
-  <button onclick="logoutAdmin()">
+<button
+    onclick="logoutAdmin()"
+    title="Logout"
+    data-tooltip="Sign out of the admin dashboard"
+>
     <i class='bx bx-log-out'></i>
     <span>Logout</span>
-  </button>
+</button>
 </div>
   
  <!-- OVERVIEW SECTION -->
@@ -539,6 +591,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script type="module" src="admin.js"></script>
+  <script type="module" src="blog.js"></script>
   <script type="module" src="marketing/marketing.js?v=20260721-meta-ig"></script>
 
 </body>
