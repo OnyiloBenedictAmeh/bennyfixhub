@@ -12,8 +12,10 @@ import {
   collection,
   onSnapshot,
   updateDoc,
+  setDoc,
   query,
   where,
+  orderBy,
   serverTimestamp,
   signInWithEmailAndPassword,
   signOut,
@@ -805,9 +807,29 @@ window.updateRepair = async function (id, status) {
   };
 
   // ✅ EXTRA when completed
+  let finalCost = null;
+
   if (status === "Completed") {
-updateData.completedAt = serverTimestamp();
-updateData.completedBy = auth.currentUser?.email || "Admin";
+    // Referral rewards are a % of what was actually charged, so we need
+    // that figure captured at the moment of completion.
+    const costInput = prompt(
+      "Enter the final amount charged for this repair (₦):",
+      data.finalCost || ""
+    );
+
+    if (costInput === null) {
+      return; // admin cancelled — don't mark it completed
+    }
+
+    finalCost = parseFloat(costInput);
+
+    if (Number.isNaN(finalCost) || finalCost < 0) {
+      return showToast("Please enter a valid repair cost");
+    }
+
+    updateData.finalCost = finalCost;
+    updateData.completedAt = serverTimestamp();
+    updateData.completedBy = auth.currentUser?.email || "Admin";
 
   // 🔔 notify user
   notifyUser(data);
@@ -817,6 +839,7 @@ updateData.completedBy = auth.currentUser?.email || "Admin";
     await updateDoc(ref, updateData);
     if (status === "Completed") {
       await createMarketingDraftFromRepair(id, data);
+      await checkReferralQualification(data.uid, id, finalCost);
       showToast("Marketing draft created");
     }
     showToast("Repair updated");
@@ -875,6 +898,188 @@ async function notifyUser(repairData) {
     console.error("Notification failed", err);
   }
 }
+
+/* =========================
+   REFERRAL SYSTEM
+========================= */
+
+// Runs every time a repair is marked Completed. Only rewards the referrer
+// on the referred user's FIRST completed repair, and only if a pending
+// referral actually exists for them.
+async function checkReferralQualification(referredUid, repairId, finalCost) {
+  if (!referredUid || finalCost === null) return;
+
+  try {
+    const completedRepairsSnap = await getDocs(
+      query(
+        collection(db, "repairs"),
+        where("uid", "==", referredUid),
+        where("status", "==", "Completed")
+      )
+    );
+
+    // This repair was already marked Completed above, so if the count is
+    // more than 1 here, they've completed a repair before — not their first.
+    if (completedRepairsSnap.size > 1) return;
+
+    const referralSnap = await getDocs(
+      query(
+        collection(db, "referrals"),
+        where("referredUid", "==", referredUid),
+        where("status", "==", "pending")
+      )
+    );
+
+    if (referralSnap.empty) return;
+
+    const referralDoc = referralSnap.docs[0];
+    const referral = referralDoc.data();
+
+    const rewardPercent = await getReferralRewardPercent();
+    const rewardAmount = Math.round((finalCost * rewardPercent) / 100);
+
+    await updateDoc(doc(db, "referrals", referralDoc.id), {
+      status: "qualified",
+      repairId,
+      finalCost,
+      rewardPercent,
+      rewardAmount,
+      qualifiedAt: serverTimestamp(),
+    });
+
+    await addDoc(collection(db, "notifications"), {
+      audience: "user",
+      uid: referral.referrerUid,
+      message: `Your referral (${referral.referredName}) completed their first repair — you've earned ₦${rewardAmount.toLocaleString()}!`,
+      createdAt: serverTimestamp(),
+      read: false,
+    });
+
+    showToast(`Referral qualified — ₦${rewardAmount.toLocaleString()} pending payout`);
+  } catch (err) {
+    // Firestore composite-index errors show up here on first run — check
+    // the browser console for a direct "create index" link from Firestore.
+    console.error("Referral qualification check failed:", err);
+  }
+}
+
+async function getReferralRewardPercent() {
+  const snap = await getDoc(doc(db, "settings", "referral"));
+  return snap.exists() && typeof snap.data().rewardPercent === "number"
+    ? snap.data().rewardPercent
+    : 5; // sensible default until admin sets one
+}
+
+window.saveReferralRewardPercent = async function () {
+  const input = document.getElementById("referralRewardPercent");
+  if (!input) return;
+
+  const percent = parseFloat(input.value);
+
+  if (Number.isNaN(percent) || percent < 0 || percent > 100) {
+    return showToast("Enter a valid percent between 0 and 100");
+  }
+
+  try {
+    await setDocReferralSettings(percent);
+    showToast("Referral reward percent saved");
+  } catch (err) {
+    console.error(err);
+    showToast("Could not save reward percent");
+  }
+};
+
+async function setDocReferralSettings(rewardPercent) {
+  await setDoc(
+    doc(db, "settings", "referral"),
+    { rewardPercent },
+    { merge: true }
+  );
+}
+
+async function loadReferralRewardPercentIntoInput() {
+  const input = document.getElementById("referralRewardPercent");
+  if (!input) return;
+
+  const percent = await getReferralRewardPercent();
+  input.value = percent;
+}
+
+function referralStatusBadgeClass(status) {
+  if (status === "paid") return "completed";
+  if (status === "qualified") return "diagnosing";
+  return "pending";
+}
+
+function listenToReferrals() {
+  const container = document.getElementById("referralsContainer");
+  if (!container) return;
+
+  loadReferralRewardPercentIntoInput();
+
+  onSnapshot(
+    query(collection(db, "referrals"), orderBy("createdAt", "desc")),
+    (snapshot) => {
+      if (snapshot.empty) {
+        container.innerHTML = `<p class="empty-state">No referrals yet.</p>`;
+        return;
+      }
+
+      container.innerHTML = snapshot.docs
+        .map((docSnap) => {
+          const r = docSnap.data();
+          const statusKey = referralStatusBadgeClass(r.status);
+
+          return `
+            <div class="repair-card">
+              <div class="repair-left">
+                <h3>${escapeHtml(r.referrerName || "Unknown referrer")}</h3>
+                <p class="issue">Referred: ${escapeHtml(r.referredName || r.referredEmail || "Unknown")}</p>
+                <small class="email">${escapeHtml(r.referredEmail || "")}</small>
+              </div>
+
+              <div class="repair-right">
+                <span class="status-badge ${statusKey}">${r.status}</span>
+
+                ${
+                  r.status === "qualified"
+                    ? `<p><strong>₦${(r.rewardAmount || 0).toLocaleString()}</strong> (${r.rewardPercent}% of ₦${(r.finalCost || 0).toLocaleString()})</p>
+                       <button onclick="markReferralPaid('${docSnap.id}')">Mark Paid</button>`
+                    : r.status === "paid"
+                    ? `<p><strong>₦${(r.rewardAmount || 0).toLocaleString()}</strong> paid</p>`
+                    : `<p class="issue">Awaiting first completed repair</p>`
+                }
+              </div>
+            </div>
+          `;
+        })
+        .join("");
+    },
+    (err) => {
+      console.error(err);
+      // Firestore will log a composite-index creation link to the console
+      // the first time this query runs — click it once to fix this.
+      container.innerHTML = `<p class="empty-state">Could not load referrals. Check the console for a Firestore index link.</p>`;
+    }
+  );
+}
+
+window.markReferralPaid = async function (referralId) {
+  if (!confirm("Confirm you have paid this referral reward externally?")) return;
+
+  try {
+    await updateDoc(doc(db, "referrals", referralId), {
+      status: "paid",
+      paidAt: serverTimestamp(),
+      paidBy: auth.currentUser?.email || "Admin",
+    });
+
+    showToast("Referral marked as paid");
+  } catch (err) {
+    console.error(err);
+    showToast("Could not update referral");
+  }
+};
 
 /* =========================
    USER MANAGEMENT
@@ -1167,6 +1372,7 @@ function loadAdminDashboard() {
   listenToNotifications();
   listenToRepairs();
   listenToReviews();
+  listenToReferrals();
   loadUsers();
   loadTechnicians();
   showSection("overview");

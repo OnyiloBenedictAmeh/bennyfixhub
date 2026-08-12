@@ -21,6 +21,10 @@ import {
   ref,
   uploadBytes,
   getDownloadURL,
+  query,
+  where,
+  getDocs,
+  addDoc,
 } from "./firebase.js";
 
 import {
@@ -39,6 +43,86 @@ let resendInterval;
 let verifyInterval;
 
 export let currentUser = null;
+
+// =========================
+// REFERRAL SYSTEM
+// =========================
+
+const REFERRAL_STORAGE_KEY = "bennyfix-referral-code";
+
+// If someone arrives via a referral link (?ref=CODE), stash the code so it
+// survives them browsing around before they actually sign up.
+(function captureReferralCodeFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const refCode = params.get("ref");
+
+  if (refCode) {
+    localStorage.setItem(REFERRAL_STORAGE_KEY, refCode.trim().toUpperCase());
+  }
+})();
+
+// Show the referral field ONLY when a code was captured from a real
+// ?ref= link. Organic visitors never see this field at all, and since the
+// input stays readonly, the only way it gets a value is by clicking an
+// actual referral link — not by someone typing in a friend's code.
+document.addEventListener("DOMContentLoaded", () => {
+  const stored = localStorage.getItem(REFERRAL_STORAGE_KEY);
+  const referralWrap = document.getElementById("referralCodeWrap");
+  const referralInput = document.getElementById("regReferralCode");
+
+  if (stored && referralWrap && referralInput) {
+    referralInput.value = stored;
+    referralWrap.style.display = "block";
+  }
+});
+
+function generateReferralCode(name = "") {
+  const base =
+    name
+      .trim()
+      .split(/\s+/)[0]
+      ?.slice(0, 4)
+      .toUpperCase()
+      .replace(/[^A-Z]/g, "") || "USER";
+
+  const random = Math.random().toString(36).slice(2, 6).toUpperCase();
+
+  return `${base}${random}`;
+}
+
+// Generates a referral code and confirms no existing user already has it,
+// retrying a few times in the rare case of a collision.
+async function createUniqueReferralCode(name) {
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const code = generateReferralCode(name);
+
+    const existing = await getDocs(
+      query(collection(db, "users"), where("referralCode", "==", code))
+    );
+
+    if (existing.empty) return code;
+  }
+
+  return `REF${Date.now().toString(36).toUpperCase()}`;
+}
+
+// Looks up which user owns a given referral code. Returns null if the code
+// doesn't exist — signup should never be blocked by a bad/missing code.
+async function findReferrerByCode(code) {
+  if (!code) return null;
+
+  const normalized = code.trim().toUpperCase();
+  if (!normalized) return null;
+
+  const snap = await getDocs(
+    query(collection(db, "users"), where("referralCode", "==", normalized))
+  );
+
+  if (snap.empty) return null;
+
+  const referrerDoc = snap.docs[0];
+  return { uid: referrerDoc.id, ...referrerDoc.data() };
+}
 
 // =========================
 // LOGOUT UI
@@ -336,7 +420,21 @@ function hideLogoutOverlay() {
 
 export async function getUserProfile(uid) {
   const snap = await getDoc(doc(db, "users", uid));
-  return snap.exists() ? snap.data() : null;
+
+  if (!snap.exists()) return null;
+
+  const data = snap.data();
+
+  // Self-healing: users created before the referral system existed won't
+  // have a code yet. Generate one the first time we see them instead of
+  // needing a manual migration script.
+  if (!data.referralCode) {
+    const referralCode = await createUniqueReferralCode(data.name || "");
+    await updateDoc(doc(db, "users", uid), { referralCode });
+    data.referralCode = referralCode;
+  }
+
+  return data;
 }
 
 function avatarFallback(name = "User") {
@@ -654,6 +752,16 @@ window.signup = async function () {
 
     const user = userCredential.user;
 
+    // Every user gets their own shareable referral code.
+    const referralCode = await createUniqueReferralCode(nameInput.value.trim());
+
+    // Was a referral code entered (typed manually or pre-filled from a
+    // ?ref= link)? Look up who it belongs to — invalid/unknown codes are
+    // ignored quietly rather than blocking signup.
+    const referralInput = document.getElementById("regReferralCode");
+    const enteredReferralCode = referralInput?.value.trim() || "";
+    const referrer = await findReferrerByCode(enteredReferralCode);
+
     await setDoc(doc(db, "users", user.uid), {
       uid: user.uid,
       name: nameInput.value.trim(),
@@ -665,8 +773,31 @@ window.signup = async function () {
         nameInput.value.trim(),
       )}&background=487DE7&color=fff`,
 
+      referralCode,
+      referredBy: referrer?.uid || null,
+
       createdAt: serverTimestamp(),
     });
+
+    if (referrer) {
+      await addDoc(collection(db, "referrals"), {
+        referrerUid: referrer.uid,
+        referrerName: referrer.name || referrer.email || "BennyFix user",
+        referredUid: user.uid,
+        referredName: nameInput.value.trim(),
+        referredEmail: user.email,
+        status: "pending",
+        repairId: null,
+        finalCost: null,
+        rewardPercent: null,
+        rewardAmount: null,
+        createdAt: serverTimestamp(),
+        qualifiedAt: null,
+        paidAt: null,
+      });
+
+      localStorage.removeItem(REFERRAL_STORAGE_KEY);
+    }
 
     await sendCustomVerificationEmail(user);
 

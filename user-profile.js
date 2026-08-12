@@ -12,7 +12,7 @@ import {
   updateDoc,
   serverTimestamp,
   onAuthStateChanged,
-} from "./firebase.js";
+} from "./js/firebase.js";
 let currentUid = null;
 let viewedUid = null;
 let isViewingOwnProfile = true;
@@ -105,6 +105,7 @@ onAuthStateChanged(auth, async (user) => {
     await loadRepairStats(viewedUid);
     await loadRepairs(viewedUid);
     await loadActivity(viewedUid);
+    await loadReferralStats(viewedUid);
     listenToUserMessages(viewedUid);
   } finally {
     finishProfileLoading();
@@ -997,3 +998,344 @@ async function () {
     toast.remove();
   }, 3000);
 };
+/* ==========================================================
+   REFERRAL SYSTEM
+========================================================== */
+
+async function loadReferralStats(uid) {
+
+  const referralSection =
+    document.getElementById("referralSection");
+
+  if (!referralSection) return;
+
+  // Only show referrals on the user's own profile
+  if (!isViewingOwnProfile) {
+    referralSection.style.display = "none";
+    return;
+  }
+
+  referralSection.style.display = "";
+
+  try {
+
+    const userRef = doc(db, "users", uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) return;
+
+    const userData = userSnap.data();
+
+    const referralCode =
+      userData.referralCode || "";
+
+    const codeElement =
+      document.getElementById("referralCode");
+
+    if (codeElement) {
+      codeElement.textContent =
+        referralCode || "------";
+    }
+
+    /*
+     * Build referral URL
+     */
+    const referralUrl =
+      `${window.location.origin}/signup.html?ref=${encodeURIComponent(referralCode)}`;
+
+    const linkElement =
+      document.getElementById("referralLink");
+
+    if (linkElement) {
+      linkElement.textContent = referralUrl;
+    }
+
+    /*
+     * Load referrals
+     */
+    const referralsQuery = query(
+      collection(db, "referrals"),
+      where("referrerUid", "==", uid)
+    );
+
+    const snapshot =
+      await getDocs(referralsQuery);
+
+    let total = 0;
+    let pending = 0;
+    let qualified = 0;
+    let earned = 0;
+
+    const list =
+      document.getElementById("referralList");
+
+    if (list) {
+      list.innerHTML = "";
+    }
+
+    snapshot.forEach((docSnap) => {
+
+      const referral = docSnap.data();
+
+      total++;
+
+      const status =
+        String(referral.status || "pending")
+          .toLowerCase();
+
+      if (status === "pending") {
+        pending++;
+      }
+
+      if (
+        status === "qualified" ||
+        status === "completed" ||
+        status === "paid"
+      ) {
+        qualified++;
+      }
+
+      const reward =
+        Number(
+          referral.reward ||
+          referral.rewardAmount ||
+          0
+        );
+
+      if (
+        status === "qualified" ||
+        status === "completed" ||
+        status === "paid"
+      ) {
+        earned += reward;
+      }
+
+      /*
+       * Referral list item
+       */
+      if (list) {
+
+        const item =
+          document.createElement("div");
+
+        item.className =
+          "referral-item";
+
+        const name =
+          referral.referredName ||
+          referral.name ||
+          "Referred user";
+
+        item.innerHTML = `
+          <div class="referral-user">
+            <div class="referral-user-icon">
+              <i class="bx bx-user"></i>
+            </div>
+
+            <div>
+              <strong>${escapeReferralHtml(name)}</strong>
+              <small>
+                ${formatReferralStatus(status)}
+              </small>
+            </div>
+          </div>
+
+          <strong class="referral-reward">
+            ${reward > 0 ? formatReferralCurrency(reward) : ""}
+          </strong>
+        `;
+
+        list.appendChild(item);
+      }
+    });
+
+    /*
+     * Update counters
+     */
+   const referralTotalEl =
+  document.getElementById("referralTotal");
+
+const referralPendingEl =
+  document.getElementById("referralPending");
+
+const referralQualifiedEl =
+  document.getElementById("referralQualified");
+
+const referralEarnedEl =
+  document.getElementById("referralEarned");
+
+if (referralTotalEl) {
+  referralTotalEl.textContent = total;
+}
+
+if (referralPendingEl) {
+  referralPendingEl.textContent = pending;
+}
+
+if (referralQualifiedEl) {
+  referralQualifiedEl.textContent = qualified;
+}
+
+if (referralEarnedEl) {
+  referralEarnedEl.textContent =
+    formatReferralCurrency(earned);
+}
+  } catch (error) {
+
+    console.error(
+      "Failed to load referral stats:",
+      error
+    );
+  }
+}
+
+
+/* ==========================================================
+   REFERRAL HELPERS
+========================================================== */
+
+function formatReferralCurrency(amount) {
+
+  return new Intl.NumberFormat(
+    "en-NG",
+    {
+      style: "currency",
+      currency: "NGN",
+      maximumFractionDigits: 0
+    }
+  ).format(Number(amount) || 0);
+}
+
+
+function formatReferralStatus(status) {
+
+  const labels = {
+    pending: "Pending",
+    qualified: "Qualified",
+    completed: "Completed",
+    paid: "Reward paid"
+  };
+
+  return labels[status] || "Pending";
+}
+
+
+function escapeReferralHtml(value) {
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/* ==========================================================
+   COPY REFERRAL LINK
+========================================================== */
+
+document
+  .getElementById("copyReferralBtn")
+  ?.addEventListener("click", async () => {
+
+    const link =
+      document.getElementById("referralLink")?.textContent?.trim();
+
+    if (!link || link === "Loading..." || link === "------") {
+      showToast("Referral link is not ready yet", "info");
+      return;
+    }
+
+    const button =
+      document.getElementById("copyReferralBtn");
+
+    try {
+      await navigator.clipboard.writeText(link);
+
+      // Change button appearance/text temporarily
+      if (button) {
+        const originalHTML = button.innerHTML;
+
+        button.innerHTML =
+          '<i class="bx bx-check"></i> Link Copied';
+
+        button.classList.add("copied");
+        button.disabled = true;
+
+        setTimeout(() => {
+          button.innerHTML = originalHTML;
+          button.classList.remove("copied");
+          button.disabled = false;
+        }, 2000);
+      }
+
+      showToast("Referral link copied!", "success");
+
+    } catch (error) {
+
+      console.error(
+        "Unable to copy referral link:",
+        error
+      );
+
+      showToast(
+        "Could not copy referral link",
+        "error"
+      );
+    }
+  });
+
+
+/* ==========================================================
+   SHARE REFERRAL LINK
+========================================================== */
+
+document
+  .getElementById("shareReferralBtn")
+  ?.addEventListener("click", async () => {
+
+    const link =
+      document.getElementById("referralLink")
+        ?.textContent;
+
+    if (!link || link === "Loading...") return;
+
+    const shareData = {
+      title: "Join BennyFix Hub",
+      text:
+        "Join BennyFix Hub using my referral link:",
+      url: link
+    };
+
+    try {
+
+      if (navigator.share) {
+
+        await navigator.share(shareData);
+
+      } else {
+
+        await navigator.clipboard.writeText(link);
+
+        if (typeof showToast === "function") {
+          showToast("Referral link copied!");
+        } else {
+          alert("Referral link copied!");
+        }
+      }
+
+    } catch (error) {
+
+      /*
+       * User cancelling the native share dialog
+       * is not an actual error.
+       */
+      if (error?.name !== "AbortError") {
+        console.error(
+          "Referral sharing failed:",
+          error
+        );
+      }
+    }
+  });

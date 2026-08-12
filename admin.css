@@ -1235,149 +1235,6 @@ body {
   align-items: center;
   justify-content: center;
 }
-/* Mobile Admin Feel  */
-@media (max-width: 1024px) {
-  .sidebar {
-    width: 70px;
-    min-width: 70px;
-    padding: 10px;
-  }
-
-  .sidebar button span {
-    display: none;
-  }
-
-  @media (max-width: 1024px) {
-    .admin-wrapper {
-      flex-direction: column;
-    }
-
-    .sidebar {
-      width: 100%;
-      min-width: 0;
-      min-height: 64px;
-      height: 64px;
-
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-
-      gap: 8px;
-      padding: 8px 10px;
-
-      overflow-x: auto;
-      overflow-y: hidden;
-
-      background: #111827;
-      border-bottom: 1px solid #1f2937;
-
-      scrollbar-width: none;
-      white-space: nowrap;
-    }
-
-    .sidebar::-webkit-scrollbar {
-      display: none;
-    }
-
-    .sidebar h2 {
-      display: none;
-    }
-
-    .sidebar button {
-      flex: 0 0 auto;
-      width: 44px;
-      min-width: 44px;
-      height: 44px;
-
-      padding: 0;
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .sidebar button span {
-      display: none;
-    }
-
-    .section {
-      padding-bottom: 24px;
-    }
-  }
-
-  .bottom-nav {
-    display: flex;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    background: #f5f6fa;
-
-    padding-bottom: calc(60px + env(safe-area-inset-bottom));
-  }
-  .chart-container {
-    height: 260px;
-  }
-}
-@media (max-width: 768px) {
-  .bottom-nav {
-    display: flex;
-  }
-  .repair-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .repair-right {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .repair-right select,
-  .repair-right button {
-    width: 100%;
-  }
-  .main {
-    padding-bottom: 70px; /* avoid overlap */
-  }
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .chart-container {
-    height: 240px;
-  }
-}
-
-@media (max-width: 600px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 480px) {
-  .stat-card h3 {
-    font-size: 18px;
-  }
-
-  .bottom-nav button {
-    font-size: 10px;
-  }
-
-  .chart-container {
-    height: 180px;
-  }
-}
-@media (max-width: 1200px), (min-width: 1100) {
-}
 /* MAIN */
 .main {
   flex: 1;
@@ -1561,149 +1418,6 @@ body {
   min-height: 36px;
 }
 
-/* Tablets */
-@media (max-width: 1024px) {
-  .admin-wrapper {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    min-width: 0;
-    min-height: 64px;
-    height: auto;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-
-    flex-direction: row;
-    align-items: center;
-    overflow-x: auto;
-    overflow-y: hidden;
-    white-space: nowrap;
-    padding: 10px;
-  }
-
-  .sidebar::-webkit-scrollbar {
-    display: none;
-  }
-
-  .sidebar h2,
-  .sidebar hr {
-    display: none;
-  }
-
-  .sidebar button {
-    width: auto;
-    flex: 0 0 auto;
-    min-height: 42px;
-    padding: 0 14px;
-  }
-
-  .stats-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .chart-container {
-    height: 280px;
-  }
-}
-
-/* Phones */
-@media (max-width: 700px) {
-  .section {
-    padding: 14px;
-  }
-
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .stat-card {
-    padding: 14px;
-  }
-
-  .repair-card {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .repair-left h3,
-  .repair-left p,
-  .repair-left small {
-    word-break: break-word;
-  }
-
-  .repair-right {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-
-  .repair-right select,
-  .repair-right button,
-  .assigned-label {
-    width: 100%;
-    text-align: center;
-  }
-
-  #usersContainer {
-    grid-template-columns: 1fr;
-  }
-
-  .messages-header {
-    flex-direction: column;
-  }
-
-  .message-filters {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .message-card {
-    grid-template-columns: 36px 1fr;
-  }
-
-  .message-direction {
-    grid-column: 2;
-    width: fit-content;
-  }
-
-  .chart-container {
-    height: 230px;
-  }
-
-  .modal-box {
-    width: 92%;
-    max-width: 380px;
-    margin: 0 auto;
-  }
-
-  .toast {
-    left: 14px;
-    right: 14px;
-    bottom: 14px;
-    text-align: center;
-  }
-}
-
-/* Very small phones */
-@media (max-width: 420px) {
-  .sidebar button {
-    padding: 0 10px;
-    font-size: 13px;
-  }
-
-  .sidebar button i {
-    font-size: 18px;
-  }
-
-  .chart-container {
-    height: 200px;
-  }
-}
 /* ==========================
    BENNYFIX UPLOADER
 ========================== */
@@ -2869,9 +2583,1025 @@ body.dark #blogEditorModal .blog-editor label {
         #e5e7eb;
 }
 
+/* ==========================================================
+   ADMIN NAV TOOLTIPS
+========================================================== */
+
+.sidebar button,
+.bottom-nav button {
+    position: relative;
+}
+
 
 /* ==========================================================
-   RESPONSIVE
+   DESKTOP SIDEBAR TOOLTIP
+   Appears BELOW the hovered icon
+========================================================== */
+
+.sidebar button[data-tooltip]::after {
+    content: attr(data-tooltip);
+
+    position: absolute;
+
+    /* Center below the button */
+    left: 50%;
+    top: calc(100% + 10px);
+
+    transform: translateX(-50%) translateY(-5px);
+
+    width: max-content;
+    max-width: 260px;
+
+    padding: 9px 12px;
+
+    background: #111827;
+    color: #fff;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 500;
+
+    white-space: normal;
+    text-align: center;
+
+    opacity: 0;
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease,
+        visibility 0.18s ease;
+
+    z-index: 9999;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+}
+
+
+/* ==========================================================
+   TOOLTIP ARROW
+   Points UP toward the icon
+========================================================== */
+
+.sidebar button[data-tooltip]::before {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: calc(100% + 1px);
+
+    transform: translateX(-50%) translateY(-5px);
+
+    border-width: 5px;
+    border-style: solid;
+
+    border-color:
+        transparent
+        transparent
+        #111827
+        transparent;
+
+    opacity: 0;
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.18s ease,
+        transform 0.18s ease,
+        visibility 0.18s ease;
+
+    z-index: 9999;
+}
+
+
+/* ==========================================================
+   SHOW TOOLTIP
+========================================================== */
+
+.sidebar button[data-tooltip]:hover::after,
+.sidebar button[data-tooltip]:hover::before {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+.sidebar button[data-tooltip]:hover::after {
+    transform: translateX(-50%) translateY(0);
+}
+
+
+.sidebar button[data-tooltip]:hover::before {
+    transform: translateX(-50%) translateY(0);
+}
+
+
+/* ==========================================================
+   DARK MODE
+========================================================== */
+
+body.dark .sidebar button[data-tooltip]::after {
+    background: #f9fafb;
+    color: #111827;
+}
+
+
+body.dark .sidebar button[data-tooltip]::before {
+    border-color:
+        transparent
+        transparent
+        #f9fafb
+        transparent;
+}
+
+
+/* ==========================================================
+   MOBILE
+========================================================== */
+
+/* ==========================================================
+   REFERRAL PROGRAM
+   ========================================================== */
+
+.referrals-panel {
+    margin-top: 24px;
+    padding: 24px;
+
+    background: var(--card-bg, #ffffff);
+
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 16px;
+
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.05);
+}
+
+
+/* ==========================================================
+   REFERRAL REWARD SETTING
+   ========================================================== */
+
+.referral-reward-setting {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 16px;
+
+    background: var(--section-bg, #f8fafc);
+
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+}
+
+.referral-reward-setting label {
+    margin: 0;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    color: var(--text-color, #111827);
+
+    white-space: nowrap;
+}
+
+
+/* Input + percentage */
+
+.referral-reward-setting > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#referralRewardPercent {
+    width: 85px;
+    height: 42px;
+
+    padding: 0 12px;
+
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: 9px;
+
+    background: var(--card-bg, #ffffff);
+    color: var(--text-color, #111827);
+
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+
+    outline: none;
+
+    box-sizing: border-box;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+#referralRewardPercent:focus {
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.referral-reward-setting span {
+    font-size: 14px;
+    font-weight: 700;
+
+    color: var(--muted-color, #6b7280);
+}
+
+
+/* ==========================================================
+   SAVE BUTTON
+   ========================================================== */
+
+.referral-reward-setting .btn-primary {
+    height: 42px;
+
+    padding: 0 20px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #2563eb;
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background .2s ease,
+        transform .15s ease,
+        box-shadow .2s ease;
+}
+
+.referral-reward-setting .btn-primary:hover {
+    background: #1d4ed8;
+
+    box-shadow:
+        0 5px 14px rgba(37, 99, 235, .20);
+
+    transform: translateY(-1px);
+}
+
+.referral-reward-setting .btn-primary:active {
+    transform: translateY(1px);
+}
+
+.referral-reward-setting .btn-primary:disabled {
+    opacity: .65;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+
+/* ==========================================================
+   REFERRAL STATS
+   ========================================================== */
+
+.referral-stats {
+    margin-top: 24px;
+}
+
+
+/* Total rewards */
+
+.referral-total-earned {
+    margin-top: 20px;
+    max-width: 320px;
+}
+
+#totalReferralRewards {
+    margin: 0;
+
+    font-size: 28px;
+    font-weight: 800;
+
+    color: #059669;
+}
+
+
+/* ==========================================================
+   REFERRAL LIST
+   ========================================================== */
+
+.referrals-container {
+    display: flex;
+    flex-direction: column;
+
+    gap: 14px;
+
+    margin-top: 20px;
+}
+
+
+/* ==========================================================
+   REFERRAL CARD
+   ========================================================== */
+
+.referral-card {
+    display: grid;
+
+    grid-template-columns: minmax(0, 1fr) auto;
+
+    gap: 20px;
+
+    padding: 18px;
+
+    background: var(--card-bg, #ffffff);
+
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: 12px;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        border-color .2s ease;
+}
+
+.referral-card:hover {
+    transform: translateY(-2px);
+
+    border-color: rgba(37, 99, 235, .20);
+
+    box-shadow:
+        0 6px 20px rgba(15, 23, 42, .07);
+}
+
+
+/* ==========================================================
+   REFERRAL INFORMATION
+   ========================================================== */
+
+.referral-info {
+    min-width: 0;
+}
+
+.referral-info h4 {
+    margin: 0 0 6px;
+
+    color: var(--text-color, #111827);
+
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.referral-info p {
+    margin: 4px 0;
+
+    color: var(--muted-color, #6b7280);
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.referral-info strong {
+    color: var(--text-color, #111827);
+}
+
+
+/* ==========================================================
+   REFERRAL STATUS
+   ========================================================== */
+
+.referral-status {
+    display: inline-flex;
+    align-items: center;
+
+    width: fit-content;
+
+    margin-top: 8px;
+
+    padding: 5px 10px;
+
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    text-transform: capitalize;
+}
+
+.referral-status.pending {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.referral-status.qualified {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.referral-status.paid {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+
+/* ==========================================================
+   REFERRAL ACTIONS
+   ========================================================== */
+
+.referral-actions {
+    display: flex;
+    flex-direction: column;
+
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+.referral-reward {
+    font-size: 18px;
+    font-weight: 800;
+
+    color: #059669;
+}
+
+.referral-actions button {
+    border: none;
+    cursor: pointer;
+}
+
+
+/* ==========================================================
+   EMPTY STATE
+   ========================================================== */
+
+.referrals-container .empty-state {
+    padding: 40px 20px;
+
+    text-align: center;
+
+    color: var(--muted-color, #6b7280);
+
+    background: var(--section-bg, #f8fafc);
+
+    border: 1px dashed var(--border-color, #d1d5db);
+    border-radius: 12px;
+}
+
+
+/* ==========================================================
+   DARK MODE
+   ========================================================== */
+
+body.dark .referrals-panel,
+body.dark .referral-card {
+    background: #111827;
+    border-color: #263244;
+}
+
+body.dark .referral-reward-setting,
+body.dark .referrals-container .empty-state {
+    background: #0f172a;
+    border-color: #263244;
+}
+
+body.dark .referral-reward-setting label,
+body.dark .referral-info h4,
+body.dark .referral-info strong {
+    color: #f8fafc;
+}
+
+body.dark .referral-info p,
+body.dark .referral-reward-setting span {
+    color: #cbd5e1;
+}
+
+body.dark #referralRewardPercent {
+    background: #020617;
+    border-color: #334155;
+    color: #f8fafc;
+}
+/* ==========================================================
+   RESPONSIVE ADMIN LAYOUT
+   ========================================================== */
+
+
+/* ==========================================================
+   TABLETS / SMALL DESKTOP
+   <= 1024px
+   ========================================================== */
+
+@media (max-width: 1024px) {
+
+    /* ------------------------------------------------------
+       MAIN ADMIN WRAPPER
+       ------------------------------------------------------ */
+
+    .admin-wrapper {
+        flex-direction: column;
+    }
+
+
+    /* ------------------------------------------------------
+       SIDEBAR → HORIZONTAL NAVIGATION
+       ------------------------------------------------------ */
+
+    .sidebar {
+        width: 100%;
+        min-width: 0;
+        min-height: 64px;
+        height: 64px;
+
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-start;
+
+        gap: 8px;
+
+        padding: 8px 10px;
+
+        overflow-x: auto;
+        overflow-y: hidden;
+
+        background: #111827;
+        border-bottom: 1px solid #1f2937;
+
+        scrollbar-width: none;
+        white-space: nowrap;
+    }
+
+    .sidebar::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    /* Hide sidebar title */
+    .sidebar h2,
+    .sidebar hr {
+        display: none;
+    }
+
+
+    /* Navigation buttons */
+    .sidebar button {
+        flex: 0 0 auto;
+
+        width: 44px;
+        min-width: 44px;
+
+        height: 44px;
+        min-height: 44px;
+
+        padding: 0;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        text-align: center;
+    }
+
+
+    /* Hide button text */
+    .sidebar button span {
+        display: none;
+    }
+
+
+    /* ------------------------------------------------------
+       BOTTOM NAV
+       ------------------------------------------------------ */
+
+    .bottom-nav {
+        display: flex;
+    }
+
+
+    /* ------------------------------------------------------
+       STATS
+       ------------------------------------------------------ */
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    /* ------------------------------------------------------
+       MAIN CONTENT
+       ------------------------------------------------------ */
+
+    .main {
+        flex: 1;
+
+        display: flex;
+        flex-direction: column;
+
+        overflow-y: auto;
+
+        background: #f5f6fa;
+
+        padding-bottom:
+            calc(60px + env(safe-area-inset-bottom));
+    }
+
+
+    /* ------------------------------------------------------
+       CHART
+       ------------------------------------------------------ */
+
+    .chart-container {
+        height: 260px;
+    }
+}
+
+
+/* ==========================================================
+   MOBILE
+   <= 768px
+   ========================================================== */
+
+@media (max-width: 768px) {
+
+    /* ------------------------------------------------------
+       GENERAL SECTION
+       ------------------------------------------------------ */
+
+    .section {
+        padding: 14px;
+        padding-bottom: 24px;
+    }
+
+
+    /* ------------------------------------------------------
+       STATS
+       ------------------------------------------------------ */
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        padding: 14px;
+    }
+
+
+    /* ------------------------------------------------------
+       MAIN / BOTTOM NAV
+       ------------------------------------------------------ */
+
+    .bottom-nav {
+        display: flex;
+    }
+
+    .main {
+        padding-bottom: 70px;
+    }
+
+
+    /* ------------------------------------------------------
+       REPAIRS
+       ------------------------------------------------------ */
+
+    .repair-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .repair-right {
+        width: 100%;
+
+        justify-content: space-between;
+    }
+
+    .repair-right select,
+    .repair-right button {
+        width: 100%;
+    }
+
+
+    /* ------------------------------------------------------
+       CHART
+       ------------------------------------------------------ */
+
+    .chart-container {
+        height: 240px;
+    }
+
+
+    /* ------------------------------------------------------
+       REFERRALS
+       ------------------------------------------------------ */
+
+    .referrals-panel {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .referral-reward-setting {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .referral-reward-setting > div {
+        width: 100%;
+    }
+
+    #referralRewardPercent {
+        flex: 1;
+        width: auto;
+    }
+
+    .referral-reward-setting .btn-primary {
+        width: 100%;
+    }
+
+    .referral-card {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .referral-actions {
+        flex-direction: row;
+
+        align-items: center;
+        justify-content: space-between;
+
+        width: 100%;
+    }
+
+    .referral-total-earned {
+        max-width: none;
+    }
+
+
+    /* ------------------------------------------------------
+       MESSAGES
+       ------------------------------------------------------ */
+
+    .messages-header {
+        flex-direction: column;
+    }
+
+    .message-filters {
+        width: 100%;
+
+        display: grid;
+        grid-template-columns:
+            repeat(3, 1fr);
+    }
+
+    .message-card {
+        grid-template-columns: 36px 1fr;
+    }
+
+    .message-direction {
+        grid-column: 2;
+        width: fit-content;
+    }
+
+
+    /* ------------------------------------------------------
+       USERS
+       ------------------------------------------------------ */
+
+    #usersContainer {
+        grid-template-columns: 1fr;
+    }
+
+
+    /* ------------------------------------------------------
+       MODAL
+       ------------------------------------------------------ */
+
+    .modal-box {
+        width: 92%;
+        max-width: 380px;
+
+        margin: 0 auto;
+    }
+
+
+    /* ------------------------------------------------------
+       TOAST
+       ------------------------------------------------------ */
+
+    .toast {
+        left: 14px;
+        right: 14px;
+        bottom: 14px;
+
+        text-align: center;
+    }
+
+
+    /* ------------------------------------------------------
+       TOOLTIP
+       ------------------------------------------------------ */
+
+    .sidebar button[data-tooltip]::before,
+    .sidebar button[data-tooltip]::after {
+        display: none;
+    }
+}
+
+
+/* ==========================================================
+   PHONES
+   <= 700px
+   ========================================================== */
+
+@media (max-width: 700px) {
+
+    /* ------------------------------------------------------
+       REPAIR CARD
+       ------------------------------------------------------ */
+
+    .repair-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .repair-left h3,
+    .repair-left p,
+    .repair-left small {
+        word-break: break-word;
+    }
+
+    .repair-right {
+        width: 100%;
+
+        flex-direction: column;
+        align-items: stretch;
+
+        gap: 8px;
+    }
+
+    .repair-right select,
+    .repair-right button,
+    .assigned-label {
+        width: 100%;
+        text-align: center;
+    }
+
+
+    /* ------------------------------------------------------
+       CHART
+       ------------------------------------------------------ */
+
+    .chart-container {
+        height: 230px;
+    }
+}
+
+
+/* ==========================================================
+   SMALL PHONES
+   <= 480px
+   ========================================================== */
+
+@media (max-width: 480px) {
+
+    /* ------------------------------------------------------
+       STATS
+       ------------------------------------------------------ */
+
+    .stat-card h3 {
+        font-size: 18px;
+    }
+
+
+    /* ------------------------------------------------------
+       BOTTOM NAV
+       ------------------------------------------------------ */
+
+    .bottom-nav button {
+        font-size: 10px;
+    }
+
+
+    /* ------------------------------------------------------
+       SIDEBAR BUTTONS
+       ------------------------------------------------------ */
+
+    .sidebar button {
+        padding: 0 10px;
+        font-size: 13px;
+    }
+
+    .sidebar button i {
+        font-size: 18px;
+    }
+
+
+    /* ------------------------------------------------------
+       CHART
+       ------------------------------------------------------ */
+
+    .chart-container {
+        height: 200px;
+    }
+
+
+    /* ------------------------------------------------------
+       BLOG
+       ------------------------------------------------------ */
+
+    #blog .section-header h2 {
+        font-size: 23px;
+    }
+
+    .blog-admin-card {
+        border-radius: 13px;
+    }
+
+    .blog-admin-image {
+        height: 165px;
+    }
+
+    .blog-admin-content {
+        padding: 15px;
+    }
+
+
+    /* Blog editor */
+    #blogEditorModal .modal-box.blog-editor {
+        width: calc(100vw - 20px);
+
+        max-height: calc(100vh - 20px);
+
+        margin: 10px auto;
+
+        padding: 20px;
+
+        border-radius: 14px;
+    }
+
+    .blog-editor-actions {
+        flex-direction: column;
+    }
+
+    .blog-editor-actions .btn {
+        width: 100%;
+    }
+}
+
+
+/* ==========================================================
+   VERY SMALL PHONES
+   <= 420px
+   ========================================================== */
+
+@media (max-width: 420px) {
+
+    /* ------------------------------------------------------
+       REFERRALS
+       ------------------------------------------------------ */
+
+    .referrals-panel {
+        padding: 14px;
+    }
+
+    .referral-reward-setting {
+        padding: 14px;
+    }
+
+    .referral-card {
+        padding: 14px;
+    }
+
+    .referral-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .referral-reward {
+        font-size: 16px;
+    }
+}
+
+
+/* ==========================================================
+   BLOG RESPONSIVE
+   <= 760px
    ========================================================== */
 
 @media (max-width: 760px) {
@@ -2898,161 +3628,4 @@ body.dark #blogEditorModal .blog-editor label {
     .blog-admin-grid {
         grid-template-columns: 1fr;
     }
-
-}
-
-@media (max-width: 480px) {
-
-    #blog .section-header h2 {
-        font-size: 23px;
-    }
-
-    .blog-admin-card {
-        border-radius: 13px;
-    }
-
-    .blog-admin-image {
-        height: 165px;
-    }
-
-    .blog-admin-content {
-        padding: 15px;
-    }
-
-    #blogEditorModal .modal-box.blog-editor {
-        width: calc(100vw - 20px);
-
-        max-height: calc(100vh - 20px);
-
-        margin: 10px auto;
-
-        padding: 20px;
-
-        border-radius: 14px;
-    }
-
-    .blog-editor-actions {
-        flex-direction: column;
-    }
-
-    .blog-editor-actions .btn {
-        width: 100%;
-    }
-
-}
-/* ==========================================================
-   ADMIN NAV TOOLTIPS
-   ========================================================== */
-
-.sidebar button,
-.bottom-nav button {
-  position: relative;
-}
-
-/* Desktop sidebar tooltip */
-.sidebar button[data-tooltip]::after {
-  content: attr(data-tooltip);
-
-  position: absolute;
-  left: calc(100% + 12px);
-  top: 50%;
-
-  transform: translateY(-50%) translateX(-5px);
-
-  width: max-content;
-  max-width: 260px;
-
-  padding: 9px 12px;
-
-  background: #111827;
-  color: #fff;
-
-  border-radius: 8px;
-
-  font-size: 12px;
-  line-height: 1.4;
-  font-weight: 500;
-
-  white-space: normal;
-
-  opacity: 0;
-  visibility: hidden;
-
-  pointer-events: none;
-
-  transition:
-    opacity 0.18s ease,
-    transform 0.18s ease,
-    visibility 0.18s ease;
-
-  z-index: 9999;
-
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
-}
-
-/* Small arrow */
-.sidebar button[data-tooltip]::before {
-  content: "";
-  position: absolute;
-
-  left: calc(100% + 5px);
-  top: 50%;
-
-  transform: translateY(-50%) translateX(-5px);
-
-  border-width: 5px;
-  border-style: solid;
-
-  border-color: transparent #111827 transparent transparent;
-
-  opacity: 0;
-  visibility: hidden;
-
-  pointer-events: none;
-
-  transition:
-    opacity 0.18s ease,
-    transform 0.18s ease,
-    visibility 0.18s ease;
-
-  z-index: 9999;
-}
-
-/* Show tooltip */
-.sidebar button[data-tooltip]:hover::after,
-.sidebar button[data-tooltip]:hover::before {
-  opacity: 1;
-  visibility: visible;
-}
-
-.sidebar button[data-tooltip]:hover::after {
-  transform: translateY(-50%) translateX(0);
-}
-
-.sidebar button[data-tooltip]:hover::before {
-  transform: translateY(-50%) translateX(0);
-}
-
-/* ==========================================================
-   DARK MODE
-   ========================================================== */
-
-body.dark .sidebar button[data-tooltip]::after {
-  background: #f9fafb;
-  color: #111827;
-}
-
-body.dark .sidebar button[data-tooltip]::before {
-  border-color: transparent #f9fafb transparent transparent;
-}
-
-/* ==========================================================
-   MOBILE
-   ========================================================== */
-
-@media (max-width: 768px) {
-  .sidebar button[data-tooltip]::before,
-  .sidebar button[data-tooltip]::after {
-    display: none;
-  }
 }

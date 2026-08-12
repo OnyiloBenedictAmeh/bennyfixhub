@@ -147,6 +147,14 @@
   <span>Messages</span>
   <span id="notifBadge" class="badge">0</span>
 </button>
+<button
+  onclick="showSection('referrals')"
+  title="Referral Program"
+  data-tooltip="Manage customer referrals and rewards"
+>
+  <i class='bx bx-gift'></i>
+  <span>Referrals</span>
+</button>
   <hr />
 <button
     onclick="enableAdminPushNotifications()"
@@ -587,7 +595,96 @@
     <p class="empty-state">Loading reviews...</p>
   </div>
 </div>
+<!-- REFERRALS SECTION -->
+<div id="referrals" class="section" style="display:none;">
 
+  <div class="marketing-header">
+    <div>
+      <h2>Referral Program</h2>
+      <p>Manage customer referrals, qualification and reward payouts.</p>
+    </div>
+
+    <div class="referral-reward-setting">
+      <label for="referralRewardPercent">
+        Reward Percentage
+      </label>
+
+      <div>
+        <input
+          type="number"
+          id="referralRewardPercent"
+          min="0"
+          max="100"
+          step="0.1"
+          value="10"
+        />
+
+        <span>%</span>
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="saveReferralRewardPercent()"
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFERRAL STATS -->
+  <div class="stats-grid referral-stats">
+
+    <div class="stat-card">
+      <h3 id="totalReferrals">0</h3>
+      <p>Total Referrals</p>
+    </div>
+
+    <div class="stat-card pending">
+      <h3 id="pendingReferrals">0</h3>
+      <p>Pending</p>
+    </div>
+
+    <div class="stat-card diagnosing">
+      <h3 id="qualifiedReferrals">0</h3>
+      <p>Qualified</p>
+    </div>
+
+    <div class="stat-card completed">
+      <h3 id="paidReferrals">0</h3>
+      <p>Paid</p>
+    </div>
+
+  </div>
+
+  <!-- TOTAL REWARDS -->
+  <div class="stat-card referral-total-earned">
+    <h3 id="totalReferralRewards">₦0</h3>
+    <p>Total Referral Rewards</p>
+  </div>
+
+  <!-- REFERRAL LIST -->
+  <div class="referrals-panel">
+
+    <div class="panel-header">
+      <div>
+        <h3>Referral History</h3>
+        <p>Track referred customers and reward status.</p>
+      </div>
+    </div>
+
+    <div
+      id="referralsContainer"
+      class="referrals-container"
+    >
+      <p class="empty-state">
+        Loading referrals...
+      </p>
+    </div>
+
+  </div>
+
+</div>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script type="module" src="admin.js"></script>
