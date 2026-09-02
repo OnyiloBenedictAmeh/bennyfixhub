@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Something For Helen 🎂</title>
+
+    <link rel="stylesheet" href="helen.css">
+</head>
+
+<body>
+<!-- =========================
+     MUSIC PLAYER
+========================= -->
+
+<button class="music-toggle" id="musicToggle" aria-label="Play birthday music">
+    <span id="musicIcon">♪</span>
+    <span id="musicText">Play</span>
+</button>
+
+<audio id="birthdayMusic" loop preload="auto">
+    <source src="assets/birthday.mp3" type="audio/mpeg">
+</audio>
+    <!-- Background -->
+    <div class="stars"></div>
+
+    <!-- INTRO -->
+    <main class="intro-screen" id="introScreen">
+
+        <div class="intro-content">
+
+    <div class="intro-sequence" id="introSequence">
+
+        <p class="intro-line line-1">
+            Hey, Helen...
+        </p>
+
+        <p class="intro-line line-2">
+            I made something for you.
+        </p>
+
+        <p class="intro-line line-3">
+            And no... 😂
+            <br>
+            it's not what you're thinking.
+        </p>
+
+    </div>
+
+
+    <div class="countdown-area" id="countdownArea">
+
+        <span class="small-text">
+            YOUR LITTLE SURPRISE
+        </span>
+
+        <h1>
+            <span>Helen</span>
+        </h1>
+
+        <p class="intro-message">
+            There's something waiting for you.
+        </p>
+
+        <div class="countdown" id="countdown">
+
+            <div class="time-box">
+                <span id="minutes">10</span>
+                <small>MIN</small>
+            </div>
+
+            <div class="colon">:</div>
+
+            <div class="time-box">
+                <span id="seconds">00</span>
+                <small>SEC</small>
+            </div>
+
+        </div>
+
+        <p class="countdown-note">
+            Be patient... 👀
+        </p>
+
+    </div>
+
+</div>
+
+    </main>
+
+<!-- =========================
+     BIRTHDAY CELEBRATION
+========================= -->
+
+<div class="celebration-layer hidden" id="celebrationLayer">
+<div class="balloon-container" id="balloonContainer"></div>
+<div class="fireworks-container" id="fireworksContainer"></div>
+    <div class="celebration-glow"></div>
+
+    <div class="celebration-content">
+
+        <div class="celebration-cake">
+            🎂
+        </div>
+
+        <p class="celebration-small">
+            TODAY IS YOUR DAY
+        </p>
+
+        <h1>
+            HAPPY
+            <span>BIRTHDAY</span>
+        </h1>
+
+        <h2>
+            HELEN
+        </h2>
+
+    </div>
+
+</div>
+    <!-- BIRTHDAY REVEAL -->
+    <section class="birthday-screen hidden" id="birthdayScreen">
+
+        <div class="birthday-content">
+
+            <div class="cake">🎂</div>
+
+            <p class="eyebrow">TODAY IS YOUR DAY</p>
+
+            <h2>
+                Happy Birthday,
+                <span>Helen!</span>
+            </h2>
+
+            <div class="divider"></div>
+
+            <p class="birthday-message">
+                You deserve a day filled with laughter, beautiful memories,
+                good people, and plenty of reasons to smile.
+            </p>
+
+            <p class="birthday-message">
+                I hope this new year of your life brings you amazing
+                opportunities, unexpected happiness, and moments you'll
+                remember for a long time.
+            </p>
+
+            <p class="birthday-message highlight">
+                Enjoy your day, birthday girl. ❤️
+            </p>
+
+            <button class="surprise-btn" id="surpriseBtn">
+    There's one more thing 👀
+</button>
+
+        </div>
+
+    </section>
+
+<!-- =========================
+     MAKE A WISH
+========================= -->
+
+<section class="wish-screen hidden" id="wishScreen">
+
+    <div class="wish-content">
+
+        <span class="eyebrow">ONE LAST THING BEFORE THE LETTER</span>
+
+        <h2>
+            Make a <span>wish.</span>
+        </h2>
+
+        <p class="wish-instruction">
+            Tap the cake and blow out the candles. 🎂
+        </p>
+
+        <div class="birthday-cake" id="birthdayCake">
+
+            <div class="cake-candles">
+
+                <div class="candle">
+                    <div class="flame"></div>
+                </div>
+
+                <div class="candle">
+                    <div class="flame"></div>
+                </div>
+
+                <div class="candle">
+                    <div class="flame"></div>
+                </div>
+
+            </div>
+
+            <div class="cake-top"></div>
+
+            <div class="cake-body">
+
+                <div class="cake-decoration"></div>
+
+            </div>
+
+            <div class="cake-plate"></div>
+
+        </div>
+
+        <p class="wish-result hidden" id="wishResult">
+            ✨ Wish made. ✨
+        </p>
+
+        <button
+            class="continue-btn hidden"
+            id="continueBtn"
+        >
+            Open your letter 💌
+        </button>
+
+    </div>
+
+</section>
+    <!-- SECOND REVEAL -->
+
+<section class="more-screen hidden" id="moreScreen">
+
+    <div class="letter-wrapper">
+
+        <div class="letter">
+
+            <div class="letter-top">
+                <span>FOR HELEN</span>
+                <span>♥</span>
+            </div>
+
+            <div class="letter-body">
+
+                <p class="letter-greeting">
+                    Hey Helen,
+                </p>
+
+                <p>
+                    I honestly didn't know what to get you for your
+                    birthday...
+                </p>
+
+                <p>
+                    So I figured I'd make something instead.
+                </p>
+
+                <p>
+                    It may not be the biggest or most expensive gift,
+                    but I hope it gives you a little smile today.
+                </p>
+
+                <p>
+                    You've got another year ahead of you now,
+                    and I genuinely hope it's a good one.
+                </p>
+
+                <p>
+                    More laughter.
+                    <br>
+                    More adventures.
+                    <br>
+                    More reasons to be happy.
+                </p>
+
+                <p class="letter-highlight">
+                    And hopefully a few memories worth keeping. ✨
+                </p>
+
+                <p class="letter-ending">
+                    Happy Birthday, Helen. ❤️
+                </p>
+
+                <div class="signature">
+                    — From someone who decided
+                    a normal birthday message wasn't enough 😂
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+    <!-- Confetti container -->
+    <div id="confetti"></div>
+
+
+    <script src="helen.js"></script>
+
+</body>
+</html>
