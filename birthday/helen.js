@@ -25,7 +25,7 @@ const balloonContainer =
     const fireworksContainer =
     document.getElementById("fireworksContainer");
 // 10 minutes
-let remainingTime = 10;
+let remainingTime = 10 * 2;
 
 
 function updateCountdown() {
