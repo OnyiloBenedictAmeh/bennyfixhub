@@ -1,6 +1,27 @@
 (function () {
   document.documentElement.classList.add('js');
 
+  var nav = document.getElementById('site-nav');
+  var menuToggle = document.querySelector('.menu-toggle');
+
+  function toggleMenu(forceOpen) {
+    if (!nav || !menuToggle) return;
+    var willOpen = typeof forceOpen === 'boolean' ? forceOpen : nav.classList.toggle('is-open');
+    nav.classList.toggle('is-open', willOpen);
+    menuToggle.setAttribute('aria-expanded', String(willOpen));
+    menuToggle.setAttribute('aria-label', willOpen ? 'Close navigation menu' : 'Open navigation menu');
+  }
+
+  if (menuToggle && nav) {
+    menuToggle.addEventListener('click', function () { toggleMenu(); });
+    nav.querySelectorAll('a').forEach(function (link) {
+      link.addEventListener('click', function () { toggleMenu(false); });
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape' && nav.classList.contains('is-open')) toggleMenu(false);
+    });
+  }
+
   function showTab(tabId) {
     var tabs = [].slice.call(document.querySelectorAll('.tab'));
     var panels = [].slice.call(document.querySelectorAll('.panel'));

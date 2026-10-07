@@ -6,6 +6,8 @@
   <title>Visit | Hearth &amp; Spice</title>
   <meta name="description" content="Find Hearth &amp; Spice in Lekki Phase 1 and check our opening hours.">
   <meta name="theme-color" content="#17352B">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
@@ -14,8 +16,11 @@
 <body>
 <header class="bar">
   <div class="wrap">
-    <a class="brand" href="resturant.html">Hearth &amp; Spice</a>
-    <nav class="nav" aria-label="Main navigation">
+    <a class="brand" href="resturant.html" aria-label="Hearth and Spice home"><img src="favicon.svg" alt="" width="32" height="32">Hearth &amp; Spice</a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="nav" id="site-nav" aria-label="Main navigation">
       <a href="restaurant-menu.html">Menu</a>
       <a href="restaurant-about.html">About</a>
       <a href="restaurant-gallery.html">Gallery</a>
@@ -67,9 +72,9 @@
   <div class="wrap">
     <a class="brand" href="resturant.html">Hearth &amp; Spice</a>
     <ul class="social">
-      <li><a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a></li>
-      <li><a href="https://facebook.com/" target="_blank" rel="noopener">Facebook</a></li>
-      <li><a href="https://tiktok.com/" target="_blank" rel="noopener">TikTok</a></li>
+      <li><a href="https://instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"></rect><circle cx="12" cy="12" r="4.25"></circle><circle cx="17.5" cy="6.5" r="1.2"></circle></svg></a></li>
+      <li><a href="https://facebook.com/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3h-3.1V7.7c0-.9.3-1.5 1.5-1.5H17V3.2c-.5-.1-1.7-.2-3.1-.2-3.1 0-5.2 1.8-5.2 5.3V10H6.5v3h2.2v8h4.8Z"></path></svg></a></li>
+      <li><a href="https://tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.3 3c.5 1.7 1.8 2.9 3.6 3.2v2.9c-1.4-.1-2.7-.6-3.8-1.4v7.3c0 3.1-2.5 5.6-5.6 5.6S4 18 4 14.9s2.5-5.6 5.6-5.6c.4 0 .8 0 1.2.1v3c-.4-.1-.8-.1-1.2-.1-1.5 0-2.7 1.2-2.7 2.7s1.2 2.7 2.7 2.7 2.7-1.2 2.7-2.7V3h3.7Z"></path></svg></a></li>
     </ul>
     <p>© 2026 Hearth &amp; Spice. All rights reserved.</p>
   </div>
