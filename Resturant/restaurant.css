@@ -88,3 +88,9 @@ body{font-size:1rem;line-height:1.65;overflow-x:hidden} .wrap{max-width:1160px;p
 .map-open{transition:background-color .18s ease,transform .18s ease}
 .map-open:hover{background:var(--burgundy-hover);transform:translateY(-2px)}.nav a:active,.sec a:not(.btn):active{color:#6B1E2B}
 .visit-hero a:not(.btn):active,.visit-cta a:not(.btn):active,.foot a:not(.btn):active{color:#C9A227}
+/* Clarify hover and pressed feedback without changing component geometry. */
+.btn-ghost{border-color:#6B1E2B;color:#6B1E2B}
+.nav a:hover,.nav a:focus-visible{background:#C9A227;color:#2B2118;box-shadow:inset 0 -2px #6B1E2B}
+.nav a[aria-current="page"]:hover{background:#C9A227;color:#6B1E2B;box-shadow:inset 0 -2px #6B1E2B}
+.sec a:not(.btn):hover{ text-decoration-color:#6B1E2B }
+.visit-menu-link:hover{text-decoration-thickness:2px}
