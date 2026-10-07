@@ -1,0 +1,129 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--
+  BASIC PACKAGE RESTAURANT SITE (single file, no build step)
+  To make it the real restaurant's site, search and replace these placeholders:
+    "Hearth & Spice"            restaurant name
+    "12 Admiralty Way..."       address (also in the Google Maps link and JSON-LD below)
+    "+234 800 000 0000"         phone shown on the page
+    "2348000000000"             WhatsApp number, digits only, with country code, no plus sign
+    "hello@yourrestaurant.com"  email
+    instagram / facebook / tiktok links in the footer
+    menu items and prices, opening hours (also in the HOURS table in the script)
+  Gallery: each .tile is a coloured placeholder. Put <img src="photo.jpg" alt="..."> inside it and keep the figcaption.
+  To embed a live Google Map, paste the iframe from Google Maps (Share > Embed a map) into the Visit section.
+-->
+<title>Hearth &amp; Spice | Nigerian Restaurant in Lekki, Lagos</title>
+<meta name="description" content="Hearth &amp; Spice serves jollof, egusi, suya and pepper soup cooked to order in Lekki Phase 1, Lagos. See the menu, opening hours and order on WhatsApp.">
+<meta name="theme-color" content="#17352B">
+<meta property="og:type" content="restaurant">
+<meta property="og:title" content="Hearth &amp; Spice | Nigerian Restaurant in Lekki, Lagos">
+<meta property="og:description" content="Jollof, egusi, suya and pepper soup cooked to order. Eat in or order on WhatsApp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="restaurant.css">
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top">Hearth &amp; Spice</a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="restaurant-menu.html">Menu</a>
+      <a href="restaurant-about.html">About</a>
+      <a href="restaurant-gallery.html">Gallery</a>
+      <a href="restaurant-visit.html">Visit</a>
+      <a href="restaurant-contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero" aria-labelledby="landing-title">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow">Lekki Phase 1, Lagos</p>
+        <h1 id="landing-title">Warm Nigerian cooking, made to share.</h1>
+        <p class="lede">From smoky jollof and rich egusi to grilled suya and comforting pepper soup, every dish is prepared fresh in our kitchen.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="restaurant-menu.html">Explore the menu</a>
+          <a class="btn btn-ghost" href="restaurant-visit.html">Plan your visit</a>
+        </div>
+      </div>
+
+      <aside class="board" aria-label="Featured dishes">
+        <p class="eyebrow accent">Today’s favourites</p>
+        <h2>On the board today</h2>
+        <ul class="specials">
+          <li class="special"><span class="nm">Party jollof &amp; grilled chicken</span><span class="lead" aria-hidden="true"></span><span class="pr">₦6,500</span></li>
+          <li class="special"><span class="nm">Egusi &amp; pounded yam</span><span class="lead" aria-hidden="true"></span><span class="pr">₦7,500</span></li>
+          <li class="special"><span class="nm">Catfish pepper soup</span><span class="lead" aria-hidden="true"></span><span class="pr">₦8,000</span></li>
+          <li class="special"><span class="nm">Suya, 4 skewers</span><span class="lead" aria-hidden="true"></span><span class="pr">₦4,000</span></li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section class="sec sec-alt">
+    <div class="wrap split">
+      <div>
+        <p class="eyebrow">A family kitchen</p>
+        <h2>Made with tradition, served with warmth.</h2>
+        <p>Hearth &amp; Spice began as a Sunday lunch shared with family and neighbours. Today, we carry that same generous spirit into every order, gathering, and evening on the patio.</p>
+        <p><a href="restaurant-about.html">Learn more about our story</a>.</p>
+      </div>
+      <div class="hero-card">
+        <p class="eyebrow accent">Opening hours</p>
+        <h2>Fresh food, every day.</h2>
+        <p>Mondayâ€“Thursday: 11:00â€“22:00<br>Fridayâ€“Saturday: 11:00â€“23:00<br>Sunday: 12:00â€“21:00</p>
+        <a class="btn btn-primary" href="restaurant-visit.html">Visit us</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="wrap">
+      <p class="eyebrow">Discover more</p>
+      <h2>See what makes Hearth &amp; Spice different.</h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Explore the menu</h3>
+          <p>Browse starters, mains, sides, and drinks.</p>
+          <p><a href="restaurant-menu.html">View menu</a></p>
+        </article>
+        <article class="card">
+          <h3>Meet the kitchen</h3>
+          <p>Learn about our ingredients, cooking style, and story.</p>
+          <p><a href="restaurant-about.html">Our story</a></p>
+        </article>
+        <article class="card">
+          <h3>Enjoy the atmosphere</h3>
+          <p>See the dishes, spaces, and moments our guests return for.</p>
+          <p><a href="restaurant-gallery.html">View gallery</a></p>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <a class="brand" href="#top">Hearth &amp; Spice</a>
+    <ul class="social">
+      <li><a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a></li>
+      <li><a href="https://facebook.com/" target="_blank" rel="noopener">Facebook</a></li>
+      <li><a href="https://tiktok.com/" target="_blank" rel="noopener">TikTok</a></li>
+    </ul>
+    <p>Â© 2026 Hearth &amp; Spice. All rights reserved.</p>
+  </div>
+</footer>
+
+<a class="btn btn-wa fab" href="https://wa.me/2348000000000?text=Hello%20Hearth%20%26%20Spice." target="_blank" rel="noopener" aria-label="Chat on WhatsApp">Chat on WhatsApp</a>
+
+<script src="restaurant.js"></script>
+</body>
+</html>

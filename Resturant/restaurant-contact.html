@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contact | Hearth &amp; Spice</title>
+  <meta name="description" content="Order from Hearth &amp; Spice or ask us a question by WhatsApp, phone, or email.">
+  <meta name="theme-color" content="#17352B">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="restaurant.css">
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="resturant.html">Hearth &amp; Spice</a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="restaurant-menu.html">Menu</a>
+      <a href="restaurant-about.html">About</a>
+      <a href="restaurant-gallery.html">Gallery</a>
+      <a href="restaurant-visit.html">Visit</a>
+      <a href="restaurant-contact.html" aria-current="page">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="page-hero">
+    <div class="wrap">
+      <p class="eyebrow">Order or ask us anything</p>
+      <h1>We’d love to hear from you.</h1>
+      <p>Write your message here and send it on WhatsApp. We reply during opening hours.</p>
+    </div>
+  </section>
+
+  <section class="sec sec-alt">
+    <div class="wrap split">
+      <div>
+        <h2>Send a message</h2>
+        <form class="form" id="contact-form" novalidate>
+          <label for="c-name">Your name
+            <input id="c-name" name="name" type="text" autocomplete="name" placeholder="Ada">
+          </label>
+          <label for="c-msg">Your message
+            <textarea id="c-msg" name="message" placeholder="Two jollof and chicken for pickup at 7pm, or a table for 6 on Saturday."></textarea>
+          </label>
+          <a class="btn btn-wa" id="wa-send" href="https://wa.me/2348000000000?text=Hello%20Hearth%20%26%20Spice." target="_blank" rel="noopener">Send on WhatsApp</a>
+          <p class="hint">This opens WhatsApp with your message filled in. Nothing is sent until you press send there.</p>
+        </form>
+      </div>
+      <dl class="contact-list">
+        <div><dt>Phone and WhatsApp</dt><dd><span id="phone-text">+234 800 000 0000</span><button class="copy" type="button" data-copy="+234 800 000 0000" data-target="phone-text">Copy</button></dd></div>
+        <div><dt>Email</dt><dd>hello@yourrestaurant.com</dd></div>
+        <div><dt>Address</dt><dd>12 Admiralty Way, Lekki Phase 1, Lagos</dd></div>
+      </dl>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <a class="brand" href="resturant.html">Hearth &amp; Spice</a>
+    <ul class="social">
+      <li><a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a></li>
+      <li><a href="https://facebook.com/" target="_blank" rel="noopener">Facebook</a></li>
+      <li><a href="https://tiktok.com/" target="_blank" rel="noopener">TikTok</a></li>
+    </ul>
+    <p>© 2026 Hearth &amp; Spice. All rights reserved.</p>
+  </div>
+</footer>
+<a class="btn btn-wa fab" href="https://wa.me/2348000000000?text=Hello%20Hearth%20%26%20Spice." target="_blank" rel="noopener" aria-label="Chat on WhatsApp">Chat on WhatsApp</a>
+<script src="restaurant.js"></script>
+</body>
+</html>
